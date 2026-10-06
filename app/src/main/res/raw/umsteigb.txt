@@ -1,0 +1,2971 @@
+9999999 02 02 STANDARD
+8500010 06 06 Basel SBB
+8500020 03 03 Muttenz
+8500021 03 03 Pratteln
+8500023 04 04 Liestal
+8500026 03 03 Sissach
+8500063 04 04 Oberwil BL, Zentrum
+8500090 04 04 Basel Bad Bf
+8500105 03 03 Moutier
+8500109 03 03 Delémont
+8500113 03 03 Laufen
+8500126 03 03 Porrentruy
+8500171 00 00 Les Reussilles
+8500174 01 01 Le Noirmont
+8500179 01 01 La Cibourg
+8500202 03 03 Grenchen Süd
+8500206 06 06 Solothurn West
+8500207 04 04 Solothurn
+8500211 03 03 Niederbipp
+8500212 03 03 Oensingen
+8500218 05 05 Olten
+8500234 00 00 Reinach BL, Surbaum
+8500301 03 03 Rheinfelden
+8500305 03 03 Frick
+8500309 03 03 Brugg AG
+8500329 03 03 Koblenz
+8500371 01 01 Wangen bei Olten, Bahnhof
+8500383 01 01 Kappel SO, Kreuz
+8500385 01 01 Neuendorf, Kirche
+8500468 01 01 Zuchwil, Langfeld
+8500476 01 01 Aeschi SO, Dorf
+8500494 01 01 Solothurn, Amthausplatz
+8500555 03 03 Lauffohr, Dorf
+8500556 01 01 Mettau, Linde
+8500557 01 01 Mettau, Kirche
+8500561 01 01 Remigen, Zentrum
+8500565 01 01 Bözberg, Neustalden
+8500571 01 01 Veltheim AG, Unterdorf
+8500577 01 01 Windisch, Löwen
+8500583 01 01 Frick, Bahnhof
+8500598 03 03 Olten, Postplatz
+8500651 01 01 Vicques, poste
+8500663 01 01 Montsevelier, poste
+8500666 01 01 Châtillon JU, bas du village
+8500671 01 01 Develier, Sur Cré
+8500674 01 01 Balsthal, Bahnhof
+8500692 01 01 Dornach, Bahnhof
+8500695 01 01 Metzerlen, Challstrasse
+8500738 01 01 Gilly, village
+8500750 01 01 Balm b. Günsberg, Dorf
+8500751 01 01 Bellelay, école
+8500752 01 01 Breitenbach, Dorfplatz
+8500758 01 01 Les Genevez JU, poste
+8500775 01 01 Seewen SO, Herrenmatt
+8500777 01 01 Gansingen, Dorfplatz
+8500783 01 01 Magden, Post
+8500784 01 01 Hottwil, Wendeplatz
+8500852 01 01 Reigoldswil, Dorfplatz
+8500861 01 01 Lajoux JU, poste
+8500958 01 01 Wahlen b. Laufen, Petersplatz
+8500978 01 01 Herznach, Post
+8500983 01 01 Kaisten, Gemeindehaus
+8500988 01 01 St-Ursanne, Pont St-Jean/ville
+8501008 04 04 Genève
+8501023 03 03 Coppet
+8501030 03 03 Nyon
+8501037 03 03 Morges
+8501062 01 01 St-Cergue
+8501068 00 00 Trélex
+8501078 01 01 St-Gingolph (Suisse) (lac)
+8501079 01 01 Bouveret (lac)
+8501094 01 01 Apples
+8501103 03 03 Vallorbe
+8501118 04 04 Renens VD
+8501120 05 05 Lausanne
+8501200 03 03 Vevey
+8501230 01 01 Glion-Alpes
+8501258 01 01 La Forclaz VS
+8501259 01 01 Haute-Nendaz, télécabine
+8501270 01 01 Törbel, Furen
+8501275 01 01 Lourtier, village
+8501293 01 01 La Sage, Villaz
+8501294 01 01 Leytron, anc. poste
+8501300 03 03 Montreux
+8501327 01 01 Arbaz, poste
+8501329 01 01 Gstaad, Wispile
+8501332 01 01 Nax, centre
+8501400 03 03 Aigle
+8501402 03 03 Bex
+8501403 04 04 St-Maurice
+8501500 03 03 Martigny
+8501506 03 03 Sion
+8501516 00 00 Varen, Frayen
+8501568 01 01 Le Châtelard-Frontière
+8501576 01 01 Sembrancher
+8501605 04 04 Visp
+8501609 04 04 Brig
+8501660 01 01 Gletsch, Post
+8501672 01 01 Fiesch
+8501688 04 04 Täsch
+8501689 05 05 Zermatt
+8501718 01 01 Stalden VS, Stahlen
+8501738 01 01 Moiry VS, barrage
+8501751 01 01 Botyre (Ayent), centre
+8501752 01 01 Ayer, anc. poste
+8501753 01 01 Brig, Bahnhof
+8501761 01 01 Erde, centre
+8501762 01 01 Bruson, village
+8501769 01 01 Gsteig b. Gstaad, Post
+8501770 01 01 Les Haudères, centre
+8501780 01 01 Saas-Almagell, Dorfplatz
+8501783 01 01 Saas-Grund, Post
+8501785 01 01 Savièse, St-Germain centre
+8501790 01 01 Vissoie, poste
+8501792 01 01 Les Mosses, Col des Mosses
+8501797 01 01 Gondo, Kirche
+8501851 01 01 Begnins, poste
+8501877 00 00 Bourg-St-Bernard
+8501880 00 00 Bourg-St-Pierre, Commune
+8501895 01 01 Binn, Dorf
+8501896 01 01 Ernen, Dorfplatz
+8501952 03 03 Iselle di Trasquera
+8501955 01 01 Betten Dorf
+8501961 01 01 Simplon Dorf, Post
+8501973 01 01 Hohtenn, Dorf
+8501975 01 01 Le Sépey, gare
+8501988 01 01 Niedergrächen
+8501990 01 01 Agarn, Dorf
+8501997 01 01 Stalden-Saas, Bahnhof
+8502000 03 03 Aarburg-Oftringen
+8502001 04 04 Zofingen
+8502007 03 03 Sursee
+8502028 03 03 Emmenbrücke Gersag
+8502038 01 01 Beromünster, Post
+8502086 01 01 Büron, Dorf
+8502103 01 01 Suhr
+8502105 03 03 Othmarsingen
+8502106 04 04 Mägenwil
+8502113 04 04 Aarau
+8502114 03 03 Rupperswil
+8502116 03 03 Schinznach Bad
+8502119 04 04 Lenzburg
+8502202 03 03 Rotkreuz
+8502204 04 04 Zug
+8502206 03 03 Baar
+8502276 01 01 Berikon-Widen
+8502278 01 01 Reppischhof
+8502293 00 00 Edlibach, Bad Schönbrunn
+8502358 00 00 Zofingen, Altachen
+8502554 04 04 Rifferswil, Oberrifferswil
+8502559 04 04 Waldegg, Birmensdorferstrasse
+8502567 01 01 Rottenschwil, Abzw.
+8502572 01 01 Zürich, Goldbrunnenplatz
+8502679 01 01 Seengen, Poststrasse
+8502689 01 01 Dottikon, Sternenplatz
+8502694 05 05 Baar, Oberdorf
+8502707 01 01 Mellingen Heitersberg, Bahnhof
+8502712 03 03 Oftringen, Kreuzplatz
+8502755 01 01 Niederwil AG, Zentrum
+8502756 01 01 Sempach Stadt, Luzernertor
+8502758 01 01 Hausen a.A., Post
+8502763 03 03 Hausen a.A., Riedmatt
+8502766 01 01 Bottenwil, Dorf
+8502768 01 01 Uerkheim, Post
+8502775 03 03 Birmenstorf AG, Strählgass
+8502779 01 01 Ottenbach, Zentrum
+8502872 01 01 Schafisheim, Gemeindehaus
+8502873 03 03 Gebenstorf, alte Post
+8502879 04 04 Jonen, Taverne
+8502884 04 04 Obfelden, Toussen
+8502885 04 04 Bonstetten, Dorfplatz
+8502890 01 01 Merenschwand, Zentrum
+8502897 01 01 Stetten AG, Künterstrasse
+8502898 01 01 Reiden, Bahnhof
+8502899 01 01 Wohlenschwil, Zentrum
+8502950 03 03 Birmensdorf ZH, Zentrum
+8502953 04 04 Affoltern a.A., Kronenplatz
+8502983 03 03 Baden, Badener Tor
+8502986 04 04 Ebertswil, Schulhaus
+8502991 01 01 Kappel a.A., Kloster
+8502995 01 01 Neuheim, Dorf
+8502996 01 01 Aarau, Bahnhof
+8503000 07 07 Zürich HB
+8503001 03 03 Zürich Altstetten
+8503003 04 04 Zürich Stadelhofen
+8503004 03 03 Zürich Tiefenbrunnen
+8503006 03 03 Zürich Oerlikon
+8503010 03 03 Zürich Enge
+8503011 03 03 Zürich Wiedikon
+8503016 05 05 Zürich Flughafen
+8503020 03 03 Zürich Hardbrücke
+8503059 01 01 Zürich Stadelhofen, Bahnhof
+8503065 01 01 Forch
+8503105 03 03 Uetikon
+8503110 03 03 Rapperswil SG
+8503116 03 03 Uznach
+8503125 03 03 Uster
+8503129 03 03 Wallisellen
+8503150 01 01 Volketswil, Dorf
+8503151 01 01 Volketswil, Zentrum
+8503152 01 01 Uster, Brandschenke
+8503154 01 01 Volketswil, Volkiland Chliriet
+8503155 01 01 Volketswil, Chrummacher
+8503156 01 01 Volketswil, Hegnau
+8503157 01 01 Gutenswil, Unterdorf
+8503159 01 01 Bubikon, Ritterhaus
+8503160 01 01 Männedorf, Allenberg
+8503161 01 01 Bubikon, Bad Kämmoos
+8503163 01 01 Oetwil am See, Felsengrund
+8503164 01 01 Hombrechtikon, Grüt
+8503165 01 01 Oetwil am See, Gusch
+8503168 01 01 Riedikon, Chis/Naturstation
+8503169 01 01 Oetwil am See, Langholz
+8503170 01 01 Esslingen, Lieburg
+8503171 01 01 Tann, Sonnenberg
+8503172 01 01 Stäfa, Mühlehölzli
+8503173 01 01 Tann, Nauen
+8503174 01 01 Esslingen, Oberesslingen
+8503175 01 01 Hombrechtikon, Plattenhof
+8503176 01 01 Wolfhausen, Hüebli
+8503179 01 01 Wetzikon ZH, Walfershausen
+8503180 01 01 Grüt (Gossau ZH), Dorf
+8503181 01 01 Gossau ZH, Ernst-Brugger-Platz
+8503182 01 01 Ottikon (Gossau), Kreisel
+8503183 01 01 Grüningen, Station
+8503184 01 01 Oetwil am See, Zentrum
+8503185 01 01 Oetwil am See, Willikon
+8503186 01 01 Stäfa, Uelikon
+8503188 01 01 Mönchaltorf, Mönchhof
+8503189 01 01 Riedikon, Dorf
+8503190 01 01 Hinwil, Hadlikon
+8503191 03 03 Dürnten, Oberdürnten
+8503192 01 01 Dürnten, Kirche
+8503194 01 01 Kempten, Ochsen
+8503195 01 01 Bubikon, Dorf
+8503196 01 01 Wolfhausen, Zentrum
+8503197 01 01 Hombrechtikon, Post
+8503198 01 01 Esslingen, Bahnhof
+8503202 03 03 Thalwil
+8503204 05 05 Horgen
+8503206 03 03 Wädenswil
+8503209 03 03 Pfäffikon SZ
+8503219 01 01 Bäretswil, Bussental
+8503225 03 03 Ziegelbrücke
+8503251 01 01 Wetzikon ZH, Oberwetzikon
+8503252 01 01 Kempten, Oberkempten
+8503253 01 01 Uster, Hegetsberg
+8503254 01 01 Uster, Niederuster
+8503260 01 01 Linthal Braunwaldbahn (Talst.)
+8503263 01 01 Sulzbach
+8503264 01 01 Grüningen, Im Haufland
+8503267 01 01 Bertschikon b. G., Dorf
+8503276 00 00 Elm, Sportbahnen
+8503286 01 01 Samstagern
+8503306 03 03 Dietlikon
+8503307 03 03 Bassersdorf
+8503308 03 03 Kloten
+8503309 03 03 Kloten Balsberg
+8503310 03 03 Glattbrugg
+8503311 03 03 Rümlang
+8503312 03 03 Oberglatt ZH
+8503340 03 03 Opfikon
+8503350 01 01 Kindhausen ZH, Geeren
+8503351 01 01 Bisikon, Dorf
+8503353 01 01 Jona, Schönau
+8503354 03 03 Kempraten, Belsito
+8503355 01 01 Rüti ZH, Unterwiesstrasse
+8503356 01 01 Hombrechtikon, Krone
+8503358 01 01 Rüti ZH, Sportplatz
+8503359 01 01 Stäfa, Kehlhof
+8503363 01 01 Uetikon am See, Kleindorf
+8503364 01 01 Mönchaltorf, Langenmatt
+8503365 01 01 Hinwil, Girenbad
+8503366 01 01 Wernetshausen, Dorf
+8503367 01 01 Laupen ZH, Hubwies
+8503370 01 01 Effretikon, Eselriet
+8503371 01 01 Illnau, Löwen
+8503372 01 01 Effretikon, Wattspitz
+8503373 01 01 Weisslingen, Dorf
+8503374 00 00 Grafstal, Unterdorf
+8503375 01 01 Kyburg, Dorf
+8503376 01 01 Ottikon b. Kemptthal
+8503377 01 01 Lindau, Dorf
+8503378 01 01 Tagelswangen, Dorf
+8503380 01 01 Winterberg ZH, Dorf
+8503381 01 01 Grafstal, Thalegg
+8503382 01 01 Illnau, Weisslingerstrasse
+8503386 01 01 Goldingen, Wolfertingen
+8503396 01 01 Rüti ZH, Rekrutierungszentrum
+8503398 01 01 Wernetshausen, Letten
+8503400 03 03 Bülach
+8503424 03 03 Schaffhausen
+8503446 05 05 Zürich Landesmuseum (See)
+8503447 05 05 Zürich Storchen
+8503481 03 03 Neuhausen, Kreuzstrasse
+8503483 01 01 Beringen, Sonne
+8503488 01 01 Schleitheim, Bahnhofstrasse
+8503503 03 03 Turgi
+8503504 03 03 Baden
+8503505 03 03 Wettingen
+8503506 03 03 Killwangen-Spreitenbach
+8503508 03 03 Dietikon
+8503509 03 03 Schlieren
+8503512 03 03 Glanzenberg
+8503555 01 01 Pfäffikon ZH, Hermatswil
+8503561 01 01 Rumlikon, Dorfstrasse
+8503567 01 01 Uster, Spital
+8503574 03 03 Brugg AG, Au
+8503578 04 04 Birmensdorf ZH, Sternen/WSL
+8503579 04 04 Birmensdorf ZH, Obere Risi
+8503582 01 01 Endingen, Zentrum
+8503599 01 01 Villigen, PSI Ost
+8503610 01 01 Zürich, Triemli
+8503622 01 01 Adetswil, Sunneberg
+8503627 01 01 Sternenberg, Gfell
+8503633 01 01 Uster, See
+8503640 01 01 Siebnen, Schulhaus
+8503647 05 05 Schmerikon (See)
+8503648 05 05 Lachen SZ (See)
+8503651 05 05 Zürich Bürkliplatz (See)
+8503655 05 05 Zollikon (See)
+8503657 05 05 Küsnacht ZH (See)
+8503659 05 05 Erlenbach ZH (See)
+8503660 05 05 Herrliberg (See)
+8503661 03 03 Meilen (See)
+8503664 03 03 Männedorf (See)
+8503665 03 03 Stäfa (See)
+8503667 05 05 Rapperswil SG (See)
+8503669 03 03 Richterswil (See)
+8503670 03 03 Wädenswil (See)
+8503671 04 04 Halbinsel Au
+8503672 05 05 Horgen (See)
+8503673 05 05 Oberrieden (See)
+8503674 03 03 Thalwil (See)
+8503675 05 05 Rüschlikon (See)
+8503677 05 05 Kilchberg ZH (See)
+8503680 05 05 Pfäffikon SZ (See)
+8503681 05 05 Zürich Wollishofen (See)
+8503683 05 05 Altendorf Seestatt
+8503684 01 01 Oberiberg, Tschalun
+8503687 01 01 Kaiserstuhl AG, Bahnhof
+8503690 04 04 Stallikon, Dorf
+8503697 01 01 Aeugstertal, Kloster
+8503699 04 04 Uitikon, Dorf
+8503700 01 01 Bassersdorf, Bahnhof
+8503702 04 04 Bülach, Bahnhof
+8503705 04 04 Hettlingen, Dorf
+8503709 04 04 Waldegg, Post
+8503715 01 01 Wangen SZ, Löwenfeld
+8503721 01 01 Einsiedeln, Rüti-Säge
+8503754 01 01 Horgenberg, Wührenbach
+8503757 01 01 Oberiberg, Neuseewen
+8503759 01 01 Unteriberg, Guggelstrasse
+8503761 01 01 Feusisberg, Gemeindehaus
+8503769 01 01 Gommiswald, Dorf
+8503775 01 01 Euthal, Schulhaus
+8503776 03 03 Untersiggenthal, Mühleweg
+8503777 03 03 Untersiggenthal, Spiracher
+8503783 04 04 Neerach, Post
+8503785 01 01 Uster, Schlyffi
+8503786 04 04 Stadel b. N., Zentrum
+8503791 01 01 Thalwil, Ebnet
+8503792 04 04 Russikon, Gemeindehaus
+8503795 01 01 Wädenswil, Hangenmoos
+8503798 01 01 Wädenswil, Bahnhof
+8503850 04 04 Bülach, Untertor
+8503852 04 04 Hittnau, Sonne
+8503855 01 01 Horgen, Bahnhof
+8503866 01 01 Wädenswil, Winterberg
+8503871 04 04 Höri, Oberhöri
+8503872 01 01 Uster, Reithalle
+8503874 01 01 Teufen ZH, Unterteufen
+8503896 01 01 Horgenberg, Moorschwand
+8503899 01 01 Horgen, Waldegg
+8503950 01 01 Altdorf SH, Dorf
+8503951 01 01 Bargen SH, Dorf
+8503952 04 04 Benken ZH, Dorf
+8503955 00 00 Büttenhardt, Dorf
+8503966 01 01 Opfertshofen SH, Dorf
+8503969 00 00 Schaffhausen, Sommerwies
+8503978 01 01 Ricken SG, Uznacherstrasse
+8503988 01 01 Freudwil, Im Dörfli
+8503990 01 01 Wädenswil, Neubühl
+8503999 01 01 Goldingen, Egligen
+8504014 03 03 Palézieux
+8504023 03 03 Romont FR
+8504033 00 00 Semsales, gare
+8504036 01 01 Léchelles, village
+8504065 01 01 Vaulruz-Sud
+8504086 03 03 Bulle
+8504100 04 04 Fribourg/Freiburg
+8504103 03 03 Flamatt
+8504108 04 04 Bern Europaplatz
+8504128 03 03 Murten/Morat
+8504160 01 01 St. Antönien, Garstett P6
+8504162 01 01 Syens, Champ-du-Chêne
+8504166 01 01 Mézières VD, station
+8504200 04 04 Yverdon-les-Bains
+8504221 04 04 Neuchâtel
+8504252 01 01 Cernier, centre
+8504256 01 01 Villiers, centre
+8504268 01 01 Neuchâtel, La Coudre (FUNI)
+8504283 00 00 St. Silvester, Dorf
+8504300 04 04 Biel/Bienne
+8504307 03 03 Courtelary
+8504314 03 03 La Chaux-de-Fonds
+8504392 01 01 Les Brenets
+8504395 01 01 Les Planchettes, village
+8504399 01 01 Les Bayards, village
+8504400 04 04 Kerzers
+8504410 03 03 Zollikofen
+8504414 03 03 Lyss
+8504415 03 03 Busswil BE
+8504458 00 00 Cheseaux-N., gymnase d'Yverdon
+8504483 03 03 Ins
+8504605 01 01 Corminboeuf, anc. poste
+8504646 01 01 Villarepos, centre
+8504653 04 04 Lavigny, café
+8504663 01 01 Vionnaz, Village
+8504677 01 01 Hérémence
+8504685 01 01 Mâche
+8504740 01 01 La Chaux-du-Milieu, village
+8504743 01 01 Les Grattes de bise
+8504750 01 01 La Brévine, poste
+8504756 01 01 Seedorf BE, Gemeindeverwaltung
+8504760 01 01 Erlach, Stedtli
+8504763 01 01 Nods, école
+8504764 01 01 La Chaux-de-Fonds, gare
+8504769 01 01 Düdingen, Bahnhof
+8504772 01 01 Romont FR, poste
+8504775 01 01 Oron-la-Ville, centre
+8504801 04 04 Hochfelden, Martinsmühle
+8504853 03 03 Corbières, village
+8504855 00 00 Farvagny-le-Grand, centre
+8504856 00 00 Giffers, Dorf
+8504863 01 01 Marsens, village
+8504868 01 01 Plaffeien, Dorf
+8504873 01 01 La Roche FR, village
+8504877 01 01 Tafers, Dorf
+8504878 01 01 Vuisternens-en-Ogoz, croisée
+8504892 00 00 Mur, village
+8504906 00 00 Corpataux, village
+8504916 01 01 Cerniat FR, bif.
+8504938 01 01 Jaun, Bergbahnen
+8504960 01 01 Attalens, village
+8504961 01 01 Monts-de-Corsier, La Chaux
+8504980 01 01 Châtonnaye, poste
+8504981 00 00 Sédeilles, village
+8504984 00 00 Lugnorre, place du Pommeré
+8504986 01 01 Grandcour, poste
+8504993 01 01 Mühleberg, Post
+8504997 01 01 Servion, Zoo-Tropiquarium
+8505000 05 05 Luzern
+8505004 04 04 Arth-Goldau
+8505068 01 01 Rigi Staffel
+8505093 01 01 Muotathal, Post
+8505094 01 01 Schwyz, Bahnhof
+8505095 01 01 Schwyz, Zentrum
+8505112 01 01 Flüelen
+8505113 04 04 Altdorf UR
+8505174 01 01 Dieni
+8505209 03 03 Biasca
+8505213 04 04 Bellinzona
+8505214 04 04 Giubiasco
+8505221 01 01 Rodi, colonia Von Mentlen
+8505226 10 10 Grindelwald Terminal
+8505254 00 00 Motto-Ludiano
+8505257 00 00 Acquarossa-Comprovasco
+8505262 00 00 Olivone, Posta
+8505269 01 01 Lukmanier Passhöhe
+8505300 04 04 Lugano
+8505305 03 03 Mendrisio
+8505307 05 05 Chiasso
+8505332 05 05 Zürich Tiefenbrunnen (See)
+8505333 05 05 Zürich Bellevue (See)
+8505389 01 01 Tesserete, Stazione
+8505393 00 00 Cappella-Agnuzzo
+8505404 03 03 Cadenazzo
+8505470 03 03 Locarno FART
+8505473 03 03 Ponte Brolla
+8505494 03 03 Intragna
+8505499 01 01 Camedo
+8505567 01 01 Cadro, Paese
+8505578 02 02 Zornasco
+8505580 02 02 Re
+8505581 02 02 S. Maria Maggiore
+8505584 02 02 Malesco
+8505585 02 02 Druogno
+8505588 02 02 Creggio
+8505589 02 02 Folsogno-Dissimo
+8505590 02 02 Gagnone-Orcesco
+8505593 02 02 Masera
+8505594 02 02 Prestinone
+8505597 02 02 Trontano
+8505599 02 02 Verigo
+8505614 01 01 Scesana
+8505657 01 01 Altdorf UR, Post
+8505658 01 01 Brügg (Bürglen UR)
+8505663 01 01 Holderkäppeli
+8505665 01 01 Küssnacht am Rigi, Seilbahn
+8505667 01 01 Amsteg, Dorf
+8505671 01 01 Gersau, Schiffstation
+8505728 01 01 Ried-Brig, Talstation LRR
+8505729 01 01 Ried-Brig, Rufigraben
+8505755 01 01 Cademario, Kurhaus
+8505765 01 01 Novaggio, Posta
+8505767 01 01 Osco, Paese
+8505774 01 01 Unterschächen, Dorf
+8505795 01 01 Termine, Paese
+8505859 01 01 Orselina, Posta
+8505875 01 01 Castaneda, Tevegno
+8505892 01 01 Altdorf UR, Telldenkmal
+8505898 01 01 Rivera-Bironico, Posta/FFS
+8505913 01 01 Lugano, Autosilo Balestra
+8505918 01 01 Isleten, Seegarten
+8505967 01 01 Arogno, Paese
+8505968 01 01 Taverne, Paese
+8505973 01 01 Faido, Posta
+8505982 01 01 Castaneda, Paese
+8506000 03 03 Winterthur
+8506025 03 03 Etzwilen
+8506090 01 01 Romont FR, La Maula haut
+8506100 03 03 Frauenfeld
+8506105 03 03 Weinfelden
+8506121 03 03 Romanshorn
+8506128 03 03 Kreuzlingen Hafen
+8506131 03 03 Kreuzlingen
+8506206 03 03 Wil SG
+8506210 03 03 Gossau SG
+8506251 01 01 Iltios
+8506260 01 01 Weissbad, Bahnhof
+8506299 01 01 Nesslau-Neu St. Johann
+8506302 03 03 St. Gallen
+8506303 03 03 St. Gallen St. Fiden
+8506306 05 05 Rorschach Hafen
+8506311 03 03 Rorschach
+8506314 03 03 St. Margrethen SG
+8506378 01 01 Gais
+8506444 01 01 Eichberg, Post
+8506471 01 01 Flawil, Botsberg
+8506477 01 01 Flawil, Maestrani
+8506580 01 01 Oberbüren, Zentrum
+8506607 01 01 Schwellbrunn, Teufen
+8506608 01 01 Schwellbrunn, Winkfeld
+8506610 01 01 Happerswil, Dorf
+8506651 01 01 Engelburg, Dorfplatz
+8506655 00 00 Braunau, Dorf
+8506677 01 01 Wil SG, Lindenhof
+8506680 01 01 Hosenruck, Dorf
+8506725 01 01 Uzwil, Gupfenstrasse
+8506730 01 01 Zuzwil SG, Industrie
+8506755 01 01 Flaach, Wesenplatz
+8506756 01 01 Grub AR, Dorf
+8506757 01 01 Hemberg, Dorf
+8506761 01 01 Rehetobel, Kaien
+8506764 00 00 Niederhelfenschwil, Dorf
+8506766 01 01 Oberhelfenschwil, Dorf
+8506770 01 01 St. Peterzell, Dorf
+8506773 01 01 Schönengrund, Dorf
+8506775 01 01 Stein AR, Dorf
+8506780 01 01 Wildhaus, Dorf
+8506784 01 01 Zuckenriet, Dorf
+8506785 01 01 Zuzwil SG, Schule
+8506787 01 01 Schwägalp, Säntis-Schwebebahn
+8506789 01 01 Andwil SG, Post
+8506794 01 01 Schwägalp, Passhöhe
+8506796 01 01 Heiden, Post
+8506798 01 01 Waldkirch, Dorf
+8506856 00 00 Frauenfeld, Bühl
+8506859 03 03 Hagenbuch ZH, Egghof
+8506862 01 01 Laupen ZH, Schulhaus
+8506865 04 04 Hagenbuch ZH, Dorf
+8506875 01 01 Marthalen, Bahnhof
+8506885 01 01 Lipperswil, Conny Land
+8506890 04 04 Rorbas, Aubrücke
+8506892 04 04 Embrach, Dreispitz
+8506898 04 04 Oberembrach, Dorf
+8506951 01 01 Rüdlingen, Gemeindehaus
+8506968 00 00 Eschenbach SG, Post
+8507000 06 06 Bern
+8507062 01 01 Muri bei Bern
+8507068 01 01 Bolligen
+8507100 03 03 Thun
+8507110 03 03 Bern, Zytglogge
+8507172 01 01 Hünibach, Chartreuse
+8507173 01 01 Hilterfingen, Post
+8507174 01 01 Oberhofen a. T., Dorf
+8507176 01 01 Gunten, Dorf
+8507177 01 01 Merligen, Beatus
+8507290 03 03 Zweisimmen
+8507311 01 01 Visp, Hubelstrasse
+8507361 09 09 Eigergletscher
+8507374 03 03 Kleine Scheidegg
+8507389 01 01 Zweilütschinen
+8507399 01 01 Heimenschwand, Post
+8507401 01 01 Steffisburg, Flühli
+8507403 01 01 Unterlangenegg, Kreuzweg
+8507405 01 01 Schwarzenegg, Dorf
+8507409 01 01 Goldiwil, Scheidweg
+8507445 01 01 Hirzel, Vorderi Siten
+8507447 00 00 Hirzel, Wässeri
+8507454 01 01 Gimmelwald (Schilthornbahn)
+8507456 01 01 Birg (Schilthornbahn)
+8507483 04 04 Spiez
+8507492 05 05 Interlaken Ost
+8507562 01 01 Grosse Scheidegg
+8507565 04 04 Grindelwald, Oberer Gletscher
+8507653 01 01 Belmont-sur-Yverdon, Battoir
+8507690 01 01 Cronay, Moulin du Pont
+8507714 01 01 Kirchdorf BE, Kirchgasse
+8507744 01 01 Vorderfultigen, Käserei
+8507765 01 01 Riggisberg, Post
+8507777 01 01 Kirchlindach, Kirche
+8507779 01 01 Wohlen b. Bern, Gemeindehaus
+8507789 01 01 Gerzensee, Dorf
+8507795 01 01 Rüeggisberg, Post
+8507850 01 01 Achseten, Kirche
+8507853 03 03 Adelboden, Oey
+8507860 01 01 Aeschi b. Spiez, Post
+8507862 01 01 Aeschiried, Schulhaus
+8507867 01 01 Unterseen, Spital Interlaken
+8507886 01 01 Aeschlen ob Gunten, Dorf
+8507889 01 01 Thierachern, Wahlen
+8507891 01 01 Blumenstein, Dorf
+8507901 01 01 Wattenwil, Rössli
+8507963 01 01 Thierrens, poste
+8507969 01 01 Villars-Epeney, Fontaine
+8507977 01 01 Innerberg BE, Bergweid
+8507980 01 01 Frauenkappelen, Kirche
+8507983 01 01 Niedermuhlern, Baumgärtli
+8508005 03 03 Burgdorf
+8508006 03 03 Wynigen
+8508059 01 01 Jegenstorf
+8508061 03 03 Fraubrunnen
+8508073 00 00 Münchenbuchsee, Hüslimoos
+8508076 01 01 Ittigen, Kappelisacker
+8508079 01 01 Krauchthal, Post
+8508100 03 03 Langenthal
+8508188 01 01 Eriswil, Hinterdorf
+8508207 03 03 Langnau i.E.
+8508308 01 01 Meiringen
+8508450 04 04 Luzern, Bahnhof
+8508464 01 01 Vitznau
+8508467 01 01 Beckenried (See)
+8508489 01 01 Kehrsiten-Bürgenstock
+8508650 01 01 Ettiswil, Post
+8508670 01 01 Kerns, Sand
+8508683 01 01 Glaubenbielen, Parkplatz
+8508696 01 01 Rumisberg, Bären
+8508733 01 01 St. Jakob (Ennetmoos)
+8508755 01 01 Emmetten, Post
+8508762 01 01 Grimsel Passhöhe
+8508763 01 01 Guttannen, Dorf
+8508767 01 01 Innertkirchen, Grimseltor
+8508769 01 01 Kerns, Post
+8508786 01 01 Schnottwil, Post
+8508787 01 01 Schwarzenberg LU, Rössli
+8508788 01 01 Schwarzwaldalp
+8508789 01 01 Sörenberg, Post
+8508790 01 01 Stalden (Sarnen), Post
+8508796 01 01 Wengi b. Büren, Dorfplatz
+8508797 01 01 Beckenried, Post
+8508867 01 01 Sörenberg, Rothornbahn
+8508896 01 01 Stans, Bahnhof
+8508986 01 01 Röthenbach i.E., Dorf
+8508988 01 01 Schüpbach, Dorf
+8509000 03 03 Chur
+8509002 04 04 Landquart
+8509085 03 03 Weissfluhjoch
+8509091 01 01 Ischalp
+8509183 01 01 Reichenau-Tamins
+8509251 01 01 Samedan
+8509253 04 04 St. Moritz
+8509269 01 01 Sagliains
+8509369 05 05 Tirano
+8509404 04 04 Buchs SG
+8509411 03 03 Sargans
+8509603 01 01 Urmein, Dorf
+8509611 01 01 Balzers, Rietstrasse
+8509613 01 01 Eschen, Dorfplatz
+8509619 01 01 Mauren FL, Post
+8509626 01 01 Schellenberg, Post
+8509632 01 01 Danis, vitg
+8509667 01 01 Hinterrhein, Tunnel Nordportal
+8509678 00 00 Mels, Pizolpark
+8509694 01 01 Surcuolm, Valata
+8509698 01 01 Triesenberg, Dorfzentrum
+8509724 01 01 Fidaz, Dorf
+8509725 01 01 Laax GR, Caltgera
+8509729 01 01 Schluein, vitg
+8509730 01 01 Tamins, Unterdorf
+8509731 01 01 Trin, Porclis
+8509732 01 01 Fidaz, Waldrand
+8509733 01 01 Pragg, Bahnhof Furna
+8509736 01 01 Luzein, Strilserrank
+8509750 01 01 Obersaxen, Affeier Dorf
+8509751 01 01 Alvaneu Dorf, Dorfplatz
+8509752 00 00 Andeer, posta
+8509755 01 01 Bivio, posta
+8509768 01 01 Cunter, vischnanca
+8509773 01 01 Flims Dorf, Post
+8509774 01 01 Flims Waldhaus, Caumasee
+8509777 01 01 Fuldera, cumün
+8509780 01 01 Gams, Zentrum
+8509781 01 01 Grabs, Post
+8509786 01 01 Laax GR, posta
+8509789 01 01 Lantsch/Lenz, Vischnanca
+8509790 01 01 Lenzerheide/Lai, Post
+8509791 01 01 Lumbrein, vitg
+8509794 01 01 Maloja, Posta
+8509795 01 01 Martina, cunfin
+8509799 01 01 Obersaxen, Meierhof Post
+8509851 01 01 Obertschappina
+8509852 01 01 Obstalden, Post
+8509853 01 01 Pany, Dorf
+8509857 01 01 Peiden, Bogn
+8509858 00 00 Pfäfers, Postplatz
+8509860 01 01 Promontogno, Posta
+8509861 01 01 Punt la Drossa P4
+8509865 01 01 St. Antönien, Platz
+8509869 01 01 Sta. Maria Val Müstair, cumün
+8509870 01 01 St. Moritz Bad, Post
+8509871 01 01 St. Peter, Caflies
+8509874 01 01 Savognin, posta
+8509881 01 01 Sils/Segl Maria, Posta
+8509882 01 01 Silvaplana, Munteratsch
+8509887 01 01 Strada i. E., Cuncalada
+8509889 01 01 Sur, plazza dalla posta
+8509896 01 01 Trin, Mulin
+8509950 01 01 Valbella, Dorf
+8509952 01 01 Vals, Post
+8509957 01 01 Vignogn, vitg
+8509958 01 01 Vella, posta
+8509961 01 01 Vrin, vitg
+8509968 01 01 Zillis, Dorf
+8509983 01 01 Laax GR, Bergbahnen
+8509986 01 01 Versam, Post
+8509994 01 01 Zernez, staziun
+8510106 01 01 St. Antönien, Sagaris
+8510352 01 01 Glis, Pfarreiheim
+8510640 03 03 Zizers, Rappagugg
+8511507 01 01 Léchelles, gare
+8511745 01 01 Obersaxen, Inder Miraniga
+8511792 01 01 Fribourg, Richemond/gare
+8512350 00 00 Triesenberg, Leitawis
+8512527 01 01 Tavannes, Rue des Eaux
+8516154 03 03 Bern Brünnen Westside
+8516161 05 05 Bern Wankdorf
+8517336 03 03 Luzern Verkehrshaus
+8517411 01 01 Muttenz, Rothausstrasse
+8530169 01 01 Cabane-des-Violettes
+8530388 04 04 Weggis (Luftseilbahn)
+8530437 00 00 Pesciüm
+8530473 01 01 Zürich, Rigiblick
+8530487 03 03 Wildhaus Oberdorf
+8530546 01 01 Känzeli (Chur)
+8530749 05 05 Renens VD, gare
+8530811 01 01 Zürich, Balgrist
+8530812 01 01 Zürich, Hegibachplatz
+8530813 01 01 Zürich, Kreuzplatz
+8530854 00 00 Eierschwand
+8557031 01 01 Arbon, Kupferwiese
+8557042 07 07 Feuerthalen, Rhymarkt
+8570030 01 01 Gland, gare nord
+8570063 03 03 Cheseaux-sur-L., gare
+8570084 03 03 Morges, gare
+8570109 01 01 Cossonay-Ville, centre
+8570142 03 03 La Sarraz, gare
+8570174 01 01 Peney-le-Jorat, poste
+8570178 03 03 Bottens, croisée
+8570185 01 01 Bettens, croisée
+8570190 01 01 Goumoens-la-Ville, centre
+8570198 01 01 Corcelles-sur-Chav., village
+8570200 01 01 Chavornay, gare
+8570238 01 01 Echallens, gare
+8570253 01 01 Grandson, place du Château
+8570262 01 01 Vugelles, croisée
+8570273 01 01 Couvet, gare
+8570322 01 01 Gorgier-St-Aubin, gare
+8570332 00 00 Montalchez, La Comballaz
+8570390 01 01 La Gaité (Champtauroz)
+8570393 01 01 Moudon, gare
+8570416 01 01 Chevroux, port
+8570417 01 01 Montpreveyres, village
+8570420 01 01 Servion, poste/croisée
+8570457 01 01 La Verrerie, gare
+8570471 05 05 Prévonloup, poste
+8570481 01 01 Trey, village
+8570493 01 01 Villaz-St-Pierre, gare
+8570521 01 01 Salavaux, poste
+8570555 01 01 Laupen BE, Bahnhof
+8570557 01 01 Flamatt, Post
+8570581 04 04 Villeneuve VD, gare
+8570585 01 01 Rennaz, village
+8570593 04 04 Vouvry, poste
+8570595 01 01 Vouvry, gare
+8570716 01 01 Aven, village
+8570742 01 01 Savièse, Drône centre
+8570784 01 01 Arbaz, café du Lac
+8570786 01 01 Grimisuat, Home les Crêtes
+8570789 01 01 Botyre (Ayent), Le Creux
+8570814 01 01 Zizers, Tennishalle
+8570874 01 01 Clèbes (Nendaz), village
+8570884 01 01 Les Agettes, garage
+8570894 01 01 Vex, poste
+8570902 01 01 Praz-Jean VS, village
+8570929 01 01 Fontany
+8570933 01 01 St-Martin VS, poste
+8570934 01 01 St-Martin VS, centre
+8570938 01 01 Vernamiège, village
+8570949 01 01 Grimentz, télécabine
+8571021 01 01 Visp, Spital
+8571062 01 01 Bürchen, Zenhäusern
+8571065 01 01 Bürchen, Station
+8571067 01 01 Bürchen, Egga
+8571070 01 01 Bürchen, Bürchneralp
+8571075 01 01 Visp, Bahnhof Süd
+8571078 01 01 Baltschieder, Kumme
+8571082 01 01 Ausserberg, Abzw. St. German
+8571163 01 01 Naters, Marktplatz
+8571213 01 01 Bühl bei Aarberg, Dorf
+8571220 01 01 Aarberg, Post/Bahnhof
+8571228 01 01 Merzligen, Linde
+8571264 01 01 Gstaad, Bahnhof
+8571310 01 01 Interlaken West, Bahnhof
+8571354 01 01 Kappelenring, Nord
+8571364 01 01 Uettligen, Dorf
+8571369 01 01 Säriswil, Wendeplatz
+8571370 01 01 Innerberg BE, Dorf
+8571371 01 01 Herrenschwanden, Mööslimatt
+8571373 01 01 Ortschwaben, Gehracker
+8571378 01 01 Meikirch, Käserei
+8571383 01 01 Baggwil, Dorf
+8571417 01 01 Schliern, Muhlernstrasse
+8571422 01 01 Niedermuhlern, Käserei
+8571451 01 01 Gümmenen, Stutz
+8571453 01 01 Gümmenen, Bahnhof
+8571456 01 01 Mühleberg, Dorf
+8571479 01 01 Büren an der Aare, Bahnhof
+8571498 01 01 Gächliwil, Wendeplatz
+8571513 01 01 Jegenstorf, Bahnhof
+8571521 01 01 Ins, Bahnhof
+8571528 01 01 Hasle-Rüegsau, Bahnhof
+8571559 01 01 Walterswil BE, Dorf
+8571576 01 01 Brünig-Hasliberg, Bahnhof
+8571581 01 01 Meiringen, Bahnhof
+8571632 01 01 Belp, Bahnhof
+8571654 01 01 Wattenwil, Postgasse
+8571662 01 01 Lanzenhäusern, Bahnhof
+8571670 01 01 Guggisberg, Kalchstätten
+8571723 01 01 Worb Dorf, Bahnhof
+8571748 01 01 Biglen, Bahnhof
+8571761 01 01 Grosshöchstetten, Talacker
+8571776 01 01 Buttes, gare
+8571788 01 01 Ste-Croix, gare
+8571795 01 01 Chambrelien, gare
+8571797 01 01 Rochefort, Carrefour
+8571800 01 01 Le Locle, gare
+8571838 01 01 Les Ponts-de-Martel, gare
+8571844 01 01 Les Grattes, bif.
+8571922 00 00 Lignières, Moulin Navilot
+8571923 01 01 Tramelan, gare
+8571957 01 01 Moutier, gare
+8571963 01 01 Les Ecorcheresses
+8571964 01 01 Souboz, village
+8571965 01 01 Delémont, gare
+8571990 01 01 Courrendlin, centre
+8571992 01 01 Choindez, gare
+8571993 01 01 Choindez, La Verrerie
+8571995 01 01 Rebeuvelier, poste
+8572002 01 01 Soyhières, place de la Liberté
+8572007 01 01 Pleigne, Place du 23-Juin
+8572020 01 01 Lucelle
+8572021 01 01 Bassecourt, gare
+8572053 01 01 Fahy, douane
+8572054 01 01 Porrentruy, Hôpital entrée
+8572063 01 01 Grandfontaine, bas du village
+8572067 01 01 Damvant, église
+8572080 01 01 Bressaucourt, poste
+8572092 01 01 Fregiécourt, place La Baroche
+8572100 01 01 Charmoille, village
+8572101 01 01 Charmoille, douane
+8572113 01 01 Laufen, Bahnhof
+8572132 01 01 Grellingen, Bahnhof
+8572150 01 01 Kleinlützel, Ölibächli
+8572180 00 00 Zwingen, Bahnhof
+8572195 01 01 Liesberg, Station
+8572250 03 03 Rheinfelden, Post
+8572252 00 00 Rheinfelden, Regionalspital
+8572282 01 01 Gelterkinden, Bahnhof
+8572312 00 00 Zeglingen, Oberdorf
+8572313 01 01 Möhlin, Bahnhof
+8572325 01 01 Balsthal, Thalbrücke
+8572341 01 01 Gänsbrunnen, St. Josef
+8572342 01 01 Gänsbrunnen, Bahnhof
+8572367 01 01 Wolfwil, Schulhaus
+8572373 04 04 Solothurn, Hauptbahnhof
+8572378 01 01 Riedholz, Bahnhof
+8572388 01 01 Aarau, Aarepark
+8572403 01 01 Laufenburg, Bahnhof
+8572429 01 01 Mumpf, Bahnhof
+8572441 01 01 Etzgen, Rheintalstrasse
+8572452 01 01 Bözen, Mitteldorf
+8572455 01 01 Effingen, Dorf
+8572464 04 04 Brugg AG, Bahnhof/Zentrum
+8572465 01 01 Wildegg, Bahnhofplatz
+8572467 01 01 Auenstein, Gemeindehaus
+8572476 01 01 Schinznach Dorf, Oberdorf
+8572483 03 03 Brugg AG, Kaserne
+8572484 03 03 Lauffohr, Sommerhaldenstrasse
+8572485 03 03 Lauffohr, Langmatt
+8572486 03 03 Lauffohr, Platte
+8572495 01 01 Siggenthal-W., Bahnhof
+8572508 01 01 Birr, Bahnhof
+8572511 03 03 Gebenstorf, Cherne
+8572513 03 03 Birmenstorf AG, Schinebüel
+8572514 03 03 Birmenstorf AG, Gemeindehaus
+8572515 03 03 Birmenstorf AG, Heigelweg
+8572532 01 01 Leuggern, Felsenau Dorf
+8572534 01 01 Full, Mitte
+8572578 03 03 Untersiggenthal, Gemeindehaus
+8572585 01 01 Ehrendingen, Tiefenwaag
+8572610 03 03 Muri AG, Egg
+8572615 01 01 Dottikon-Dintikon, Bahnhof
+8572645 01 01 Hermetschwil, Kloster
+8572669 00 00 Triengen, Dorf
+8572714 01 01 St. Urban, Klinik
+8572745 01 01 Zofingen, Bahnhof
+8572747 01 01 Bremgarten AG, Bahnhof
+8572748 01 01 Stein-Säckingen, Bahnhof
+8572776 01 01 Altbüron, Hiltbrunnen
+8572788 01 01 Willisau, Bahnhof
+8572792 01 01 Käppelimatt b. Willisau
+8572804 01 01 Alberswil, Burgrain
+8572862 01 01 Wiggen, Egghus
+8572897 01 01 Sarnen, Bahnhof
+8572945 01 01 Buochs, Linden
+8572965 01 01 Schenkon, Zellfeld
+8572981 01 01 St. Erhard, Dorf
+8573008 01 01 Sempach Station
+8573022 03 03 Luzern, Pilatusplatz
+8573024 03 03 Luzern, Kasernenplatz
+8573032 03 03 Emmenbrücke, Riffig
+8573043 03 03 Luzern, Eichhof
+8573088 01 01 Altdorf UR, Bahnhof Ost
+8573089 01 01 Altdorf UR, Allmend
+8573116 03 03 Altdorf UR, Kollegium
+8573164 01 01 Thalwil, Feldstrasse
+8573165 01 01 Thalwil, Schützenhaus
+8573166 01 01 Thalwil, Mühlebachplatz
+8573178 03 03 Affoltern a.A., Bahnhof
+8573181 02 02 Mettmenstetten, Bahnhof
+8573196 01 01 Andelfingen, Bahnhof
+8573199 01 01 Ossingen, Bahnhof
+8573203 01 01 Stammheim, Bahnhof
+8573205 03 03 Zürich Flughafen, Bahnhof
+8573211 03 03 Kloten, Zum Wilden Mann
+8573213 03 03 Zürich Flughafen, Werft
+8573214 01 01 Kloten, Balsberg Hardacher
+8573220 04 04 Rorbas, Hirschen
+8573233 01 01 Kloten, Kaserne Ost
+8573234 01 01 Kloten, Hohrainli
+8573236 04 04 Oberglatt ZH, Mösli Hofstetten
+8573239 04 04 Oberglatt ZH, Zentrum
+8573240 01 01 Rümlang, Riedmatt
+8573242 01 01 Rümlang, Rümelbach
+8573251 04 04 Stadel b. N., Neuwis-Huus
+8573257 04 04 Bülach, Sonnenhof
+8573261 04 04 Niederglatt ZH, Nöschikon
+8573262 04 04 Niederglatt ZH,altes Schulhaus
+8573263 04 04 Niederglatt ZH, Zentrum
+8573273 03 03 Steinmaur, Obersteinmaur
+8573275 04 04 Steinmaur, Bahnhof
+8573277 01 01 Dielsdorf, Bahnhof
+8573327 01 01 Stein am Rhein, Bahnhof
+8573337 01 01 Hörhausen, alte Post
+8573338 01 01 Hörhausen, Freihof
+8573370 01 01 Amlikon-Bissegg, Bänikon
+8573373 01 01 Weinfelden, Maienrain
+8573376 01 01 Kreuzlingen, Bahnhof
+8573379 01 01 Tägerwilen, Hertler
+8573404 01 01 Kreuzlingen, Bärenplatz
+8573441 03 03 Schaffhausen, Mühlentor
+8573458 01 01 Schaffhausen, Schützenhaus
+8573464 01 01 Hemmental, Dorfplatz
+8573465 01 01 Schaffhausen, Finsterwaldstr.
+8573478 01 01 Schaffhausen, Falkeneck
+8573487 01 01 Opfertshofen SH, Reiatstube
+8573499 03 03 Pfäffikon ZH, Bahnhof
+8573503 04 04 Wermatswil, Ledi
+8573507 01 01 Fehraltorf, Bahnhof
+8573518 04 04 Turbenthal, Hutzikon
+8573519 01 01 Turbenthal, Bahnhof
+8573529 04 04 Russikon, Tüfi
+8573538 01 01 Kollbrunn, Bahnhof
+8573540 04 04 Pfäffikon ZH, Grundstrasse
+8573542 04 04 Hittnau, Oberhittnau
+8573546 04 04 Saland, Dorf
+8573552 01 01 Horgen, Altes Gemeindehaus
+8573553 01 01 Horgen, Stocker
+8573554 01 01 Horgen Oberdorf, Bahnhof
+8573557 01 01 Horgen, Fischenrüti
+8573565 00 00 Hirzel, Spitzen
+8573570 01 01 Wädenswil, Feld
+8573573 01 01 Wädenswil, Hintere Rüti West
+8573574 01 01 Wädenswil, Gulmenmatt
+8573575 01 01 Wädenswil, Krähbach
+8573576 01 01 Wädenswil, Schwanen
+8573577 01 01 Wädenswil, Schmiedstube
+8573578 01 01 Wädenswil, Mühlebach
+8573586 01 01 Wald ZH, Bahnhof
+8573587 01 01 Laupen ZH, Hauptstrasse
+8573588 01 01 Goldingen, Löffel
+8573595 01 01 Eschenbach SG, Sternen
+8573599 01 01 Wald ZH, Gemeindehaus
+8573636 01 01 Wila, Bahnhof
+8573664 00 00 Winterthur, Klösterli Iberg
+8573666 00 00 Winterthur, Eidberg
+8573669 04 04 Schlatt ZH, Oberschlatt
+8573680 03 03 Aesch (Neftenbach)
+8573684 04 04 Buch am Irchel, Oberbuch
+8573685 04 04 Buch am Irchel, Unterbuch
+8573697 03 03 Hettlingen, Föhrenstrasse
+8573701 01 01 Henggart, Bahnhof
+8573709 01 01 Rafz, Bahnhof
+8573710 01 01 Zürich Wiedikon, Bahnhof
+8573712 04 04 Wettswil a.A., Bäumlisächer
+8573714 04 04 Ringlikon, Langwies
+8573715 04 04 Stallikon, Aumüli
+8573720 01 01 Arni AG, Stockacker
+8573724 04 04 Stallikon, Aegerten
+8573726 01 01 Bonstetten-Wettswil, Bahnhof
+8573731 04 04 Stallikon, Diebis
+8573732 01 01 Aeugstertal, Müliberg
+8573747 00 00 Dörflingen, Kirche
+8573748 01 01 Dörflingen, Laag
+8573756 01 01 Einsiedeln, Bahnhof
+8573794 01 01 Siebnen-Wangen, Bahnhof
+8573800 01 01 Pfäffikon SZ, Bahnhof
+8573860 01 01 Eschenbach SG, Dorftreff
+8573916 03 03 Zuzwil SG, Grünegg
+8573929 01 01 Uzwil, Bahnhof
+8573953 01 01 Gossau SG, Gerbhof
+8573958 01 01 Arnegg, Bahnhof
+8573965 01 01 Wittenbach, Bahnhof
+8573979 01 01 Bütschwil, Bahnhof
+8573984 01 01 Mosnang, Dorf
+8573990 01 01 Mühlrüti, Dorf
+8574018 01 01 Nesslau-Neu St.Johann, Bahnhof
+8574041 01 01 Buchs SG, Bahnhof
+8574113 01 01 St-Martin VS, église
+8574127 01 01 Reute AR, Hinterdorf
+8574128 01 01 Reute AR, Dorf
+8574147 01 01 Altstätten SG, Rathaus
+8574200 01 01 Degersheim, Post
+8574201 01 01 Degersheim, Bahnhof
+8574226 01 01 St. Gallen, Spisegg
+8574229 01 01 Engelburg, Freihof
+8574231 01 01 Waldkirch, Locherhof
+8574236 01 01 Seuzach, Gemeindehaus
+8574251 01 01 Arbon, Bahnhof
+8574270 01 01 Rorschach, Löwengarten
+8574272 01 01 Rorschach, Signalstrasse
+8574373 01 01 Ruggell, Kirche
+8574382 01 01 Gamprin, Bühl
+8574393 01 01 Vaduz, Au
+8574408 01 01 Balzers, Schlossweg
+8574410 01 01 Trübbach, Dorf
+8574424 01 01 Triesenberg, Guferwald
+8574442 01 01 Gommiswald, Gauenhof
+8574446 01 01 Grub AR, Ebne Grub
+8574466 01 01 Speicherschwendi, Bären
+8574478 01 01 Lachen SZ, Bahnhof
+8574479 01 01 Uetliburg SG, Giegen
+8574483 01 01 Reichenburg, Kreuzwies
+8574487 01 01 Grüsch, Bahnhof
+8574493 01 01 Chur, Malteser
+8574515 01 01 St. Moritz, Bahnhof
+8574516 01 01 Ramosch, Fermada
+8574533 01 01 Mutten, Oberdorf
+8574542 00 00 Pratval, Dorf
+8574544 01 01 Almens, Dorf
+8574549 01 01 Tumegl/Tomils, Curschiglias
+8574563 01 01 Maienfeld, Bahnhof
+8574569 01 01 Landquart, Bahnhof
+8574580 01 01 Scharans, Dorf
+8574592 01 01 Präz, Dorf
+8574612 01 01 Tenna, Abzw.
+8574616 01 01 Sargans, Castels
+8574631 01 01 Salouf, vischnanca
+8574648 01 01 Sta. Maria Val Müstair, scoula
+8574650 01 01 Müstair, Somvih
+8574702 01 01 Trimmis, Churweg
+8574704 01 01 Trimmis, Gargällis
+8574705 01 01 Trimmis, Alt Strass
+8574707 01 01 Untervaz, Bahnhof
+8574713 01 01 Maladers, alte Post
+8574739 04 04 Waldegg, Katholische Kirche
+8574746 01 01 Castiel, Dorf
+8574747 01 01 Calfreisen, Abzw.
+8574758 01 01 Schiers, Unterpusserein
+8574776 01 01 Flums, Bahnhof
+8574803 01 01 Sfazù, Fermata
+8574808 00 00 Ospizio Bernina, Albergo
+8574836 01 01 Davos Glaris, Ortolfi
+8574850 01 01 Susch, Plaz
+8574851 01 01 Susch, staziun
+8574861 01 01 Scuol-Tarasp, staziun
+8574864 01 01 Mon, avant porta
+8574913 01 01 Maladers, Dorf
+8574936 01 01 Pontresina, Post
+8574941 01 01 Punt Muragl, Talstation
+8574944 01 01 Celerina, Cresta Palace
+8574946 01 01 St. Moritz, Schulhausplatz
+8574948 01 01 St. Moritz Bad, Sonne
+8574949 01 01 St. Moritz Bad, Via San Gian
+8574954 01 01 Champfèr, Guardalej
+8574957 01 01 Sils/Segl Maria, Seglias
+8574974 01 01 Samedan, Bahnhof
+8574976 01 01 Samedan, Ariefa
+8574979 01 01 Bernina Suot, Bahnhof
+8575031 01 01 Pitasch, Mulin da Pitasch
+8575048 01 01 Sevgein, vitg
+8575055 01 01 Rueun, S. Clau
+8575061 01 01 Tavanasa-Breil/Brigels,staziun
+8575088 01 01 Küblis, Dorfplatz
+8575093 01 01 Rueun, Grava
+8575098 01 01 Morissen, Cuschnaus
+8575099 01 01 Vella, Sumsiaras
+8575100 01 01 Degen, Rampa
+8575113 01 01 Tiefencastel, staziun
+8575119 01 01 Schiers, Bahnhof
+8575126 01 01 Giubiasco, Piazza
+8575158 01 01 Sementina, Via Locarno
+8575177 01 01 Tenero, Stazione
+8575221 01 01 Biasca, Stazione
+8575224 01 01 Castione, Stazione
+8575252 01 01 Vico Morcote, Olivella Lago
+8575261 00 00 Casoro, Paese
+8575312 03 03 Massagno, Cappella due Mani
+8575314 15 15 Vezia, Paese
+8575315 01 01 Vezia, Villa Negroni
+8575352 01 01 Ponte Capriasca, Nogo
+8575389 01 01 Aranno, Cappella di Aranno
+8575394 01 01 Agno, Stazione
+8575403 01 01 Magliaso, Stazione
+8575458 01 01 Maglio di Colla, Paese
+8575470 01 01 Sonvico, Stazione ARL
+8575474 01 01 Solduno, Stazione
+8575488 01 01 Russo
+8575489 10 10 Crana, Ponte Oscuro
+8575502 01 01 Vergeletto, Piazza
+8575526 01 01 Magadino, Debarcadero
+8575527 01 01 Magadino-Vira, Stazione
+8575562 01 01 Ranzo, Paese
+8575580 01 01 Castel S.Pietro, Posta
+8575620 01 01 Gaggiolo, Confine
+8575627 00 00 Salorino, Somazzo Paese
+8575646 01 01 Meride, Paese
+8575652 01 01 Peccia, Paese
+8575657 01 01 Ponte Tresa, Stazione
+8575689 01 01 Airolo, Stazione
+8575700 01 01 Maroggia-Melano, Stazione
+8575701 01 01 Ambrì-Piotta, Stazione
+8575715 01 01 Faido, Stazione
+8575721 01 01 Predelp
+8575733 01 01 Lavorgo, Stazione
+8575747 01 01 Bironico, Piazza Guidetti
+8575779 01 01 Morbio Inferiore, Posta
+8575785 01 01 Morbio Superiore, Posta
+8575799 01 01 Muggio, Paese
+8575809 01 01 Chiasso, Via Bossi
+8575845 01 01 Curio, Bivio
+8575887 00 00 Cevio, Posta
+8575895 01 01 Cerentino, Paese
+8575909 01 01 Effretikon, Vogelbuckstrasse
+8575918 01 01 Effretikon, Bahnhof
+8575919 01 01 Effretikon, Zentrum
+8575920 01 01 Effretikon, Müselacher
+8575921 01 01 Effretikon, Lindenwiese
+8575923 01 01 Illnau, Kirche
+8575924 01 01 Illnau, Steinacher
+8575925 01 01 Illnau, Wingert
+8575926 01 01 Illnau, Chrummenacher
+8575927 01 01 Illnau, Bahnhof
+8575929 01 01 Illnau, Horben
+8575930 01 01 Agasul
+8575931 01 01 Weisslingen, Brauiweiher
+8575932 01 01 Dettenried
+8575933 01 01 Neschwil, Post
+8575934 01 01 Weisslingen, Lendikerstrasse
+8575935 01 01 Lendikon
+8575936 04 04 Theilingen, Post
+8575937 01 01 Tagelswangen, Oberwis
+8575938 01 01 Tagelswangen, Buckstrasse
+8575939 01 01 Lindau, Rigacher
+8575940 01 01 Effretikon, Langhag
+8575941 01 01 Lindau, Eschikon
+8575942 01 01 Winterberg ZH, Wältiwis
+8575943 01 01 Grafstal, Oberdorf
+8575944 01 01 Kemptthal, Bahnhof
+8575946 01 01 Effretikon, Girhalde
+8575947 01 01 Kyburg, Billikon
+8575948 01 01 Kyburg, Ettenhusen
+8575957 01 01 Uster, Talacker
+8575958 01 01 Uster, im Hölzli
+8575960 01 01 Mönchaltorf, Traube
+8575961 01 01 Mönchaltorf, Wihalde
+8575962 01 01 Oetwil am See, Zelgli
+8575963 01 01 Oetwil am See, Buacher
+8575967 01 01 Hombrechtikon, Eichberg
+8575968 01 01 Hombrechtikon, Eichtal
+8575969 01 01 Hombrechtikon, Garstlig
+8575970 01 01 Feldbach, Viadukt
+8575971 00 00 Feldbach, Bahnhof
+8575972 01 01 Stäfa, Schützenhaus Wanne
+8575973 01 01 Stäfa, Kniebreche
+8575974 01 01 Stäfa, Lindenbänkli
+8575975 01 01 Uerikon, Ritterhaus
+8575976 01 01 Uster, Florastrasse
+8575977 01 01 Uster, Oberuster
+8575978 01 01 Uster, Linde
+8575979 01 01 Uster, Koppach
+8575980 01 01 Uster, Neufuhr
+8575981 01 01 Bertschikon b. G., Müselacher
+8575982 01 01 Gossau ZH, Rigistrasse
+8575983 01 01 Kempten, Emmetschloo
+8575984 01 01 Bäretswil, Eishalle
+8575985 01 01 Bäretswil, Oberdorf
+8575986 01 01 Bäretswil, Bärenplatz
+8575987 01 01 Bäretswil, Bahnhof
+8575988 01 01 Adetswil, Frowiesstrasse
+8575991 01 01 Neuthal bei Bäretswil
+8575992 01 01 Bauma, Giesserei
+8575993 01 01 Bauma, Dorfmitti
+8575995 01 01 Wetzikon ZH, Pflegezentrum
+8575996 01 01 Wetzikon ZH, Spital
+8575997 01 01 Wetzikon ZH, Bachtelstrasse
+8575998 01 01 Wetzikon ZH, Friedhof
+8575999 01 01 Wetzikon ZH, Sonnenfeld
+8576001 01 01 Wetzikon ZH, Buchgrindel
+8576008 01 01 Hinwil, Bossikon
+8576009 01 01 Hinwil, Hinwil Center Ost
+8576010 01 01 Hinwil, Wässeristrasse
+8576011 01 01 Hinwil, Industriestrasse
+8576012 01 01 Hinwil, Kreuzplatz
+8576013 01 01 Hinwil, Dorf
+8576014 01 01 Wetzikon ZH, Alpenblick
+8576015 01 01 Grüt (Gossau ZH), Lindenhof
+8576016 01 01 Gossau ZH, Tannenberg
+8576017 01 01 Gossau ZH, Zentrum
+8576018 01 01 Gossau ZH, Oberstufe/Altrüti
+8576020 01 01 Ottikon (Gossau), Unterottikon
+8576021 01 01 Grüningen, Stedtli
+8576022 01 01 Grüningen, Freihof
+8576023 01 01 Grüningen, Heispel
+8576025 01 01 Oetwil am See, Bergstrasse
+8576027 01 01 Männedorf, Glärnischstrasse
+8576028 01 01 Männedorf, Kirchweg
+8576029 00 00 Männedorf, Bahnhof
+8576033 01 01 Grüt (Gossau ZH), Grünau
+8576034 01 01 Ottikon (Gossau), Strick
+8576037 01 01 Grüningen, Adler
+8576041 01 01 Tann, Härtiplatz
+8576044 01 01 Hinwil, Sportplatz
+8576045 01 01 Hinwil, Zelgacher
+8576046 01 01 Hinwil, Gstalden
+8576047 01 01 Hinwil, Friedhof
+8576048 01 01 Hinwil, Langmatt
+8576050 01 01 Rüti ZH, Jonamarkt
+8576052 01 01 Bubikon, Wihalde
+8576053 01 01 Wolfhausen, Neugut
+8576054 01 01 Stäfa, Binz
+8576055 02 02 Hombrechtikon, Holflüe
+8576056 01 01 Uerikon, Gsteig
+8576057 00 00 Uerikon, Bahnhof
+8576058 01 01 Uerikon, Töbeli
+8576059 00 00 Uerikon, Moritzberg
+8576060 01 01 Stäfa, Phonak
+8576061 01 01 Stäfa, Mies
+8576062 01 01 Stäfa, Dorf
+8576063 01 01 Stäfa, Landi
+8576064 01 01 Stäfa, Obstgarten
+8576065 01 01 Stäfa, Tränkebachstrasse
+8576066 01 01 Stäfa, Grund
+8576067 01 01 Stäfa, Krone
+8576068 01 01 Bubikon, Tafleten
+8576069 01 01 Dürnten, Rothus
+8576070 01 01 Dürnten, Etzelstrasse
+8576071 01 01 Dürnten, Langacher
+8576072 01 01 Tann, Blatt
+8576073 01 01 Dürnten, Breitenmattstrasse
+8576074 01 01 Dürnten, J.-C.-Heerstrasse
+8576076 01 01 Rüti ZH, Seefeldstrasse
+8576077 01 01 Kempraten, Bahnhof
+8576078 01 01 Jona, Fluhstrasse
+8576079 01 01 Rapperswil SG, Sonnenhof
+8576080 00 00 Meilen, Bahnhof
+8576082 01 01 Meilen, Beugen
+8576083 01 01 Meilen, Obermeilen
+8576084 01 01 Meilen, Dollikon
+8576085 01 01 Meilen, Weid
+8576086 01 01 Uetikon am See, Grossdorf
+8576087 01 01 Männedorf, Büelen
+8576088 01 01 Männedorf, Allmendhof
+8576089 01 01 Männedorf, Boldernstrasse
+8576091 01 01 Wetzikon ZH, Wildbach
+8576092 01 01 Wetzikon ZH, Schloss
+8576093 01 01 Wetzikon ZH, Binzackerstrasse
+8576094 01 01 Kempten, Kreuzackerstrasse
+8576095 01 01 Uster, Stadtpark
+8576097 01 01 Uster, Wil
+8576099 01 01 Uster, Turicum
+8576101 00 00 Stäfa, Bahnhof
+8576102 00 00 Bubikon, Bahnhof
+8576103 01 01 Rüti ZH, Bahnhof
+8576104 00 00 Hinwil, Bahnhof
+8576107 01 01 Richterswil, Wisli
+8576108 01 01 Richterswil, Kerag
+8576109 01 01 Richterswil, Bächlistrasse
+8576112 01 01 Richterswil, Chrummbächli
+8576113 01 01 Richterswil, Im Leemann
+8576114 01 01 Richterswil, Speerstrasse
+8576116 01 01 Richterswil, Untere Schwanden
+8576117 01 01 Richterswil, Obermatt
+8576127 01 01 Schwerzenbach ZH, Bahnhof
+8576128 01 01 Volketswil, Hölzliwisen
+8576130 01 01 Volketswil, Huzlenstrasse
+8576131 01 01 Volketswil, Eichstrasse
+8576132 01 01 Volketswil, Chapf
+8576133 01 01 Kindhausen ZH, Bodenacher
+8576135 01 01 Effretikon, Moosburg
+8576139 01 01 Volketswil, In der Höh
+8576140 01 01 Volketswil, In der Au
+8576147 01 01 Pfungen, Bahnhof
+8576152 01 01 Kloten, Kirchgasse
+8576153 01 01 Kloten, Rankstrasse
+8576154 01 01 Kloten, Oberfeld
+8576155 01 01 Kloten, Grubenstrasse
+8576158 01 01 Bassersdorf, Talgüetli
+8576159 01 01 Bassersdorf, Schmitte
+8576160 01 01 Bassersdorf, Löwen
+8576161 01 01 Bassersdorf, Gemeindehaus
+8576163 01 01 Bassersdorf, Rietli
+8576167 01 01 Nürensdorf, Chrüzstrass
+8576168 01 01 Birchwil (Nürensdorf)
+8576169 01 01 Nürensdorf, Oberwil
+8576170 01 01 Nürensdorf, Berg
+8576171 01 01 Breite b. Nürensdorf, Sternen
+8576173 01 01 Breite b. N'dorf, W'thurerstr.
+8576176 00 00 Brütten, Harossen
+8576182 01 01 Zürich Tiefenbrunnen, Bahnhof
+8576184 01 01 Zollikon, Bahnhof
+8576185 01 01 Zollikon, Gemeindehaus
+8576186 01 01 Zollikon, Höhestrasse
+8576187 01 01 Zollikon, Allmend
+8576188 01 01 Zollikon, Schützenstrasse
+8576189 01 01 Zollikon, Rebwiesstrasse
+8576193 03 03 Zürich, Bellevue
+8576194 01 01 Zürich, Elektrowatt
+8576195 01 01 Zürich, Opernhaus
+8576196 01 01 Zürich, Kreuzstrasse
+8576197 01 01 Zürich, Feldeggstrasse
+8576198 01 01 Zürich, Höschgasse
+8576199 01 01 Zürich, Fröhlichstrasse
+8576200 01 01 Zürich, Wildbachstrasse
+8576201 01 01 Zollikon, Bahnübergang
+8576202 01 01 Zollikon, Felbenstrasse
+8576203 01 01 Zollikon, Dufourplatz
+8576204 01 01 Zollikon, Beugi
+8576205 01 01 Zollikon, Goldhaldenplatz
+8576206 01 01 Küsnacht ZH, Bühlstrasse
+8576207 01 01 Küsnacht ZH, Goldbacherstrasse
+8576208 01 01 Küsnacht ZH, Boglerenstrasse
+8576209 01 01 Küsnacht ZH, Schiedhaldenstr.
+8576210 01 01 Küsnacht ZH, Schiedhaldensteig
+8576211 01 01 Küsnacht ZH, Schübel
+8576214 01 01 Itschnach, Dorf
+8576215 01 01 Itschnach, Fallacher
+8576216 01 01 Küsnacht ZH, Oberwacht
+8576217 01 01 Küsnacht ZH, Ob. Heslibachstr.
+8576218 01 01 Küsnacht ZH, Bergstrasse
+8576219 01 01 Küsnacht ZH, Himmelistrasse
+8576220 01 01 Küsnacht ZH, Hesligenstrasse
+8576221 01 01 Küsnacht ZH, Ränkestrasse
+8576222 01 01 Küsnacht ZH, Allmend
+8576223 01 01 Küsnacht ZH, Bahnhof
+8576224 01 01 Zumikon, Gössikon
+8576225 01 01 Waltikon, Station
+8576226 01 01 Zumikon, Dorfzentrum
+8576231 00 00 Wiesendangen, Hinterdorf
+8576235 01 01 Otelfingen, Bahnhof
+8576236 01 01 Otelfingen, Alte Post
+8576237 01 01 Otelfingen, Schule
+8576238 01 01 Boppelsen, Dorf
+8576239 01 01 Boppelsen, Hand
+8576240 01 01 Zürich, Meierhofplatz
+8576241 01 01 Zürich, Heizenholz
+8576242 01 01 Zürich, Grünwald
+8576243 01 01 Regensdorf, Lettenhau
+8576244 01 01 Regensdorf, Obstgarten
+8576245 01 01 Regensdorf, Zentrum
+8576246 01 01 Regensdorf, Ostring
+8576248 01 01 Watt, Geerenweg
+8576249 01 01 Watt, Dorf
+8576250 01 01 Watt, Schulhaus
+8576251 01 01 Watt, Laubisser
+8576252 01 01 Watt, Haldensteig
+8576255 01 01 Adlikon b. R., Sonnhalde
+8576256 00 00 Adlikon b. R., Sonnhalde West
+8576257 01 01 Buchs ZH, Petermoos
+8576258 01 01 Buchs ZH, Linde
+8576259 01 01 Buchs ZH, Post
+8576260 01 01 Buchs-Dällikon, Bahnhof
+8576262 01 01 Zürich, Zehntenhausplatz
+8576263 01 01 Zürich, Hungerbergstrasse
+8576264 01 01 Regensdorf, Chrüzächer
+8576265 01 01 Regensdorf, Gemeindehaus
+8576269 01 01 Regensdorf, Dreispitz
+8576270 01 01 Regensdorf, Sportanlage Wisa.
+8576271 01 01 Dällikon, Seitenacker
+8576272 01 01 Dällikon, Dorf
+8576273 01 01 Dänikon, Gemeindehaus
+8576274 01 01 Hüttikon
+8576275 01 01 Regensdorf, Holenbach
+8576276 01 01 Dällikon, Industrie
+8576277 01 01 Buchs ZH, Industrie
+8576278 01 01 Regensdorf, Furtbächli
+8576279 01 01 Regensdorf, Hardhölzli
+8576280 01 01 Regensdorf, Althard/Bahnhof
+8576281 01 01 Adlikon b. R., Ziegelhütte
+8576282 01 01 Dielsdorf, Altmoos
+8576283 00 00 Dielsdorf, Dorfzentrum
+8576285 01 01 Dielsdorf, Bezirksgebäude
+8576286 01 01 Dielsdorf, Spitalstrasse
+8576287 01 01 Regensberg, Hirsmühle
+8576288 01 01 Regensberg, Höfli
+8576289 01 01 Regensberg, Dorf
+8576290 01 01 Hüntwangen-Wil, Bahnhof
+8576295 01 01 Wasterkingen,Ausserdorfstrasse
+8576296 01 01 Wasterkingen, Gemeindehaus
+8576297 03 03 Seuzach, Bahnhof
+8576301 04 04 Thalheim-Altikon, Bahnhof
+8576333 01 01 Spiez, Bahnhof
+8576338 01 01 Spiez, Oberlandstrasse
+8576376 01 01 Interlaken Ost, Bahnhof
+8576377 01 01 Interlaken, Lindenallee
+8576445 01 01 Hindelbank, Post
+8576493 01 01 Koppigen, Sternen
+8576543 01 01 Heiligenschwendi, Alpenblick
+8576558 04 04 Thun, Marktgasse
+8576559 04 04 Thun, Postbrücke
+8576579 01 01 Steffisburg, Dorf
+8576580 01 01 Steffisburg, Platz
+8576582 01 01 Steffisburg, Ziegelei
+8576587 01 01 Chamoson, poste
+8576596 01 01 Oberlangenegg, Inn. Kreuzweg
+8576659 01 01 St. Johannsen
+8576664 01 01 Langnau i.E., Bahnhof
+8576704 01 01 Signau, Bahnhof
+8576728 01 01 Brienz BE, Bahnhof
+8576747 01 01 Sigriswil, Dorf
+8576788 01 01 Uster, Burgreben
+8576815 01 01 Thun, Waldeck
+8576825 01 01 Oberstocken, Kreuzgasse
+8576900 01 01 Wangen an der Aare, Bahnhof
+8576917 01 01 Herzogenbuchsee, Bahnhof
+8576937 01 01 Langenthal, Bahnhof
+8576972 00 00 Münchenbuchsee, Schönegg
+8576990 01 01 Bern, Guisanplatz Expo
+8576992 01 01 Ittigen, Aespliz
+8576998 01 01 Bolligen, Bahnhof
+8577003 04 04 Ostermundigen, Bahnhof
+8577016 01 01 Gümligen, Sonnenfeld
+8577035 01 01 Lauterbrunnen, Sandweidli
+8577036 01 01 Isenfluh, Dorf
+8577070 01 01 Hitzkirch, Dorf
+8577084 01 01 Kleinwangen, Post
+8577106 01 01 Fenkrieden, Dorf
+8577108 01 01 Aettenschwil, Post
+8577161 03 03 Ebikon, Bahnhof
+8577172 01 01 Perlen, Fabrik
+8577212 01 01 Weggis, Zopf
+8577213 01 01 Weggis, Neubüel
+8577235 03 03 Emmenbrücke, Sprengi
+8577238 00 00 Rothenburg, Eschenbachstrasse
+8577308 01 01 Bioggio Molinazzo, Stazione
+8577375 03 03 Altdorf UR, Spital
+8577396 01 01 Wassen, Post
+8577398 01 01 Arth-Goldau, Bahnhof
+8577515 01 01 Wollerau, Dorfplatz
+8577518 01 01 Wollerau, Fürti
+8577519 01 01 Wollerau, Oswäldli
+8577521 01 01 Wollerau, Hafen
+8577522 01 01 Wollerau, Wyssenfluh
+8577523 01 01 Wollerau, Weingarten/Bellevue
+8577526 00 00 Schwanden GL, Bahnhof
+8577580 03 03 Cham, Neudorf
+8577612 01 01 Estavayer-le-Lac, gare rout.
+8577673 00 00 Vuisternens-dt-Romont, forge
+8577727 01 01 Broc-Village, gare
+8577737 01 01 Gruyères, gare
+8577828 01 01 Domdidier, gare
+8577867 01 01 Horgen, Waidli
+8577901 01 01 Gurmels, Kirche
+8577912 01 01 Horgen, untere Mühle
+8577994 01 01 Lostorf, Dorfplatz
+8578000 01 01 Stüsslingen, Jura
+8578007 01 01 Erlinsbach, Dorfplatz
+8578011 01 01 Niedergösgen, Jurastrasse
+8578038 01 01 Olten, Museen
+8578039 01 01 Olten, Baslerstrasse
+8578121 01 01 Aeschi SO, Kirche
+8578170 01 01 Basel, Bachgraben
+8578188 01 01 Muttenz, Unterwart
+8578193 01 01 Muttenz, Bahnhof
+8578205 01 01 Biel-Benken BL, Unterdorf
+8578206 01 01 Biel-Benken BL, Brücke
+8578250 01 01 Hölstein, Station
+8578256 00 00 Lampenberg-Ramlinsburg,Station
+8578306 03 03 Basel, Breite
+8578348 01 01 Kaiseraugst, Liebrüti
+8578349 01 01 Kaiseraugst, Bahnhof
+8578364 00 00 Schleitheim, Gemeindehaus
+8578372 01 01 Siblingen, Am Stei
+8578376 01 01 Neuhausen, Zentrum
+8578387 01 01 Wilchingen-Hallau, Bahnhof
+8578389 01 01 Hallau, Gemeindehaus
+8578392 00 00 Oberhallau, Trottengasse
+8578498 01 01 Amden, Vorderdorf
+8578524 01 01 Rapperswil SG, Cityplatz
+8578525 01 01 Rapperswil SG, Zeughaus
+8578526 01 01 Rapperswil SG, Scheidweg
+8578527 01 01 Jona, Kreuz
+8578529 03 03 Jona, Bollwies
+8578530 01 01 Jona, Feldli
+8578531 01 01 Jona, Jona-Center
+8578550 01 01 Glis, Saltina
+8578561 00 00 Ermenswil, Hirschen
+8578562 01 01 Ermenswil, Post
+8578563 01 01 Rüti ZH, Weier
+8578564 01 01 Rüti ZH, Ferrach
+8578577 01 01 Lichtensteig, Obertor
+8578595 01 01 Fischingen, Kloster
+8578652 00 00 Erlinsbach, Oberdorf
+8578663 00 00 Biberstein, Post
+8578677 03 03 Gebenstorf, Reuss
+8578678 03 03 Wettingen, Zentrumsplatz
+8578707 01 01 Seengen, Rotes Haus
+8578738 01 01 Lenzburg, Langsamstig
+8578768 01 01 Fahrwangen, Bahnhof
+8578789 00 00 Littenheid, Klinik
+8578795 03 03 Wil SG, STIHL
+8578837 00 00 Olivone, Petullo
+8578851 00 00 Ghirone, Aquilesco
+8578875 01 01 Capolago, Stazione
+8578916 01 01 Egerkingen, Bahnhof
+8578924 03 03 Losone, Ponte Maggia
+8578932 00 00 Münsingen, Spital
+8578968 00 00 Münsingen, Brückreuti
+8579007 01 01 Savosa, Valgersa
+8579033 01 01 Monthey-Ville, gare
+8579064 01 01 Val-d'Illiez, bif. Champoussin
+8579084 00 00 Münsingen, Sonnhalde
+8579086 01 01 Gimel, La Vernette
+8579088 01 01 Vallorbe, poste
+8579100 01 01 Les Clées-La Russille, croisée
+8579134 03 03 Interlaken, Gymnasium
+8579154 01 01 Corseaux, Gonelles
+8579168 01 01 Fenil-sur-Corsier, Pont
+8579170 01 01 Fenil-sur-Corsier, vieille rte
+8579174 04 04 Vevey, gare
+8579186 01 01 Oberrieden, Bahnhof
+8579188 01 01 Oberrieden, Seehalde
+8579189 01 01 Horgen, Scheller
+8579190 01 01 Horgen, Plattenhof
+8579192 01 01 Horgen, Spital
+8579237 03 03 Lausanne, Ours
+8579238 04 04 Lausanne, Sallaz
+8579261 01 01 Saanen, Bahnhof
+8579275 01 01 Schwarzenbach SG, Kapelle
+8579314 00 00 Crassier, Ancienne Gare
+8579315 01 01 La Rippe, village
+8579348 01 01 Fiesch, Bahnhof
+8579384 03 03 Collombey, Corbier
+8579409 01 01 Sierre/Siders,Place de la gare
+8579410 01 01 Sierre, Le Bourgeois
+8579452 01 01 Orsières, gare
+8579500 01 01 La Tzoumaz, télécabine
+8579517 01 01 Vex, bif. d'Hérémence
+8579555 01 01 Gampel, Zentrum
+8579556 01 01 Steg VS, Kirche
+8579568 01 01 Finhaut, gare
+8579592 01 01 Fleurier, gare
+8579599 01 01 Les Bayards, Quartier du Vent
+8579640 01 01 Areuse Littorail, gare
+8579746 01 01 Cudrefin, camping
+8579771 01 01 Waldkirch, Bisihus
+8579845 01 01 Waldkirch, Edlischwil
+8579885 01 01 Mels, Bahnhof
+8579904 01 01 Lömmenschwil, Romanshornerstr.
+8579962 01 01 Brienzwiler, Bahnhof
+8579967 01 01 Kloten, Weinbergstrasse
+8579968 01 01 Kloten, Egetswil
+8579969 01 01 Kloten, Chanzler
+8579979 01 01 Häggenschwil, Dorfplatz
+8579984 01 01 Brusio, Municipio
+8580005 00 00 S. Carlo GR, Percosta
+8580068 01 01 Morbio Inferiore, Serfontana
+8580081 01 01 Vacallo, Ponte Picio
+8580103 01 01 Grono, Bivio Calanca
+8580136 01 01 Dalpe, Villaggio
+8580179 01 01 Thusis, Bahnhof
+8580184 01 01 Leibstadt, Milchhüsli
+8580221 01 01 St-Maurice, L'Acquis-Chapelle
+8580237 01 01 Hinterkappelen, Bernstrasse
+8580260 04 04 Elsau, Bännebrett
+8580267 00 00 Praz-Jean VS, Stand Mourty
+8580289 01 01 Buchberg, Engel
+8580290 01 01 Buchberg, Kirche
+8580310 01 01 Remetschwil, Garage
+8580337 01 01 Duggingen, Hofackerbühne/Bhf.
+8580339 03 03 Le Locle, Hôtel-de-Ville
+8580430 08 08 Winterthur, Technikum
+8580432 01 01 Kloten, Bramen
+8580433 01 01 Kloten, Graswinkel
+8580434 01 01 Kloten, Lindenstrasse
+8580435 01 01 Kloten, Mühle
+8580437 01 01 Kloten, Säntisstrasse
+8580438 01 01 Kloten, Wohnheim
+8580443 01 01 Glattbrugg, Riethofstrasse
+8580449 01 01 Zürich Oerlikon, Bahnhof
+8580458 05 05 Winterthur, Gewerbeschule
+8580522 01 01 Zürich, Escher-Wyss-Platz
+8580536 01 01 Opfikon, Schulstrasse
+8580583 04 04 Bülach, Gewerbehaus
+8580585 01 01 Samedan, Plazzet
+8580590 01 01 Bodio TI, Stazione
+8580594 01 01 Riffenmatt, Kreuzung
+8580602 01 01 Triesen, Messina
+8580605 00 00 Rueun, Las Dretgs
+8580614 04 04 Bülach, Stadthalle
+8580619 01 01 Bachenbülach, Bramenländli
+8580620 04 04 Bachenbülach, Bramenstrasse
+8580622 04 04 Bülach, Bahnhof Ost
+8580636 05 05 Bülach, Güterbahnhof
+8580700 01 01 Manno, Suglio
+8580716 01 01 Savognin, Cresta
+8580718 01 01 Goldach, Bahnhof
+8580724 01 01 Horgen, Baumgärtlihof
+8580730 03 03 Birmenstorf AG, Chrüz
+8580758 00 00 Salavaux, école
+8580761 01 01 Ellikon a. d. Thur, Dorf
+8580788 01 01 Cadenazzo, Stazione
+8580793 01 01 Rikon im Tösstal, Bahnhof
+8580798 05 05 Winterthur, Schiltwiesen
+8580868 00 00 Steinach, Obersteinach Käserei
+8580872 01 01 Uster, Ackerstrasse
+8580874 01 01 Uster, Krämeracker
+8580877 01 01 Uster, Sonnenberg
+8580879 01 01 Uster, Stadthaus
+8580885 01 01 Wald ZH, Sportstrasse
+8580886 01 01 Andeer, Heilbad
+8580912 04 04 Zürich, Schaufelbergerstrasse
+8580929 01 01 Grono, Paese
+8580956 01 01 Mastrils, Tretsch
+8580994 01 01 Locarno, Palexpo
+8581095 01 01 Andeer, Tgavugl
+8581099 01 01 Zofingen, Heitereplatz
+8581105 01 01 S. Antonino, Posta
+8581146 01 01 Moutier, Suisse Est
+8581163 01 01 Gerra (Gambarogno), Stazione
+8581170 01 01 Valendas, Abzw. Brün
+8581190 03 03 Lantsch/Lenz, Sudem Vischnanca
+8581196 01 01 Serneus, Dorf
+8581199 01 01 Serneus, Mezzaselva
+8581241 00 00 Bellinzona, Ospedale
+8581264 01 01 Wollerau, Wächlen
+8581280 01 01 Wollerau, Sonnenberg
+8581281 01 01 Wollerau, Erlenmoos
+8581317 01 01 Piotta, Nord
+8581370 01 01 Meiringen, Alpbach Parkplatz
+8581394 01 01 Mörschwil, Kirche
+8581417 01 01 Wädenswil, Campus Grüental
+8581463 01 01 Branson, Pont du Rhône
+8581481 01 01 Rorschach Stadt, Bahnhof
+8581517 01 01 Surcuolm, Cavrida
+8581532 01 01 Hettlingen, Bahnhof
+8581534 03 03 Baar, Kreuzplatz
+8581535 03 03 Flaach, Unterdorf
+8581538 01 01 Uster, Seeweg
+8581539 01 01 Uster, Apothekerstrasse
+8581540 01 01 Uster, Wildsbergstrasse
+8581541 01 01 Uster, Jungholz
+8581542 01 01 Uster, Burgstrasse
+8581543 01 01 Uster, Krone
+8581544 01 01 Uster, Bildungszentrum
+8581545 01 01 Uster, Jugendhaus
+8581546 01 01 Uster, Nossikon
+8581547 01 01 Uster, Herracher
+8581551 01 01 Bellinzona, Via Pellandini
+8581567 01 01 Müstair, Clostra Son Jon
+8581572 01 01 Wädenswil, Rötiboden
+8581573 01 01 Wädenswil, Hallenbad/Frohmatt
+8581612 04 04 Elgg, Meisenplatz
+8581613 01 01 Elgg, Bahnhof
+8581614 01 01 Thundorf, Brückenwaage
+8581701 00 00 Winterthur, Rosenberg
+8581724 01 01 Visp, Forsthaus
+8581795 01 01 Uetendorf, TUS
+8581830 01 01 Geltwil, Isenbergschwil
+8581852 01 01 Visp, Bahnhof Nord
+8581863 00 00 Pratval, Gemeindehaus
+8581866 01 01 Müstair, cunfin
+8581943 01 01 Thierrens, gare routière
+8582005 04 04 Bülach, Einkaufszentrum Süd
+8582084 01 01 Boécourt, Chez le Minet
+8582180 01 01 Seuzach, Forrenbergstrasse
+8582433 00 00 Bramois, Pont de Bramois
+8582448 01 01 Bitsch, Bahnhof
+8582469 01 01 Bad Ragaz, Zentrum
+8582470 00 00 Bad Ragaz, St. Leonhard
+8582473 00 00 Bad Ragaz, Fluppi
+8582709 01 01 Fidaz, Pinut
+8582724 01 01 Hittnau, Industrie
+8582782 00 00 Oberkirch LU, CAMPUS Sursee
+8582790 04 04 Ottenbach, Engelwiese
+8582986 01 01 Fontenais, les Rochets
+8582987 01 01 Kiental, Ramslauenen
+8583034 00 00 Lyss, Kornweg
+8583047 01 01 Aeugst a.A., Grossacher
+8583052 04 04 Embrach, Im Feld
+8583071 04 04 Jonen, Radmühle
+8583089 01 01 Sonceboz-Sombeval, Couronne
+8583094 01 01 Brusio, Piazzo Fermata
+8583214 01 01 Birmensdorf ZH, Ristet
+8583266 01 01 Sion, EMS Gravelone
+8583270 01 01 Sion, Gare Bus Sédunois
+8583272 00 00 Sion, Gravelone
+8583305 01 01 Chevenez, place la Grangette
+8583309 01 01 Concise, village
+8583369 01 01 Sion, SUVA
+8583391 01 01 Maladers, Schule
+8583405 01 01 Lostallo, nord
+8583417 01 01 Unterseen, Wellenacher
+8583481 04 04 Obfelden, Gessnerstrasse
+8583482 04 04 Obfelden, Bachstrasse
+8583487 04 04 Pfäffikon ZH, Mettlenstrasse
+8583566 01 01 Chevenez, Les Moissons
+8583604 01 01 Martigny, Le Guercet
+8583629 01 01 Samnaun-Ravaisch, Abzweigung
+8583632 01 01 Euthal, Alte Festung
+8583633 01 01 Maienfeld, Heididorf
+8583639 01 01 Samnaun-Laret, Abzweigung
+8583664 01 01 Visp, West
+8583742 04 04 Mettmenstetten, Schulhaus
+8583748 00 00 Villars-Ste-Croix, En Coulaye
+8583756 04 04 Mettmenstetten, Zentrum
+8583770 04 04 Pfäffikon ZH, Güchweg
+8583774 04 04 Winkel, Seebüel
+8583775 04 04 Winkel, Wisental
+8583807 01 01 Sent, Plaz
+8583818 04 04 Eglisau, Städtli
+8583851 99 99 Roveredo GR, CRS
+8583869 04 04 Russikon, Dorf
+8583881 01 01 Silvaplana, Rundella Curtins
+8587004 01 01 Bertschikon bei Attikon
+8587005 00 00 Gundetswil
+8587010 01 01 Uster, Pfannenstielstrasse
+8587018 01 01 Kindhausen AG
+8587062 04 04 Genève, Jonction
+8587066 00 00 Gy, temple
+8587244 01 01 Sumiswald-Grünen, Bahnhof
+8587264 01 01 Zug, Schönegg
+8587283 01 01 Hagendorn, Rumentikon
+8587333 04 04 Eglisau, Viehmarkt
+8587347 01 01 Zürich, Rote Fabrik
+8587348 01 01 Zürich, Bahnhofplatz/HB
+8587410 01 01 Hinwil, Ringwil
+8587420 01 01 Kloten, Bahnhof
+8587422 01 01 Wetzikon ZH, Haldenstrasse
+8587471 01 01 Gwatt, Deltapark
+8587485 01 01 Bern, Rosengarten
+8587497 01 01 Esslingen, Loogarten
+8587516 00 00 Cham, Chamerried
+8587533 01 01 Muotathal, hintere Brücke
+8587564 01 01 Läufelfingen, Dorf
+8587569 01 01 Buchs SG, Hightech Campus
+8587598 01 01 Oberhofen a. T., Wichterheer
+8587600 01 01 Dieni, Pendicularas
+8587619 01 01 Biel/Bienne, Place Guisan
+8587651 01 01 Wallisellen, Glatt (Bus)
+8587653 05 05 Dübendorf, Bahnhof
+8587654 01 01 Glattbrugg, Glatthof
+8587680 01 01 Uster, Gschwaderstrasse
+8587681 01 01 Bäretswil, Gemeindehaus
+8587682 01 01 Männedorf, Dammstrasse
+8587683 01 01 Männedorf, Spital
+8587684 01 01 Männedorf, Asylstrasse
+8587685 01 01 Stäfa, Lattenberg
+8587686 01 01 Stäfa, Echtlenbach
+8587687 01 01 Stäfa, Rain
+8587688 01 01 Stäfa, Wiesengrund
+8587689 01 01 Männedorf, Sonnenfeld
+8587706 01 01 Naters, Massa-Wildi
+8587748 01 01 Gwatt, Moos
+8587778 01 01 Bazenheid, Ochsen
+8587810 01 01 Fraubrunnen, Bahnhof
+8587845 01 01 Muralto, Al Parco
+8587848 00 00 Luterbach, Bahnhof Nordseite
+8587854 00 00 Engollon, village
+8587857 01 01 Kyburg, Ausserdorf
+8587858 01 01 Volketswil, Giessen
+8587859 01 01 Uster, Loren
+8587860 01 01 Uster, Strick
+8587863 01 01 Chapella, La Resgia
+8587877 01 01 Thun, Schorenstrasse
+8587884 01 01 La Punt, Krone
+8587889 01 01 Zuoz, staziun
+8587890 01 01 S-chanf, Chesa cumünela
+8587903 00 00 Bernex, Loëx Hôpital
+8587905 03 03 Veyrier, douane
+8587926 01 01 Celerina, Punt Schlattain
+8587928 00 00 Osterfingen, Lindenhof
+8587931 01 01 Bauma, Holderbaum
+8587932 01 01 Bauma, Lipperschwändi
+8587933 01 01 Fischenthal, Bahnhof
+8587935 01 01 Fischenthal, Schmittenbach
+8587936 01 01 Gibswil, Bahnhof
+8587937 01 01 Gossau ZH, Moos
+8587939 01 01 Hinwil, Hinwil Center West
+8587941 01 01 Hombrechtikon, Grossacher
+8587942 01 01 Männedorf, Widenbad
+8587943 03 03 Rapperswil SG, Kreuzliplatz
+8587945 01 01 Rüti ZH, Gubel
+8587946 01 01 Rüti ZH, Laufenbach
+8587947 01 01 Rüti ZH, Würzhalde
+8587948 01 01 Stäfa, Metzg
+8587949 01 01 Stäfa, Wässerwies
+8587950 01 01 Steg im Tösstal, Bahnhof
+8587951 00 00 Uetikon am See, Bahnhof
+8587953 01 01 Wald ZH, Elbastrasse
+8587954 01 01 Wald ZH, Jonatal
+8587955 01 01 Wald ZH, Riet
+8587956 01 01 Wetzikon ZH, Medikon/Kulti
+8587957 01 01 Wetzikon ZH, Stadion
+8587958 01 01 Kempten, Talhof
+8587963 01 01 Bubikon, Platte
+8587964 01 01 Erlenbach ZH, Alterswohnheim
+8587965 00 00 Erlenbach ZH, Bahnhof
+8587966 01 01 Erlenbach ZH, Bahnhofstrasse
+8587967 01 01 Erlenbach ZH, Im Bindschädler
+8587968 01 01 Erlenbach ZH, Chapf
+8587969 01 01 Erlenbach ZH, Erlenhöhe
+8587970 01 01 Erlenbach ZH, Föhrenstrasse
+8587971 01 01 Erlenbach ZH, Im Loo
+8587972 01 01 Erlenbach ZH, Im Streuli
+8587973 01 01 Erlenbach ZH, Im Vogelsang
+8587974 01 01 Erlenbach ZH,Kirchgemeindehaus
+8587975 01 01 Erlenbach ZH, Pflugstein
+8587976 01 01 Erlenbach ZH, Rankstrasse
+8587977 01 01 Erlenbach ZH, Rebstrasse
+8587978 01 01 Erlenbach ZH, Sandfelsenstr.
+8587980 01 01 Erlenbach ZH, Trottgatter
+8587981 01 01 Meilen, Eichholz
+8587982 01 01 Meilen, Zentrum Feldmeilen
+8587983 01 01 Meilen, Schulhaus Feld
+8587984 01 01 Meilen, Schwabach
+8587985 01 01 Grüt (Gossau ZH), Bönler
+8587986 01 01 Ottikon (Gossau), Brüschweid
+8587987 01 01 Ottikon (Gossau), Hasenacher
+8587988 01 01 Ottikon (Gossau), Hellberg
+8587989 01 01 Ottikon (Gossau),Herschmettlen
+8587990 01 01 Grüt (Gossau ZH), Hundsruggen
+8587991 01 01 Ottikon (Gossau), Kirschgarten
+8587992 01 01 Herrliberg, Alterssiedlung
+8587993 01 01 Herrliberg, Aryanastrasse
+8587994 00 00 Herrliberg, Bergstrasse
+8587996 01 01 Herrliberg, Forchstrasse
+8587997 01 01 Herrliberg, Freudacherstrasse
+8587998 01 01 Herrliberg, Gartenstrasse
+8587999 01 01 Herrliberg, Grundhofstrasse
+8588000 01 01 Herrliberg, Grüt
+8588001 01 01 Herrliberg, Harzerstrasse
+8588002 01 01 Herrliberg, Holzwies
+8588003 01 01 Herrliberg, Humrigen
+8588005 01 01 Herrliberg, Pfarrgasse
+8588006 01 01 Herrliberg, Rietli
+8588007 01 01 Herrliberg, Schulhaus
+8588008 01 01 Herrliberg, Sportplatz
+8588009 01 01 Herrliberg, Tennisplätze
+8588010 01 01 Herrliberg, Vogtei
+8588011 00 00 Herrliberg-Feldmeilen, Bahnhof
+8588012 01 01 Rapperswil SG, Hanfländerstr.
+8588013 01 01 Meilen, Aebleten
+8588014 01 01 Meilen, Allmend
+8588015 01 01 Meilen, Alte Sonne
+8588016 01 01 Meilen, Au
+8588017 01 01 Meilen, Bezibüel/Chilchbüel
+8588019 01 01 Meilen, Bundi
+8588020 01 01 Meilen, Charrhalten
+8588021 01 01 Meilen, Grueb
+8588022 01 01 Meilen, Grüt
+8588023 01 01 Meilen, Hallenbad
+8588024 01 01 Meilen, Halten
+8588025 01 01 Meilen, Hohenegg
+8588026 01 01 Meilen, In der Au
+8588027 01 01 Meilen, Ormis
+8588028 01 01 Meilen, Parkresidenz
+8588029 01 01 Meilen, Plätzli
+8588030 01 01 Meilen, Rebbergstrasse
+8588031 01 01 Meilen, Roren
+8588032 01 01 Meilen, Tobel
+8588033 01 01 Meilen, Vorderer Pfannenstiel
+8588034 01 01 Meilen, Zur Au
+8588035 01 01 Jona, Busskirchstrasse
+8588036 01 01 Rüti ZH, Bandwies
+8588037 01 01 Rüti ZH, Bergacher
+8588039 01 01 Rüti ZH, Gruebenplatz
+8588040 01 01 Rüti ZH, Moosstrasse
+8588041 01 01 Rüti ZH, Pilgerhof
+8588042 01 01 Rüti ZH, Steinacher
+8588043 01 01 Rüti ZH, Steinstrasse
+8588044 01 01 Uetikon am See, Bergheim
+8588045 01 01 Uetikon am See, Talstrasse
+8588046 01 01 Uetikon am See, Gemeindehaus
+8588048 01 01 Uetikon am See, Oergelacher
+8588049 01 01 Uetikon am See, Rundi
+8588050 01 01 Uster, Bordacker
+8588052 01 01 Uster, Gschwader
+8588053 01 01 Uster, Haberweid
+8588054 01 01 Uster, Meieracher
+8588055 01 01 Uster, Oberlandstrasse
+8588056 01 01 Uster, Talweg
+8588057 01 01 Uster, Himmelriich
+8588058 01 01 Uster, Wageren
+8588059 01 01 Uster, Weidli
+8588072 03 03 Münchenstein, Neuewelt
+8588073 03 03 Münchenstein, Schaulager
+8588078 01 01 Zürich, Central
+8588094 01 01 Dänikon, Rotflue
+8588095 01 01 Gutenswil, Grossenacher
+8588097 01 01 Volketswil, Gries
+8588098 01 01 Gutenswil, Sternen
+8588105 03 03 Spiez, Spiezmoos
+8588139 01 01 Stäfa, Strandbad
+8588205 01 01 Erlenbach ZH, Allmend
+8588209 00 00 Bettlach, Post
+8588239 05 05 Herisau, Obstmarkt
+8588308 01 01 Richterswil, Schwyzerstrasse
+8588311 01 01 Effretikon, Brüttenerstrasse
+8588313 01 01 Baltenswil
+8588314 01 01 Dietlikon, Bahnhof West
+8588315 01 01 Bassersdorf, Grindel
+8588317 01 01 Bassersdorf, Bächli
+8588318 01 01 Brüttisellen, Ob. Wangenstr.
+8588319 01 01 Brüttisellen, Zentrum
+8588350 01 01 Givisiez, La Faye
+8588416 01 01 Horgen, Bocken
+8588426 01 01 Steffisburg, Kirche
+8588429 01 01 Uetikon am See, Brandrain
+8588430 00 00 Uetikon am See, Tramstrasse
+8588454 01 01 Grandvaux, Pra Grana
+8588469 01 01 Nürensdorf, Lindauerstrasse
+8588478 01 01 Thun, Kleine Allmend
+8588500 01 01 St. Gallen, Russen
+8588501 01 01 St. Gallen Bruggen, Erlachstr.
+8588502 01 01 Kleinikon
+8588515 01 01 Granges VS, Grand Canal
+8588516 01 01 Grône, écoles
+8588518 01 01 Bramois, Institut
+8588531 01 01 Oetwil am See, Beichlen
+8588532 01 01 Mönchaltorf, Huebstock
+8588533 01 01 Uerikon, Rietlirain
+8588550 01 01 Bremgarten BE, Schloss
+8588553 03 03 Zürich Flughafen, Fracht
+8588581 01 01 Steffisburg, Alte Bernstrasse
+8588718 03 03 Baar, Paradies
+8588723 01 01 Domdidier, CO
+8588734 01 01 Männedorf, Im Russer
+8588735 01 01 Grafstal, Engelacher
+8588736 01 01 Kloten, Ackerstrasse
+8588737 01 01 Kloten, Geissbergstrasse
+8588738 01 01 Kloten, Härdlen
+8588739 01 01 Kloten, Lägernstrasse
+8588740 01 01 Kloten, Neubrunnenstrasse
+8588744 01 01 Wallisellen, Kaserne
+8588745 01 01 Wallisellen, Steinacker
+8588768 01 01 Basel, Dreirosenbrücke
+8588807 04 04 Weggis, Seilbahn
+8588843 01 01 Crissier, bourg
+8588845 01 01 Crissier, Timonet
+8588853 01 01 Mex VD, village
+8588883 01 01 Wald ZH, Katholische Kirche
+8588888 03 03 Schaffhausen, Logierhaus
+8588908 01 01 Burgdorf, Gyrischachen
+8588913 01 01 Burgdorf, Meiefeld
+8588955 03 03 Haag (Rheintal), Rheinstrasse
+8588984 01 01 Horgen, Gehren
+8588985 01 01 Horgen, Heubach
+8588986 01 01 Horgen, Reithy
+8588987 01 01 Horgen, Schnegg
+8588988 04 04 Bern, Aegertenstrasse
+8589068 01 01 Steffisburg, Schule Bernstr.
+8589082 01 01 Oberwil i.S., Heidenweidli
+8589093 01 01 Binn, Fäld
+8589104 01 01 Rapperswil SG, H.-Rathgeb-Weg
+8589106 01 01 Volketswil, Zimikon
+8589108 01 01 Oberrieden, Tannenbach
+8589109 01 01 Horgen, Säntisstrasse
+8589110 01 01 Horgen, Widmerheim
+8589111 01 01 Horgen, Gumelenstrasse
+8589128 01 01 Volketswil, Chammwisen
+8589140 01 01 Fribourg, Champriond
+8589172 01 01 Villars-sur-Glâne, Fenetta
+8589281 01 01 Fischenthal, Fistel
+8589357 01 01 Basel, Schänzli
+8589401 01 01 Frenkendorf-Füllinsdorf, Bhf
+8589405 00 00 Füllinsdorf, Giebenacherstr.
+8589451 01 01 Riehen, Fondation Beyeler
+8589512 01 01 Rapperswil SG, Attenhoferstr.
+8589552 05 05 St. Gallen, Altenwegen
+8589604 01 01 St. Gallen, Oberstrasse
+8589613 00 00 St. Gallen, Rotmonten
+8589732 01 01 Kriens, Pilatus-Bahnen
+8589894 01 01 Weite, Weitegartenweg
+8589896 03 03 St. Gallen Winkeln, Bhf. Nord
+8589899 01 01 St. Gallen, Walserstrasse
+8589992 03 03 Bern, Sulgenau
+8590009 03 03 Bern, Kaufmännischer Verband
+8590021 03 03 Bern, Viktoriaplatz
+8590114 00 00 Bern, Marzilistrasse
+8590124 01 01 Belp, Eissel
+8590200 01 01 Bergdietikon, Baltenschwil
+8590201 01 01 Bergdietikon, Bergli
+8590202 01 01 Bergdietikon, Bernold
+8590203 01 01 Bergdietikon, Dünni
+8590204 01 01 Bergdietikon, Rietwies
+8590205 01 01 Bergdietikon, Vorbühl
+8590220 01 01 Dietikon, Marmori-Weiher
+8590222 01 01 Dietikon, Oetwilerstrasse
+8590223 01 01 Dietikon, Stadthaus
+8590239 03 03 Killwangen, Bahnhof
+8590241 01 01 Kindhausen AG, Eichholz
+8590269 01 01 Spreitenbach, Breiti
+8590275 03 03 Spreitenbach, IKEA
+8590296 00 00 Wettingen, Halbartenstrasse
+8590302 03 03 Wettingen, Rathaus
+8590314 03 03 Würenlos, Büntenstrasse
+8590317 03 03 Würenlos, Raiffeisenbank
+8590318 01 01 Zürich, Farbhof
+8590326 01 01 Herisau, Wiesental
+8590411 01 01 Dulliken, Zentrum
+8590442 03 03 Lausanne, Riponne-M. Béjart
+8590443 01 01 Hinwil, Zürichstrasse
+8590444 01 01 Hombrechtikon, Dörfli
+8590445 01 01 Hombrechtikon, Niderfeld
+8590446 01 01 Hombrechtikon, Wisental
+8590447 01 01 Stäfa, Frohberg
+8590448 01 01 Wolfhausen, Oberwolfhausen
+8590461 01 01 Adlikon b. R., Pächterried
+8590462 01 01 Adlikon b. R., Leematten
+8590463 01 01 Adliswil, Badstrasse
+8590464 01 01 Adliswil, Bahnhof
+8590466 01 01 Adliswil, Bodenacker
+8590467 01 01 Adliswil, Büchel
+8590469 01 01 Adliswil, Feldblumenstrasse
+8590470 01 01 Adliswil, Friedhof
+8590471 01 01 Adliswil, Baldernstrasse
+8590472 01 01 Adliswil, Grüt
+8590473 01 01 Adliswil, Hofackerstrasse
+8590474 01 01 Adliswil, Krone
+8590475 01 01 Adliswil, Landolt-Junker-Str.
+8590476 01 01 Adliswil, Ahornweg
+8590477 01 01 Adliswil, Moos
+8590478 01 01 Adliswil, Poststrasse
+8590479 01 01 Adliswil, Zopf
+8590480 01 01 Adliswil, Rifertstrasse
+8590481 00 00 Adliswil, Rütistrasse/Wacht
+8590482 01 01 Adliswil, Schulhaus Kopfholz
+8590484 01 01 Adliswil, Tiefacker
+8590485 01 01 Adliswil, Tobelhof
+8590486 01 01 Adliswil, Wanneten-/Haldenstr.
+8590489 01 01 Au ZH, Alte Landstrasse
+8590490 00 00 Au ZH, Appital
+8590491 01 01 Au ZH, Aubrücke
+8590493 01 01 Au ZH, Bahnhof
+8590494 01 01 Au ZH, Grundstein
+8590495 01 01 Au ZH, Gwad
+8590496 01 01 Au ZH, Moosacher
+8590497 01 01 Au ZH, Naglikonerweg
+8590498 01 01 Au ZH, Schützenhaus
+8590499 01 01 Au ZH, Seeguet
+8590500 01 01 Au ZH, Stoffelstrasse
+8590501 01 01 Au ZH, Strandbad
+8590502 00 00 Au ZH, Unter Ort
+8590503 01 01 Bassersdorf, Chlupfgasse
+8590504 01 01 Benglen, Gerlisbrunnen
+8590505 01 01 Binz bei Maur, Fridlimatt
+8590508 01 01 Brüttisellen, Haldenbrücke
+8590510 01 01 Dübendorf, Sport Heerenschürli
+8590512 01 01 Dietikon, Birmensdorferstrasse
+8590513 01 01 Dietikon, Dörfli
+8590514 01 01 Dietikon, Rapidplatz
+8590515 01 01 Dietikon, Hagackerstrasse
+8590516 01 01 Dietikon, Hätschen
+8590517 01 01 Dietikon, Hofacker
+8590518 01 01 Dietikon, Lätten
+8590519 01 01 Dietikon, Lerzen
+8590520 01 01 Dietikon, Moosmatt
+8590521 01 01 Dietikon, Oberdorf
+8590523 01 01 Dietikon, Pestalozzi
+8590526 01 01 Dietikon, Schönenwerd
+8590528 01 01 Dietikon, Silbern
+8590529 01 01 Dietikon, Sommerau
+8590531 01 01 Dietikon, Stadthalle Ost
+8590532 01 01 Dietikon, Staffelackerstrasse
+8590533 01 01 Dietikon, Stelzenacker
+8590536 01 01 Dietikon, Weidstrasse
+8590537 01 01 Dietikon, Weinberg
+8590538 01 01 Dietlikon, Aegert
+8590539 01 01 Dietlikon, Schwimmbad
+8590540 01 01 Dietlikon, Brandbachstrasse
+8590541 01 01 Dietlikon, Dornenstrasse
+8590542 01 01 Dietlikon, Dübendorferstrasse
+8590543 01 01 Dietlikon, Hofwiesen
+8590544 01 01 Dietlikon, Hörnligraben
+8590545 00 00 Dietlikon, Industriestrasse
+8590547 01 01 Dübendorf, Alterszentrum
+8590548 01 01 Dübendorf, Bahnhof Nord
+8590549 01 01 Dübendorf, Bauhof
+8590550 01 01 Dübendorf, Bettlistrasse
+8590551 01 01 Dübendorf, Branzenäsch
+8590553 01 01 Dübendorf, Chriesmatt
+8590554 01 01 Dübendorf, City Center
+8590555 01 01 Dübendorf, Claridenstrasse
+8590556 01 01 Dübendorf, Innovationspark
+8590557 01 01 Dübendorf, EMPA
+8590558 01 01 Dübendorf, Flugplatz
+8590559 01 01 Dübendorf, Gfenn
+8590561 01 01 Dübendorf, Am Ring
+8590562 01 01 Dübendorf, Glärnischstrasse
+8590563 01 01 Dübendorf, Grüzenstrasse
+8590565 01 01 Dübendorf, Heidenrietstrasse
+8590566 01 01 Dübendorf, Hoffnung
+8590567 01 01 Dübendorf, Högler
+8590568 01 01 Dübendorf, Im Grund
+8590569 01 01 Dübendorf, Kämmaten
+8590570 01 01 Dübendorf, Kirche Wil
+8590571 01 01 Dübendorf, Kreuzbühl
+8590573 01 01 Dübendorf, Kunsteisbahn
+8590574 01 01 Dübendorf, Lindenbühl
+8590575 01 01 Dübendorf, Lindenplatz
+8590576 01 01 Dübendorf, Meiershofstrasse
+8590577 01 01 Dübendorf, Memphis
+8590578 01 01 Wallisellen, Neugut
+8590579 01 01 Dübendorf, Neugut Süd
+8590580 01 01 Dübendorf, Post
+8590581 01 01 Dübendorf, Raubbühl
+8590582 01 01 Dübendorf, Ringstrasse
+8590584 01 01 Dübendorf, Schossacher
+8590586 01 01 Dübendorf, Schwimmbad
+8590587 01 01 Dübendorf, Sonnenberg
+8590589 01 01 Dübendorf, Stadthaus
+8590590 01 01 Dübendorf, Sunnhalde
+8590591 01 01 Dübendorf, Unterdorf
+8590592 01 01 Dübendorf, Wasserfurren
+8590593 01 01 Dübendorf, Zelglistrasse
+8590594 01 01 Dübendorf, Zwinggarten
+8590596 01 01 Ebmatingen, Leeacherstrasse
+8590597 01 01 Ebmatingen, Looren
+8590600 01 01 Egetswil, Dorf
+8590602 01 01 Fahrweid, Brunaustrasse
+8590603 01 01 Fahrweid, Limmatbrücke
+8590604 01 01 Fällanden, Bruggacher
+8590605 01 01 Fällanden, Eggler
+8590606 01 01 Fällanden, Gemeindehaus
+8590607 01 01 Fällanden, Industrie
+8590608 01 01 Fällanden, Jugendherberge
+8590609 01 01 Fällanden, Neuhus
+8590610 01 01 Fällanden, Schützenhaus
+8590611 01 01 Fällanden, Wigarten
+8590612 01 01 Fällanden, Zil
+8590614 01 01 Geroldswil, Dorfstrasse
+8590615 01 01 Geroldswil, Grindlen
+8590616 01 01 Geroldswil, Schweizäcker
+8590617 01 01 Geroldswil, Welbrig
+8590618 01 01 Geroldswil, Zentrum
+8590619 01 01 Glanzenberg, Bahnhof
+8590620 01 01 Glattbrugg, Bahnhof
+8590621 01 01 Glattbrugg, Frohbühlstrasse
+8590622 01 01 Glattbrugg, Giebeleichstrasse
+8590623 01 01 Glattbrugg, Halden
+8590627 01 01 Glattbrugg, Mode Center TMC
+8590629 01 01 Glattbrugg, Post
+8590631 01 01 Glattbrugg, Zentrum
+8590632 01 01 Opfikon, Zil
+8590635 01 01 Gockhausen, Ursprungstrasse
+8590637 11 11 Greifensee, Pfisterhölzli
+8590638 01 01 Greifensee, Städtli
+8590639 01 01 Greifensee, Tumigerstrasse
+8590640 01 01 Greifensee, Im Hof
+8590641 01 01 Herrliberg, Busenhardstrasse
+8590642 01 01 Herrliberg, Kirche Wetzwil
+8590643 01 01 Herrliberg, Oberdorfweg
+8590644 01 01 Herrliberg, Rain
+8590645 01 01 Herrliberg, Rebberg
+8590646 01 01 Herrliberg, Wetzwil
+8590647 01 01 Herrliberg-Feldmeilen,Bhf West
+8590649 01 01 Hinwil, Alpenblick
+8590650 01 01 Horgen, Zentrum Tödi
+8590651 01 01 Horgen, Dorfgasse
+8590652 01 01 Horgen, Glärnischhof
+8590653 01 01 Horgen, Käpfnach
+8590654 01 01 Horgen, Meilibach
+8590655 01 01 Horgen, Panorama
+8590656 01 01 Horgen, Rietli
+8590657 01 01 Horgen, Risi/Dow
+8590658 01 01 Horgen, Rotweg
+8590659 01 01 Horgen, Schärbächli/Fähre
+8590660 01 01 Horgen, Schinzenhof
+8590661 01 01 Horgen, Teufenbach
+8590663 01 01 Horgen, Wannenthal
+8590665 01 01 Horgenberg, Nordecke
+8590668 01 01 Itschnach, Rebweg
+8590669 01 01 Itschnach, Tägermoos
+8590670 01 01 Kilchberg ZH, Alterszentrum
+8590671 01 01 Kilchberg ZH, Auf Brunnen
+8590672 01 01 Kilchberg ZH, Bächlerstrasse
+8590673 01 01 Kilchberg ZH, Bahnhof
+8590674 01 01 Kilchberg ZH, Bendlikon
+8590675 01 01 Kilchberg ZH, Gottlieb-Binder
+8590677 01 01 Kilchberg ZH, Hornhaldenstr.
+8590678 01 01 Kilchberg ZH, Kirche
+8590679 01 01 Kilchberg ZH, Asp
+8590680 01 01 Kilchberg ZH, Gemeindehaus
+8590681 01 01 Kilchberg ZH, Lindt & Sprüngli
+8590683 01 01 Kilchberg ZH, Paradiessteig
+8590684 01 01 Kilchberg ZH, Paradiesstrasse
+8590685 01 01 Kilchberg ZH, Sanatorium
+8590686 01 01 Kilchberg ZH, Schlimbergstr.
+8590688 01 01 Kilchberg ZH, Schoorenstrasse
+8590689 01 01 Kilchberg ZH,Schulhaus Dorfstr
+8590690 01 01 Kilchberg ZH, Schwelle
+8590691 01 01 Kilchberg ZH, Stockengut
+8590692 01 01 Kilchberg ZH, Weinbergstrasse
+8590693 01 01 Kloten, Breitistrasse/Bahnhof
+8590694 01 01 Kloten, Buchhalden
+8590697 01 01 Kloten, Schluefweg
+8590698 01 01 Kloten, Schulstrasse
+8590699 01 01 Kloten, Stadthaus
+8590700 01 01 Kloten, Wallisellenstrasse
+8590701 01 01 Küsnacht ZH, Gartenstrasse
+8590702 01 01 Küsnacht ZH, Hallenbad
+8590703 01 01 Küsnacht ZH, Oberfeld
+8590704 01 01 Küsnacht ZH, Reform. Kirche
+8590705 01 01 Küsnacht ZH, Zentrum
+8590710 01 01 Lindau, Nürensdorferstrasse
+8590712 01 01 Maur, Aschbach
+8590713 01 01 Maur, Dorf
+8590714 01 01 Maur, Kirche
+8590715 01 01 Maur, Platten
+8590716 01 01 Maur, See
+8590718 01 01 Meilen, Schulhaus Obermeilen
+8590720 01 01 Nänikon, Grossriet
+8590721 01 01 Nänikon, Heuwinkelstrasse
+8590725 01 01 Oberengstringen, Eggbühl
+8590726 01 01 Oberengstringen, Lanzrain
+8590727 01 01 Oberengstringen, Paradies
+8590728 01 01 Oberengstringen, Zentrum
+8590729 01 01 Oberhasli, Dorf
+8590730 01 01 Oberhasli, Hasliberg
+8590731 01 01 Oberhasli, Moosacker
+8590732 01 01 Oberhasli, Post
+8590733 01 01 Oberhasli, Spielplatz
+8590734 01 01 Oberrieden Dorf, Bahnhof
+8590735 01 01 Oberrieden, Hubstrasse
+8590736 01 01 Oberrieden, Wattenbühlweg
+8590737 01 01 Oetwil an der Limmat, Halde
+8590738 01 01 Oetwil an der Limmat, Oberdorf
+8590739 00 00 Oetwil an der Limmat, Zentrum
+8590740 01 01 Opfikon, Aublick
+8590741 01 01 Opfikon, Austrasse
+8590742 01 01 Opfikon, Bahnhof
+8590743 01 01 Opfikon, Bubenholz
+8590744 01 01 Opfikon, Dorf
+8590745 01 01 Opfikon, Fernsicht
+8590746 01 01 Opfikon, Grätzli
+8590747 01 01 Opfikon, Grossacker
+8590748 01 01 Opfikon, Neuwiesen
+8590750 01 01 Opfikon, Vreniker
+8590751 01 01 Pfaffhausen, Feldhof
+8590752 01 01 Pfaffhausen, Pfaffenstein
+8590753 01 01 Pfaffhausen, Sängglen
+8590754 01 01 Regensdorf, Altersheim
+8590755 01 01 Regensdorf, Moosächer
+8590756 01 01 Regensdorf, Feldblumenstrasse
+8590757 01 01 Regensdorf, Pumpwerkstrasse
+8590758 01 01 Regensdorf, Querstrasse
+8590759 01 01 Regensdorf, Strassenverkehrs.
+8590760 01 01 Regensdorf, Zentrum Ost
+8590765 01 01 Rümlang, Letten
+8590767 01 01 Rümlang, Gemeindehaus
+8590768 01 01 Rümlang, Riedmattstrasse
+8590771 01 01 Rüschlikon, Bahnhof
+8590772 01 01 Rüschlikon, Belvoir
+8590773 01 01 Rüschlikon, Bodengasse
+8590775 01 01 Rüschlikon, Eggrain
+8590776 01 01 Rüschlikon, Langhaldenstrasse
+8590777 01 01 Rüschlikon, Loorain
+8590779 01 01 Rüschlikon, Moosstrasse
+8590780 01 01 Rüschlikon, Park im Grüene
+8590781 01 01 Rüschlikon, Rebsteig
+8590782 01 01 Rüschlikon, Säumerstrasse
+8590783 01 01 Rüschlikon, Schlossstrasse
+8590784 01 01 Rüschlikon, Weidstrasse
+8590786 01 01 Schlieren, Bahnhof
+8590787 01 01 Schlieren, Bahnhof Nord
+8590788 01 01 Schlieren, Brunngasse
+8590789 01 01 Schlieren, Am Rietpark
+8590790 01 01 Schlieren, Feldstrasse
+8590791 01 01 Schlieren, Gasometerbrücke
+8590792 01 01 Schlieren, Heimeliweg
+8590793 01 01 Schlieren, Industrie Gaswerk
+8590794 01 01 Schlieren, Kesslerplatz
+8590795 01 01 Schlieren, Mülligen
+8590796 01 01 Schlieren, Nassacker
+8590797 01 01 Schlieren, Reitmen
+8590798 01 01 Schlieren, Goldschlägistrasse
+8590799 01 01 Schlieren, Rütistrasse
+8590800 04 04 Schlieren, Spital Limmattal
+8590802 01 01 Schlieren, Talacker-Windegg
+8590803 01 01 Schlieren, Wagonsfabrik
+8590806 01 01 Schwerzenbach ZH, Dorf
+8590807 01 01 Sihlwald, Bahnhof
+8590811 01 01 Thalwil, Aegertli
+8590812 01 01 Thalwil, Alterszentrum
+8590813 01 01 Thalwil, Archstrasse
+8590814 01 01 Thalwil, Aubrigstrasse
+8590815 01 01 Thalwil, Böni
+8590817 01 01 Thalwil, Gewerbestrasse
+8590818 01 01 Thalwil, In Reben
+8590819 01 01 Thalwil, Mettli
+8590820 01 01 Thalwil, Oeggisbüelplatz
+8590822 01 01 Thalwil, Pilgerweg
+8590823 01 01 Thalwil, Platte
+8590825 01 01 Thalwil, Rainstrasse
+8590826 01 01 Thalwil, Rudishaldenstrasse
+8590828 01 01 Thalwil, Seehaldenstrasse
+8590829 01 01 Thalwil, Trotte
+8590830 01 01 Thalwil, Zehntenstrasse
+8590831 01 01 Unterengstringen, Aegelsee
+8590832 01 01 Unterengstringen, Eckstein
+8590833 01 01 Unterengstringen, Langacher
+8590834 01 01 Urdorf Weihermatt, Bahnhof
+8590837 01 01 Urdorf, Feldegg
+8590838 01 01 Urdorf, Heinrich-Stutz-Strasse
+8590839 01 01 Urdorf, Urdorf-Nord
+8590840 01 01 Urdorf, Kantiallee
+8590841 01 01 Urdorf, Neumatt
+8590842 01 01 Urdorf, Neumattstrasse
+8590843 01 01 Urdorf, Niederurdorf
+8590844 01 01 Urdorf, Oberurdorf
+8590845 01 01 Urdorf, Rainweg
+8590847 01 01 Urdorf, Sonne
+8590848 01 01 Urdorf, Spitzacker
+8590849 01 01 Urdorf, Uitikonerstrasse
+8590851 01 01 Volketswil, Chappeli
+8590852 01 01 Volketswil, Milandia
+8590853 01 01 Wädenswil, Baumgarten
+8590854 01 01 Wädenswil, Boller
+8590855 01 01 Wädenswil, Büelen
+8590856 01 01 Wädenswil, Coop
+8590857 01 01 Wädenswil, Eichweid
+8590858 01 01 Wädenswil, Forschungsanstalt
+8590859 01 01 Wädenswil, Frohmatt
+8590860 01 01 Wädenswil, Giessen
+8590861 01 01 Wädenswil, Glärnisch
+8590862 01 01 Wädenswil, Lätten
+8590863 01 01 Wädenswil, Meierhof
+8590864 01 01 Wädenswil, Meierhof-Rain
+8590866 01 01 Wädenswil, Neudorf
+8590867 01 01 Wädenswil, Reidbach
+8590868 01 01 Wädenswil, Schlossbergstrasse
+8590869 01 01 Wädenswil, Sonnenrainstrasse
+8590870 01 01 Wädenswil, Staubeweidli
+8590871 01 01 Wädenswil, Tiefenhof
+8590872 01 01 Wädenswil, Tiefenhofstrasse
+8590873 01 01 Wädenswil, Tiefenhofweiher
+8590874 01 01 Wädenswil, Töbelibach
+8590877 01 01 Wädenswil, Weinrebe
+8590878 03 03 Regensdorf-Watt, Bahnhof
+8590880 01 01 Wallisellen, Alterszentrum
+8590881 01 01 Wallisellen, Belair
+8590882 01 01 Wallisellen, Blumenweg
+8590883 01 01 Wallisellen, Bützacker
+8590884 01 01 Wallisellen, Florastrasse
+8590885 01 01 Wallisellen, Furtbach
+8590886 01 01 Wallisellen, Stadthaus
+8590888 01 01 Wallisellen, Hallenbad
+8590889 01 01 Wallisellen, Herti
+8590890 01 01 Wallisellen, Ifang
+8590892 01 01 Wallisellen, Lindenplatz
+8590894 01 01 Wallisellen, Riedenerstrasse
+8590895 01 01 Wallisellen, Rosenberg
+8590896 01 01 Wallisellen, Schäfligraben
+8590897 01 01 Wallisellen, Spitzacker
+8590898 01 01 Wallisellen, Sportzentrum
+8590899 01 01 Wallisellen, Zentrum
+8590900 01 01 Wallisellen, Zielacker
+8590901 01 01 Wangen b D'dorf, Dorfplatz
+8590902 01 01 Wangen b D'dorf, Hätzelwisen
+8590903 01 01 Wangen b D'dorf, Oberdorf
+8590904 01 01 Wangen b D'dorf, Stierwisen
+8590905 01 01 Wangen b D'dorf, Weidli
+8590906 01 01 Wangen b D'dorf, Dürrbach
+8590908 01 01 Watt, Brünigstrasse
+8590911 01 01 Weiningen ZH, Ausserdorf
+8590913 01 01 Weiningen ZH, Lindenplatz
+8590914 01 01 Weiningen ZH, Schulhaus
+8590915 01 01 Wetzikon ZH, Ettenhausen
+8590954 01 01 Winterthur, Haltenreben
+8591010 00 00 Winterthur, Technorama
+8591023 01 01 Zollikerb., Langägerten/Spital
+8591024 01 01 Zollikerberg, Hasenbart
+8591027 01 01 Zollikerberg, Sennhof
+8591028 01 01 Zollikerberg, Station
+8591029 01 01 Zollikerberg, Trichtenhauserm.
+8591031 01 01 Zürich Flughafen, REGA
+8591034 01 01 Zürich, Albisgütli
+8591035 01 01 Zürich, Albisrank
+8591036 01 01 Zürich, Albisrieden
+8591037 01 01 Zürich, Albisriederdörfli
+8591038 01 01 Zürich, Albisriederplatz
+8591039 01 01 Zürich, Alte Trotte
+8591040 01 01 Zürich, Altenhofstrasse
+8591041 01 01 Zürich, Althoos
+8591043 01 01 Zürich, Am Börtli
+8591044 01 01 Zürich, Am Suteracher
+8591045 01 01 Zürich, Appenzellerstrasse
+8591046 01 01 Zürich, Aspholz
+8591047 01 01 Zürich, Aubrücke
+8591048 01 01 Zürich, Ausserdorfstrasse
+8591049 01 01 Zürich, Auzelg
+8591050 01 01 Zürich, Auzelg Ost
+8591051 01 01 Zürich, Bachmattstrasse
+8591052 01 01 Zürich, Bäckeranlage
+8591053 01 01 Zürich, Bad Allenmoos
+8591054 01 01 Zürich Affoltern, Bahnhof
+8591056 01 01 Zürich Altstetten, Bahnhof
+8591057 01 01 Zürich Altstetten, Bahnhof N
+8591058 01 01 Zürich Enge, Bahnhof
+8591059 01 01 Zürich Enge, Bahnhof/Bederstr.
+8591060 01 01 Zürich Hardbrücke, Bahnhof
+8591061 01 01 Zürich Leimbach, Bahnhof
+8591062 01 01 Zürich Oerlikon, Bahnhof Nord
+8591063 01 01 Zürich Oerlikon, Bahnhof Ost
+8591064 01 01 Zürich Selnau, Bahnhof
+8591065 01 01 Stettbach, Bahnhof
+8591066 01 01 Zürich Wipkingen, Bahnhof
+8591067 01 01 Zürich, Bahnhofstrasse/HB
+8591068 01 01 Zürich, Bändliweg
+8591070 01 01 Zürich, Baslerstrasse
+8591071 01 01 Zürich, Beckenhof
+8591072 01 01 Zürich, Berghaldenstrasse
+8591073 01 01 Zürich, Berninaplatz
+8591074 01 01 Zürich, Bernoulli-Häuser
+8591075 01 01 Zürich, Bertastrasse
+8591076 01 01 Zürich, Berufswahlschule
+8591077 01 01 Zürich, Besenrainstrasse
+8591078 01 01 Zürich, Bethanien
+8591079 01 01 Zürich, Bezirksgebäude
+8591080 00 00 Zürich Wollishofen, Bhf/Werft
+8591081 01 01 Zürich Wollishofen,Bhf/Staubst
+8591082 01 01 Zürich, Billoweg
+8591083 01 01 Zürich, Grubenstrasse
+8591084 01 01 Zürich, Binz Center
+8591085 01 01 Zürich, Birch-/Glatttalstrasse
+8591086 01 01 Zürich, Birchdörfli
+8591087 01 01 Zürich, Bircher-Benner
+8591088 01 01 Zürich, Birchstrasse
+8591089 01 01 Zürich, Bleulerstrasse
+8591090 01 01 Zürich, Blumenfeldstrasse
+8591092 01 01 Zürich, Bollingerweg
+8591093 01 01 Zürich, Kantonalbank
+8591094 01 01 Zürich, Botanischer Garten
+8591097 01 01 Zürich, Bristenstrasse
+8591098 01 01 Zürich, Brunau/Mutschellenstr.
+8591100 01 01 Zürich, Brunaustrasse
+8591101 01 01 Zürich, Bucheggplatz
+8591102 01 01 Zürich, Buchholz
+8591103 01 01 Zürich, Buhnstrasse
+8591104 01 01 Zürich, Burgwies
+8591106 01 01 Zürich, Butzenstrasse
+8591107 01 01 Zürich, Zentrum Witikon
+8591108 01 01 Zürich, Chaletweg
+8591109 01 01 Zürich, Chinagarten
+8591110 01 01 Zürich, Löwenbräu
+8591111 01 01 Zürich, Dangelstrasse
+8591112 01 01 Zürich, Dorflinde
+8591113 01 01 Zürich, Dreispitz
+8591114 01 01 Zürich, Dreiwiesen
+8591115 01 01 Zürich, Drusbergstrasse
+8591116 01 01 Zürich, Dunkelhölzli
+8591118 01 01 Zürich, Einfangstrasse
+8591119 01 01 Zürich, Englischviertelstrasse
+8591120 01 01 Zürich, EPI-Klinik
+8591121 01 01 Zürich, Eschergutweg
+8591123 01 01 Zürich, ETH/Universitätsspital
+8591124 01 01 Zürich, Ettenfeld
+8591126 01 01 Zürich, Fellenbergstrasse
+8591127 01 01 Zürich, Felsenrainstrasse
+8591128 01 01 Zürich, Fernsehstudio
+8591130 01 01 Zürich, Feusisbergli
+8591131 01 01 Zürich, Fischerweg
+8591132 01 01 Zürich, Flobotstrasse
+8591133 01 01 Zürich, Flühgasse
+8591134 01 01 Zürich, Flurstrasse
+8591135 01 01 Zürich, Förrlibuckstrasse
+8591136 01 01 Zürich, Frankental
+8591137 01 01 Zürich, Freiestrasse
+8591138 01 01 Zürich, Freihofstrasse
+8591140 01 01 Zürich, Friedackerstrasse
+8591141 01 01 Zürich, Friedhof Eichbühl
+8591142 01 01 Zürich, Friedhof Enzenbühl
+8591143 01 01 Zürich, Friedhof Hönggerberg
+8591144 01 01 Zürich, Friedhof Schwandenholz
+8591145 01 01 Zürich, Friedhof Sihlfeld
+8591146 01 01 Zürich, Friedhof Uetliberg
+8591147 01 01 Zürich, Friedhof Witikon
+8591148 01 01 Zürich, Friedrichstrasse
+8591149 01 01 Zürich, Friesenberg
+8591151 01 01 Zürich, Friesenbergstrasse
+8591152 01 01 Zürich, Frohburg
+8591153 01 01 Zürich, Fronwald
+8591154 01 01 Zürich, Frymannstrasse
+8591155 01 01 Zürich, Geeringstrasse
+8591156 01 01 Zürich, Germaniastrasse
+8591158 01 01 Zürich, Giblenstrasse
+8591159 01 01 Zürich, Glattwiesen
+8591161 01 01 Zürich, Glaubtenstrasse Süd
+8591162 01 01 Zürich, Glockenacker
+8591163 01 01 Zürich, Goldackerweg
+8591164 01 01 Zürich, Goldauerstrasse
+8591165 01 01 Zürich, Grimselstrasse
+8591167 01 01 Zürich, Grünaustrasse
+8591168 01 01 Zürich, Guggachstrasse
+8591169 01 01 Zürich, Güterbahnhof
+8591170 01 01 Zürich, Gutstrasse
+8591171 01 01 Zürich, Hadlaubstrasse
+8591172 01 01 Zürich, Hagenholz
+8591173 01 01 Zürich, Haldenbach
+8591174 01 01 Zürich, Haldenegg
+8591175 01 01 Zürich, Hallenbad Oerlikon
+8591176 01 01 Zürich, Hardhof
+8591177 01 01 Zürich, Hardplatz
+8591178 01 01 Zürich, Hardturm
+8591180 01 01 Zürich, Hedwigsteig
+8591181 01 01 Zürich, Heerenwiesen
+8591182 01 01 Zürich, Hegianwandweg
+8591183 01 01 Zürich, Helmhaus
+8591184 01 01 Zürich, Helvetiaplatz
+8591186 01 01 Zürich, Herdernstrasse
+8591187 01 01 Zürich, Hertensteinstrasse
+8591188 01 01 Zürich, Herzogenmühlestrasse
+8591189 01 01 Zürich, Heubeeriweg
+8591190 01 01 Zürich, Heuried
+8591191 01 01 Zürich, Himmeri
+8591192 01 01 Zürich, Hinterbergstrasse
+8591193 01 01 Zürich, Hirschwiesenstrasse
+8591194 01 01 Zürich, Hirzenbach
+8591195 01 01 Zürich, Höfliweg
+8591196 01 01 Zürich, Hofstrasse
+8591197 01 01 Zürich, Hohenklingensteig
+8591198 01 01 Zürich, Hölderlinsteig
+8591199 01 01 Zürich, Hölderlinstrasse
+8591200 01 01 Zürich, Holzerhurd
+8591201 01 01 Zürich, Hönggerberg
+8591202 01 01 Zürich, Hottingerplatz
+8591203 01 01 Zürich, Hubertus
+8591204 01 01 Zürich, Hügelstrasse
+8591206 01 01 Zürich, Hürstholz
+8591207 01 01 Zürich, Im Ebnet
+8591208 01 01 Zürich, Im Gut
+8591209 01 01 Zürich, Im Hagacker
+8591210 01 01 Zürich, Im Hüsli
+8591211 01 01 Zürich, Im Klösterli
+8591212 01 01 Zürich, Im Walder
+8591213 01 01 Zürich, Im Wingert
+8591214 01 01 Zürich, In der Ey
+8591215 01 01 Zürich, Juchhof
+8591216 01 01 Zürich, Jugendherberge
+8591217 01 01 Zürich, Kalchbühlweg
+8591218 01 01 Zürich,Kalkbreite/Bhf.Wiedikon
+8591219 01 01 Zürich, Kanonengasse
+8591220 01 01 Zürich, Kantonsschule
+8591221 01 01 Zürich, Kapfstrasse
+8591222 01 01 Zürich, Kappeli
+8591223 01 01 Zürich, Kappenbühlweg
+8591224 01 01 Zürich, Käshaldenstrasse
+8591225 01 01 Zürich, Genossenschaftsstrasse
+8591226 01 01 Zürich, Kempfhofsteig
+8591227 01 01 Zürich, Kernstrasse
+8591228 01 01 Zürich, Kienastenwies
+8591229 01 01 Zürich, Kinkelstrasse
+8591230 01 01 Zürich, Kirche Fluntern
+8591231 01 01 Zürich, Klosbach
+8591234 01 01 Zürich, Köschenrüti
+8591235 01 01 Zürich, Krematorium Nordheim
+8591236 01 01 Zürich, Altes Krematorium
+8591237 01 01 Zürich, Kronenstrasse
+8591238 01 01 Zürich, Krönleinstrasse
+8591239 01 01 Zürich, Kunsthaus
+8591240 01 01 Zürich, Lägernstrasse
+8591241 01 01 Zürich, Landiwiese
+8591242 01 01 Zürich, Langensteinenstrasse
+8591243 01 01 Zürich, Langgrütstrasse
+8591244 01 01 Zürich, Langmauerstrasse
+8591245 01 01 Zürich, Laubegg
+8591246 01 01 Zürich, Laubiweg
+8591247 01 01 Zürich, Lehenstrasse
+8591248 01 01 Zürich, Leimgrübelstrasse
+8591249 01 01 Zürich, Lerchenhalde
+8591250 01 01 Zürich, Lerchenrain
+8591251 01 01 Zürich, Lettenstrasse
+8591252 01 01 Zürich, Letzigrund
+8591253 01 01 Zürich, Letzipark
+8591254 01 01 Zürich, Letzipark West
+8591255 01 01 Zürich, Letzistrasse
+8591256 01 01 Zürich, Leutschenbach
+8591257 01 01 Zürich, Limmatplatz
+8591258 01 01 Zürich, Lindenplatz
+8591259 01 01 Zürich, Lochergut
+8591260 01 01 Zürich, Loogarten
+8591261 01 01 Zürich, Loorenstrasse
+8591262 01 01 Zürich, Löwenplatz
+8591263 01 01 Zürich, Luchswiesen
+8591264 01 01 Zürich, Luegisland
+8591265 01 01 Zürich, Letzibach
+8591266 01 01 Zürich, Maienweg
+8591267 01 01 Zürich, Maillartstrasse
+8591268 01 01 Zürich, Manegg
+8591269 01 01 Zürich, Manesseplatz
+8591270 01 01 Zürich, Marbachweg
+8591271 01 01 Zürich, Mattenhof
+8591272 01 01 Zürich, Max-Bill-Platz
+8591273 01 01 Zürich, Messe/Hallenstadion
+8591274 01 01 Zürich, Micafil
+8591275 01 01 Zürich, Michelstrasse
+8591277 01 01 Zürich, Militär-/Langstrasse
+8591278 01 01 Zürich, Mittelleimbach
+8591280 01 01 Zürich, Mötteliweg
+8591281 00 00 Zürich, Mühlacker
+8591282 01 01 Zürich, Museum für Gestaltung
+8591284 01 01 Zürich, Neeserweg
+8591285 01 01 Zürich, Neuaffoltern
+8591286 01 01 Zürich, Neubühl
+8591287 01 01 Zürich, Neumarkt
+8591289 01 01 Zürich, Neunbrunnen
+8591290 01 01 Zürich, Nordheimstrasse
+8591291 01 01 Zürich, Nordstrasse
+8591292 01 01 Zürich, Nürenbergstrasse
+8591293 01 01 Zürich, Oberwiesenstrasse
+8591294 01 01 Zürich, Oerlikerhus
+8591296 01 01 Zürich, Okenstrasse
+8591297 01 01 Zürich, Orionstrasse
+8591298 01 01 Zürich, Ottikerstrasse
+8591299 01 01 Zürich, Paradeplatz
+8591300 01 01 Zürich, Stodolastrasse
+8591302 01 01 Zürich, Käferberg
+8591303 01 01 Zürich, Platte
+8591304 01 01 Zürich, Renggerstrasse
+8591305 01 01 Zürich, Probstei
+8591306 01 01 Zürich, Quellenstrasse
+8591308 01 01 Zürich, Räffelstrasse
+8591309 01 01 Zürich, Rathaus
+8591310 01 01 Zürich, Rautihalde
+8591311 01 01 Zürich, Rautistrasse
+8591312 01 01 Zürich, Rebbergsteig
+8591314 01 01 Zürich, Regensbergbrücke
+8591316 01 01 Zürich, Rennweg
+8591317 01 01 Zürich, Rentenanstalt
+8591318 01 01 Zürich, Riedbach
+8591319 01 01 Zürich, Riedgraben
+8591320 01 01 Zürich, Riedhofstrasse
+8591322 01 01 Zürich, Röntgenstrasse
+8591323 01 01 Zürich, Rosengartenstrasse
+8591324 01 01 Zürich, Röslistrasse
+8591325 01 01 Zürich, Roswiesen
+8591327 01 01 Zürich, Rudolf-Brun-Brücke
+8591328 01 01 Zürich, Rütihof
+8591329 01 01 Zürich, Saalsporthalle
+8591330 01 01 Zürich, Saatlenstrasse
+8591331 01 01 Zürich, Sackzelg
+8591332 01 01 Zürich, Salersteig
+8591333 01 01 Zürich, Salzweg
+8591334 01 01 Zürich, SBB-Werkstätte
+8591335 01 01 Zürich, Schaffhauserplatz
+8591336 01 01 Zürich, Schäppiweg
+8591338 01 01 Zürich, Schauenberg
+8591339 01 01 Zürich, Scheuchzerstrasse
+8591340 01 01 Zürich, Schlyfi
+8591341 01 01 Zürich, Schmiede Wiedikon
+8591342 01 01 Zürich, Schönauring
+8591343 01 01 Zürich, Ueberlandpark
+8591344 01 01 Zürich, Schulhaus Altweg
+8591345 01 01 Zürich, Schulhaus Buchlern
+8591346 01 01 Zürich, Schumacherweg
+8591347 01 01 Zürich, Schürgistrasse
+8591348 01 01 Zürich, Schützenhaus Höngg
+8591349 01 01 Zürich, Schwamendingerplatz
+8591350 01 01 Zürich, Schwandenholz
+8591351 01 01 Zürich, Schweighof
+8591352 01 01 Zürich, Schweizer Rück
+8591353 01 01 Zürich, Schwert
+8591355 01 01 Zürich, Seebacherplatz
+8591357 01 01 Zürich, Seerose
+8591358 01 01 Zürich, Segantinistrasse
+8591360 01 01 Zürich, Segeten
+8591361 01 01 Zürich, Seidelhof
+8591363 01 01 Zürich, Siemens
+8591364 01 01 Zürich, Signaustrasse
+8591365 01 01 Zürich, Sihlcity
+8591366 01 01 Zürich, Sihlcity Nord
+8591367 01 01 Zürich, Sihlpost/HB
+8591368 01 01 Zürich, Sihlquai/HB
+8591369 01 01 Zürich, Sihlstrasse
+8591370 01 01 Zürich, Sihlweidstrasse
+8591371 01 01 Zürich, Singlistrasse
+8591372 01 01 Zürich, Solidapark
+8591373 01 01 Zürich, Sonneggstrasse
+8591374 01 01 Zürich, Sportweg
+8591375 01 01 Zürich, Sprecherstrasse
+8591376 01 01 Zürich, Spyriplatz
+8591377 01 01 Zürich, Spyristeig
+8591378 01 01 Zürich, Stadtgrenze
+8591379 01 01 Zürich, Stampfenbachplatz
+8591380 01 01 Zürich, Staudenbühl
+8591382 01 01 Zürich, Sternen Oerlikon
+8591383 01 01 Zürich, Stierenried
+8591384 01 01 Zürich, Stockerstrasse
+8591385 01 01 Zürich, Strassenverkehrsamt
+8591386 01 01 Zürich, Strickhof
+8591387 01 01 Zürich, Sukkulentensammlung
+8591389 01 01 Zürich, Susenbergstrasse
+8591390 01 01 Zürich, Talwiesenstrasse
+8591391 01 01 Zürich, Technopark
+8591392 01 01 Zürich, Thujastrasse
+8591393 01 01 Zürich, Tierspital
+8591394 01 01 Zürich, Titlisstrasse
+8591396 01 01 Zürich, Tobelhof
+8591397 01 01 Zürich, Toblerplatz
+8591398 01 01 Zürich, Toni-Areal
+8591399 01 01 Zürich, Trichtenhausenfussweg
+8591400 01 01 Zürich, Trichtisal
+8591401 01 01 Zürich, Triemlispital
+8591402 01 01 Zürich, Tüffenwies
+8591403 01 01 Zürich, Tulpenstrasse
+8591404 01 01 Zürich, Tunnelstrasse
+8591405 01 01 Zürich, Uetlihof
+8591406 01 01 Zürich, Universität Irchel
+8591407 01 01 Zürich, Unteraffoltern
+8591408 01 01 Zürich, Untermoosstrasse
+8591410 01 01 Zürich, Verenastrasse
+8591411 01 01 Zürich, Vogelsangstrasse
+8591412 01 01 Zürich, Voltastrasse
+8591413 01 01 Zürich, Vulkanstrasse
+8591414 01 01 Zürich, Waffenplatz-/Bederstr.
+8591415 01 01 Zürich, Waffenplatzstrasse
+8591416 01 01 Zürich, Waidbadstrasse
+8591417 01 01 Zürich, Waidfussweg
+8591418 01 01 Zürich, Waidhof
+8591419 01 01 Zürich, Waidspital
+8591420 03 03 Zürich, Waldgarten
+8591421 01 01 Zürich, Waldhaus Dolder
+8591423 01 01 Zürich, Wartau
+8591424 01 01 Zürich, Waserstrasse
+8591425 01 01 Zürich, Weihersteig
+8591427 01 01 Zürich, Werd
+8591428 01 01 Zürich, Werdhölzli
+8591429 01 01 Zürich, Wetlistrasse
+8591430 01 01 Zürich, Widmerstrasse
+8591431 01 01 Zürich, Wieslergasse
+8591432 01 01 Zürich, Wiesliacher
+8591433 01 01 Zürich, Winkelriedstrasse
+8591434 01 01 Zürich, Winzerhalde
+8591435 01 01 Zürich, Winzerstrasse
+8591436 01 01 Zürich, Winzerstrasse Süd
+8591437 01 01 Zürich, Wipkingerplatz
+8591438 01 01 Zürich, Buchzelgstrasse
+8591439 01 01 Zürich, Wollishoferplatz
+8591440 01 01 Zürich, Wonnebergstrasse
+8591441 01 01 Zürich, Zielweg
+8591442 01 01 Zürich, Zoo
+8591443 01 01 Zürich, Zoo/Forrenweid
+8591444 01 01 Zürich, Zürichbergstrasse
+8591445 01 01 Zürich, Zweiackerstrasse
+8591446 01 01 Zürich, Zwielplatz
+8591447 01 01 Zürich, Zwinglihaus
+8591448 01 01 Zürich, Zypressenstrasse
+8591528 03 03 Ascona, Via Medere
+8591549 01 01 Losone, Agricola
+8591599 04 04 Lugano, ai Frati
+8591637 01 01 Pazzallo, P+R Fornaci
+8591658 01 01 Wil SG, Neugruben
+8591659 01 01 Wil SG, Neulanden
+8591661 01 01 Wil SG, Reuttistrasse
+8591673 01 01 Wil SG, Wilerwald
+8591674 01 01 Wil SG, Buebenloo
+8591706 00 00 Weggis, Dorfplatz
+8591722 01 01 Jona, Allmeindstrasse
+8591723 01 01 Jona, Altersheim Meienberg
+8591724 01 01 Jona, Aubrigstrasse
+8591726 01 01 Jona, Feldlistrasse
+8591727 01 01 Jona, Geberit
+8591728 01 01 Jona, Grünfeld
+8591729 01 01 Jona, Grüt
+8591730 01 01 Jona, Hummelwaldstrasse
+8591731 01 01 Jona, Kindergarten Hummelberg
+8591732 01 01 Jona, Kreuzackerstrasse
+8591733 01 01 Jona, Langrütistrasse
+8591734 01 01 Jona, Lenggiserstrasse
+8591735 01 01 Jona, Lenggisrain
+8591736 01 01 Jona, Molkereistrasse
+8591737 01 01 Jona, Neuhof
+8591738 01 01 Jona, Rankstrasse
+8591739 01 01 Jona, Sonnenblickstrasse
+8591740 01 01 Jona, Spitzenwies
+8591741 01 01 Jona, Vita-Parcours
+8591743 01 01 Jona, Weiden
+8591744 01 01 Jona, Tägernau
+8591745 01 01 Jona, Wohnheim Balm
+8591746 00 00 Rapperswil SG, Bahnhof Süd
+8591747 01 01 Rapperswil SG, Bildau
+8591748 01 01 Rapperswil SG, EW
+8591749 01 01 Rapperswil SG, Greithstrasse
+8591750 01 01 Rapperswil SG, Hanfländer
+8591751 01 01 Rapperswil SG, Kinderzoo
+8591752 01 01 Rapperswil SG, Oberseeplatz
+8591753 01 01 Rapperswil SG, Schulstrasse
+8591754 01 01 Rapperswil SG, Sportanl. Lido
+8591824 01 01 Zürich, Binz
+8591826 01 01 Binz bei Maur, Gassacher
+8591828 01 01 Ebmatingen, Dorf
+8591829 01 01 Fahrweid, Au
+8591831 01 01 Gockhausen, Dorf
+8591832 01 01 Pfaffhausen, Müseren
+8591833 01 01 Unterengstringen, Sennenbüel
+8591857 01 01 Uster, Loren-Allee
+8591858 01 01 Jona, Hummelberg
+8591869 01 01 Jona, Raineggstrasse
+8591893 01 01 Dietikon, Gyrhalden
+8591896 01 01 Zürich, Würzgraben
+8591903 01 01 Zollikerberg, Spital
+8591914 01 01 Thun, Lerchenfeld
+8591922 01 01 Thun, Schorenfriedhof
+8591928 00 00 Thun, Westquartier
+8591929 01 01 Thun, Zentrum Oberland
+8592028 03 03 Lausanne, Délices
+8592043 00 00 Lausanne, Faverges
+8592165 01 01 Moudon, Sorbiers
+8592166 01 01 Moudon, Verger
+8592310 00 00 Adelboden, Gilbach des Alpes
+8592462 00 00 Biel/Bienne, Fuchsenried
+8592493 01 01 Schaffhausen, Herblinger Markt
+8592505 00 00 Neuhausen, Herbstäcker
+8592515 00 00 Schaffhausen, Birch
+8592521 00 00 Schaffhausen, Buchthalen
+8592526 03 03 Schaffhausen, Dachsenbüel
+8592530 00 00 Schaffhausen, Ebnat
+8592543 01 01 Schaffhausen, Gräfler
+8592545 00 00 Schaffhausen, Gruben
+8592586 00 00 Schaffhausen, Waldfriedhof
+8592588 01 01 Schaffhausen, Wiesli
+8592634 03 03 Avully, Eaumorte hameau
+8592679 03 03 Lancy-Pont-Rouge, gare/Etoile
+8592777 01 01 Genève, Alpes
+8592802 04 04 Genève, Charmilles
+8592803 03 03 Genève, De-Chateaubriand
+8592804 03 03 Genève, Cirque
+8592864 03 03 Genève, Mont-Blanc
+8592883 05 05 Genève, Place des Eaux-Vives
+8592910 03 03 Genève, Terrassière
+8593030 00 00 Onex, cité
+8593266 01 01 Koppigen, Gemeindeverwaltung
+8593280 01 01 Bulle, Place de la Gare
+8593311 01 01 Oppligen, Gemeindehaus
+8593332 00 00 Biel/Bienne, Goldgrube/Mine-Or
+8593356 00 00 Biel/Bienne, Mösliacker/Pt-Mar
+8593357 01 01 Biel/Bienne, Schüssinsel/Suze
+8593372 00 00 Biel/Bienne, Schulen Linde/Til
+8593382 00 00 Biel/Bienne, Vorhölzli/Bois-Dv
+8593488 01 01 Les Marécottes, gare
+8593529 01 01 Unterengstringen, Langwisen
+8593842 00 00 Bettlach, Allmend
+8593917 01 01 Clarens, dépôt VMCV
+8593938 01 01 Montreux, rue de la Gare
+8593951 03 03 La Tour-de-Peilz, Baumes
+8593957 01 01 La Tour-de-Peilz,Crausaz/Doges
+8593984 01 01 Vevey, Charmontey
+8593991 03 03 Vevey, Entre-Deux-Villes
+8594022 01 01 Yverdon, Léon-Jaquier nord
+8594028 00 00 Yverdon, Pierre de Savoie
+8594035 00 00 Yverdon-les-Bains, Bellevue
+8594049 00 00 Yverdon-les-Bains, Les Moulins
+8594061 00 00 Yverdon-les-Bains, Blancherie
+8594089 01 01 Nidau, Bahnhof
+8594114 00 00 Grenchen, Fichtenweg
+8594149 00 00 Grenchen, Weinbergstrasse
+8594160 01 01 Clarens, centre
+8594182 01 01 Horgen, Wannerstrasse
+8594186 01 01 Wallisellen, Haldenstrasse
+8594187 01 01 Wallisellen, Friedhof
+8594188 01 01 Wallisellen, Schulhaus Bürgli
+8594189 01 01 Wallisellen, Säntisstrasse
+8594190 01 01 Wallisellen, Guggenbühlstrasse
+8594198 01 01 Wallisellen, Glatt (Tram)
+8594199 03 03 Seuzach, Mörsburgstrasse
+8594202 01 01 Jona, Schachen
+8594232 01 01 Pontresina, Punt Ota Sur
+8594236 01 01 Rümlang, Hörnlistrasse
+8594239 01 01 Zürich, Schiffbau
+8594247 01 01 Vaulruz-Nord, gare
+8594252 01 01 Kilchberg ZH, Breitloo
+8594255 01 01 Zürich, Schanzackerstrasse
+8594257 01 01 Dürnten, Lättenmoos
+8594261 01 01 Dübendorf, Hochbord Nord
+8594283 01 01 Männedorf, Zentrum Leue
+8594297 01 01 Seuzach, Breitestrasse
+8594338 01 01 Brüttisellen, Neuwisen
+8594339 01 01 Illnau, Dorfplatz
+8594361 01 01 Ramsen, Petersburg
+8594455 01 01 Mendrisio, S. Martino
+8594491 01 01 Wald ZH, Nordeck
+8594538 01 01 Rüti ZH, Waldau
+8594539 01 01 Wetzikon ZH, Kastellstrasse
+8594540 01 01 Wetzikon ZH, Motorenstrasse
+8594541 01 01 Wetzikon ZH, Schönau
+8594542 01 01 Wetzikon ZH, Uster-/Weststr.
+8594543 01 01 Wetzikon ZH, Widum
+8594552 01 01 Dielsdorf, Ruchwiesen
+8594553 01 01 Opfikon, Schwimmbad
+8594560 00 00 Zermatt, Kapelle Winkelmatten
+8594615 01 01 Sierre, Hôtel de Ville/gare
+8594643 01 01 Uetikon am See,Binzigerstrasse
+8594644 01 01 Uetikon am See, Forbüelstrasse
+8594645 01 01 Uetikon am See, Stötzli
+8594715 01 01 Aminona, Plumachit
+8594731 01 01 Wetzikon ZH, Bahnhof Süd
+8594732 01 01 Unterengstringen, Sennenbüel N
+8594891 01 01 Kreuzlingen, Besmer
+8595074 01 01 Dietlikon, Hinentalstrasse
+8595075 01 01 Dietlikon, In Lampitzäckern
+8595077 01 01 Dietlikon, Lettenstrasse
+8595081 01 01 Dietlikon, Zentrum
+8595082 01 01 Effretikon, Oberkempttal
+8595089 01 01 Neunkirch, Schweizerbund
+8595129 01 01 Dietlikon, Rebackerweg
+8595198 01 01 Couvet, Le Preyel
+8595252 01 01 Wuppenau, Gemeindehaus
+8595380 00 00 Unterterzen, Bahnhof
+8595520 01 01 Wädenswil, Hintere Rüti Ost
+8595529 00 00 Barzheim, Dorf
+8595537 01 01 Rueyres-les-Prés, école
+8595607 00 00 Les Masses, télésiège
+8595648 01 01 Apples, gare
+8595654 01 01 Neunkirch, Bahnhof
+8595657 00 00 Rheinfelden, HPS
+8595702 00 00 Pratteln, Chästeli
+8595970 01 01 Chailly-Montreux, P+R
+8596106 01 01 Beringen, Belvedere
