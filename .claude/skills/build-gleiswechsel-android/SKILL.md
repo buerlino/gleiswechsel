@@ -12,15 +12,15 @@ is in `research/`.
 
 ## Where things are
 
-- `core/.../Opendata.kt`: `Stop`, `Leg`, `Connection` (with `duration` and
-  `changes`, the change stations: the search and the page both use it), the client
-  `connections()` and its parser. Tests in `OpendataTest` with made-up JSON shaped like a real response.
+- `core/.../Opendata.kt`: `Stop`, `Leg`, `Connection` (with `duration` and `changes`, the change
+  stations: the search and the page both use it), the client `connections()` and its parser.
+  Tests in `OpendataTest` with made-up JSON shaped like a real response.
 - `core/.../Minimums.kt`: `Minimums`, the official minimum transfer time per station from the
   HRDF `UMSTEIGB` text (`MinimumsTest`, made-up lines). The real file is the app's
   `res/raw/umsteigb.txt`, see [Official minimums](#official-minimums-each-timetable-change).
-- `core/.../Search.kt`: `Find` (with `saved` and `moreEfficient`), the local search `search()`. It takes the official connections,
-  the transfer time per station and the request as a function, so `SearchTest` runs it on a fake
-  API with made-up connections.
+- `core/.../Search.kt`: `Find` (with `saved` and `moreEfficient`), the local search `search()`.
+  It takes the official connections, the transfer time per station and the request as a
+  function, so `SearchTest` runs it on a fake API with made-up connections.
 - `core/.../LiveTest.kt`: the Horw → Sursee test case, live. Excluded from `:core:test` (and so
   from CI); run it with `./gradlew :core:test -Plive`, which also prints the finds and the number
   of requests. It asks for the next weekday, so a public holiday or a timetable change can fail it.
@@ -29,8 +29,10 @@ is in `research/`.
   SharedPreferences `commute`: `from`, `to`, `leaving`, `offset` and the transfer times keyed by
   station id, all as typed. The rows come from `Result.Found.changes` and stay in `changes` while
   a time or the offset is edited. `app/.../Pages.kt`: Settings, Help and `SubPage`
-  (← and the back gesture). Every text is in `res/values*/strings.xml` (en, de, fr, it); a new
-  one goes in all four, or lint fails on the missing translation. The search runs on
+  (← and the back gesture). A symbol on a button gets `Modifier.spokenAs(…)`, the word a screen
+  reader says instead (`uiautomator dump` shows it as the child's `content-desc`). Every text is
+  in `res/values*/strings.xml` (en, de, fr, it); a new one goes in all four, or lint fails on
+  the missing translation. The search runs on
   `Dispatchers.IO`; a failure shows one text (`search_failed`) and logs the exception under the
   tag `Gleiswechsel`, in the message too (Android's `Log` drops the stack trace of an
   `UnknownHostException`). `buildConfig` is on for the version name in the User-Agent.
@@ -38,16 +40,22 @@ is in `research/`.
   `input text` (`%s` for a space), `input keyevent 123` moves to the end and `67` deletes,
   `input keyevent 4` closes the keyboard (a second one goes back from Help or Settings). On the
   test phone (1116×2484): ⚙ at (87, 182), ? at (1029, 182), fields at y 350, 566, 782, ⇅ at
-  (960, 470), Search at (186, 974); the first "Track switch time" field at x 1000, y 1250 under "nothing faster", y 2198
-  under the test case's card. In Settings: ← at (87, 182), the offset at (912, 338). Rows below
-  the screen aren't in the dump: `input swipe 558 2000 558 400` first.
+  (960, 470), Search at (186, 974); the first "Track switch time" field at x 1000, y 1250 under
+  "nothing faster", y 2198 under the test case's card. In Settings: ← at (87, 182), the offset
+  at (912, 338). Rows below the screen aren't in the dump: `input swipe 558 2000 558 400` first.
+  TalkBack (FOSS build `app.talkbackfoss`) can be turned on with `settings put secure
+  enabled_accessibility_services app.talkbackfoss/com.google.android.marvin.talkback.TalkBackService`
+  and `accessibility_enabled 1`; off with `settings delete secure enabled_accessibility_services`
+  and `accessibility_enabled 0` (both were unset, 2026-10-06). Its tutorial opens first: back key.
 - Another language without changing the phone's (Android 13+; the app has no language picker,
   but this works anyway): `adb shell cmd locale set-app-locales io.github.buerlino.gleiswechsel
-  --locales de-CH` (`fr-CH`, `it-CH`); `""` goes back to the phone's. It restarts the page, so the result is gone: Search again.
+  --locales de-CH` (`fr-CH`, `it-CH`); `""` goes back to the phone's. It restarts the page, so
+  the result is gone: Search again.
 
 ## Working on the phone
 
-- Build and test: `ANDROID_HOME=~/Android/Sdk ./gradlew :core:test :app:lintDebug :app:assembleDebug :app:assembleRelease`.
+- Build and test:
+  `ANDROID_HOME=~/Android/Sdk ./gradlew :core:test :app:lintDebug :app:assembleDebug :app:assembleRelease`.
   Add `:app:lintAnalyzeDebug --rerun` when a lint warning looks stale.
 - Real phone over USB, no emulator. `adb` isn't on PATH:
   `~/Android/Sdk/platform-tools/adb install -r app/build/outputs/apk/debug/app-debug.apk`. If
@@ -94,51 +102,26 @@ Wed 7 Oct 2026.
 
 ## Still untested
 
-- Track switch time, colours, languages, swap, top bar, "more efficient" on the phone
-  (2026-10-06, R8 release build signed with the debug key, phone in en-US): ⚙ left, ? right; ⇅
-  centred over the gap, swaps From and To (and back), saved over a force-stop; the test case's
-  card: 42% more efficient, the Luzern change green (4 against 5); the Luzern row green at 4,
-  orange at 5, red at 6; Settings green at −1. With the app set to de-CH (`set-app-locales`
-  works without a locale config): the card, the row, Help and Settings in German, formal. French
-  and Italian looked at before the rename and the formal texts only. Lint: no issues. Not tried:
-  an orange or red box in a card (no such find at hand), the offset at 0 (orange), a phone set
-  to German itself, the French row's long label, TalkBack on ⇅.
-- The error text (2026-10-06): seen in airplane mode in all four languages, with
-  `UnknownHostException` in the log. Not seen: HTTP 429 (got once before the text, after many
-  searches; a minute later it worked), so not with the new text.
-- Settings, Help and the new cards on the phone (2026-10-06, R8 release build signed with the
-  debug key): ? and ⚙ open Help and Settings, ← and the back gesture return with the result
-  kept. With nothing set, Luzern shows a grey 4 (5 − 1) and Horw → Sursee finds the test case.
-  Offset 2 → Luzern grey 3 and the result cleared; offset 3 survives a force-stop. Luzern 6 →
-  nothing faster, after a force-stop too. Horw → Bern, Bundesplatz: the false find is gone
-  (nothing faster), rows Luzern, Olten grey 4, Bern grey 5. Lint: no issues; release APK
-  1.21 MB. Not tried: a find with a walk or two changes drawn as a timetable (only the test
-  case's), a long station name in a row or a card.
-- Transfer times on the phone (2026-10-06, R8 release build signed with the debug key), Horw →
-  Sursee 08:50 for Wed 7 Oct: 4 at Luzern → Sursee 09:26 instead of 09:40; 4 survives a
-  force-stop; 6 → nothing faster; clearing it brings the grey default back. Typing a time
-  cleared the old result and kept the row; editing To cleared both. Horw → Bern, Bundesplatz
-  shows three rows (Luzern, Olten, Bern). Not tried: a set time at a second change finding something, a non-digit typed (the filter
-  drops it).
-- On the phone (2026-10-06, R8 release build signed with the debug key): Horw → Sursee 850
-  finds the test case for Wed 7 Oct (Sursee 09:26 instead of 09:40, S4 track 12 → RE24 track 9),
-  so R8 with kotlinx.serialization works; the fields survive a force-stop; editing a field
-  clears the result; "8" marks the time red and disables Search; "Xyzzyq" says no connections
-  found. Lint: no issues; release APK 1.16 MB (the text fields; 899 KB before). After the rename
-  (new applicationId, so a new install; the old `io.github.buerlino.umsteiger` was uninstalled):
-  label Gleiswechsel, same find.
-  Not tried: the debug build on the phone.
-- How much more efficient (2026-10-06): a unit test (40 minutes against 30: 33%) and on the
-  phone, 42% for the test case (47 / 33), as worked out by hand.
-- The search: `:core:test` 13 tests green, `-Plive` 3 green on 2026-10-06 (rerun after the
-  false-find filter);
-  the walk rule once by hand at Zürich HB (CLAUDE.md). On the phone, Horw → Bern, Bundesplatz
-  08:50 (three changes): nothing at Olten and Bern, with 5 minutes or the defaults 4 and 5. Not
-  tried: a find at a second change.
-- The dark bar icons (2026-10-06): seen with the phone in dark mode (gesture navigation), on
-  the search page, in Help and in landscape. Not tried: three-button navigation.
-- The release workflow (the secrets are in place, user 2026-10-06; never run) and the
-  reproducible build (two clean builds with the same sha256).
+Everything else was tried on the phone with the R8 release build signed with the debug key.
+
+- On the page: an orange or red box in a card (no such find at hand); the offset at 0 (orange);
+  a find with a walk, or at a second change, drawn as a timetable (only the test case's); a set
+  time at a second change finding something; a long station name in a row or a card; a
+  non-digit typed (the filter drops it).
+- The rule between the finds (2026-10-06): only the unit tests; no real search has shown two
+  finds yet.
+- Languages: a phone set to German itself (only `set-app-locales`); French and Italian since the
+  formal texts (only the error text seen); the French row's long label.
+- HTTP 429 with the plain error text (got once before it, after many searches).
+- TalkBack's speech: the words are in the accessibility tree and TalkBack (FOSS build, turned on
+  over adb and off again) frames ← as one element, but nothing was heard (neither it nor eSpeak
+  logs the text).
+- The dark bar icons with three-button navigation.
+- Turning the phone in Help or Settings, split screen.
+- The debug build on the phone.
+- The themed icon in a launcher that shows themed icons (Niagara doesn't); only checked as a
+  render.
+- The release workflow (the secrets are in place, user 2026-10-06; never run).
 
 ## Releasing (as in gridload and APODroid)
 
@@ -170,5 +153,36 @@ APODroid has for its data source; decide with the user. Category: likely `Public
 
 `fastlane/metadata/android/en-US/`: title, short (max 80 characters) and full description, drafted
 2026-10-06; `de-DE`, `fr-FR`, `it-IT`: short and full description (the title falls back to
-en-US), same day. Still missing: `images/icon.png` (512 px, from the logo), `featureGraphic.png`,
-`phoneScreenshots/`. Screenshots with SystemUI demo mode, as in APODroid's skill.
+en-US), same day. `images/icon.png`: both logo SVGs at 512 px (`rsvg-convert -w 512 -h 512` each,
+`magick back.png front.png -composite -strip`). `images/featureGraphic.png` (1024×500): source
+`logo/featureGraphic.svg` (the signs, cropped, on the back's grey, "Gleiswechsel" in Inter Bold
+and the subtitle in Inter Medium, dark text: white on this grey is too faint), render command in
+its header comment. `images/phoneScreenshots/1.png` (user, 2026-10-06: one is enough): the test
+case's find and the green Luzern row, the whole page on one screen; `README.md` embeds it. Taken
+with SystemUI demo mode: `settings put global sysui_demo_allowed 1`, then broadcasts
+(`am broadcast -a com.android.systemui.demo -e command …`) `enter`, `clock -e hhmm 1200`,
+`notifications -e visible false`, `network -e wifi show -e level 4 -e fully true -e mobile hide`,
+`battery -e level 100 -e plugged false`, `status -e volume hide -e bluetooth hide -e location
+hide -e alarm hide -e sync hide -e mute hide -e speakerphone hide` (the VPN key goes with
+them); after the shot `exit` and the setting back to 0. `magick … -strip` for the PNG.
+
+## Icon
+
+The user's SVGs in `logo/` (108×108: `gleiswechsel_back.svg` grey, `gleiswechsel_front.svg` two
+blue signs "Gleis" and "Wechsel" and the grey connector, inside the 66-unit safe circle) as
+`res/drawable/ic_launcher_{background,foreground}.xml`, combined with
+`ic_launcher_monochrome.xml` in `res/mipmap-anydpi/ic_launcher.xml` (2026-10-06). The SVGs have
+no transforms: each rect and path became a `<path>` with the root's inherited style (`evenOdd`
+only where a path has holes; the strokes keep caps, joins and miter limit); the transparent
+artboard rect is skipped. Check: the drawables turned back into SVG render pixel-identical to
+the originals at 1080 px (rsvg-convert + `magick compare -metric AE`: 0).
+
+The themed layer is computed with shapely (in a venv, with svgelements to flatten the curves):
+the union of the signs, their shadows and the connector, minus the union of the white parts
+(borders, lettering, symbols; the strokes buffered with their caps), simplified at 0.005. One
+path would be 14,600 characters (lint VectorPath), so it's cut into 43 tiles under 900
+characters that overlap by 0.05 (no seam: every pixel 2 px inside the shape is opaque). Check:
+against a mask of the front's non-white pixels, 33 of 1,166,400 pixels differ, all at edges.
+The user's launcher (Niagara) doesn't show themed icons; App info shows the normal one
+(`adb shell am start -a android.settings.APPLICATION_DETAILS_SETTINGS -d
+package:io.github.buerlino.gleiswechsel`). If the SVGs change, regenerate all of these.

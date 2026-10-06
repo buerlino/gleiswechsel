@@ -60,53 +60,32 @@ turned to landscape and back (`user_rotation`; auto-rotate stayed off, restored)
 - [x] 1.2 Errors showed raw and in English: one text in all four, `Result.Failed` without a
   reason, the exception in the log. On the phone: airplane mode, all four languages. 429 not
   seen.
-- [ ] 1.3 Cards that say nothing new. With finds at two changes of one official connection,
-  both leave at the same time and one arrives later: that card is beaten by the other. Two
-  official connections sharing the ride to a change (one faster, one with fewer changes) give
-  the same trip twice. Found by reading, not seen. Fix: apply the "planner already offers it"
-  rule to the finds too (drop a find another find leaves no earlier than and arrives no later
-  than; an identical trip once, against the official that arrives first, so the saving isn't
-  overstated). A few lines in `search` and a test.
+- [x] 1.3 Cards that said nothing new: the "planner already offers it" rule between the finds
+  too; an identical trip once, against the official arriving first. Two tests; not seen live.
 - [x] 1.4 Found during 1.1: on a phone in dark mode the status bar's icons were white on the
   light page. `SystemBarStyle.light` for both bars (user: dark icons, not the system theme).
 
 ### Code
-- [ ] 2.1 `Find.arrival` and `Find.departure` are read only by the tests; the page draws the
-  change from the trip's legs. Drop them (`Find(official, faster)`), the tests check
-  `faster.legs` instead.
-- [ ] 2.2 Screen-reader labels for ⚙, ?, ⇅ and ← (TalkBack reads the symbols), as APODroid did
-  for ☆ and ▾: the "Settings" and "Help" strings, plus two new ones ("Swap from and to",
-  "Back") in all four languages. Optional.
-- [ ] 2.3 `prefs.edit { }` is core-ktx, which comes in only through activity-compose (1.18.0).
-  gridload and APODroid declare it at 1.18.0. Recommended: the same (the code uses it directly).
+- [x] 2.1 `Find(official, faster)`; the tests check `faster.legs`.
+- [x] 2.2 Screen-reader words for ⚙, ?, ⇅ and ← (`spokenAs`), two new strings in all four.
+  Seen in the accessibility tree; TalkBack's speech not heard.
+- [x] 2.3 core-ktx declared at 1.18.0 (the same version as before, via activity-compose).
 
 ### Migrations
 - None: nothing released yet.
 
 ### Docs
-- [ ] 4.1 `CLAUDE.md`, finished work: the plan's done steps 1–3 and the name (keep the scope,
-  what's left before the first release, and later versions; the `/v1/locations` idea moves to
-  The app, the commute); "`catchable()` and the boards are gone"; "the APK grew 1.16 → 1.21
-  MB" (now 1.23 MB: sizes drift); "renamed from the working name `umsteiger`".
-- [ ] 4.2 `CLAUDE.md`, stale: the heading "Data source (proposed …)" (transport.opendata.ch is
-  in use; OJP and Ist-Daten are still proposals); open question 1's "Per-station time is
-  decided above."; the plan's "Later: the keystore and CI secrets" repeats Setup's "Not set up
-  yet".
-- [ ] 4.3 Skill, Still untested: seven bullets that mostly list what *was* tested. Rewrite as
-  in APODroid, only what's untested: an orange or red box in a card; the offset at 0; a phone
-  set to German itself; French and Italian since the formal texts; the French row's long label;
-  a find with a walk or at a second change drawn as a timetable; a long station name; a
-  non-digit typed; the error text; the debug build on the phone; TalkBack; the release
-  workflow. The reproducible build is done (above); rotating is 1.1.
-- [ ] 4.4 `research/architecture.md`, Open points: "one number for all stations, or per
-  station" is decided (per station, with the offset); the first point repeats `CLAUDE.md`'s
-  plan. Drop both.
-- [ ] 4.5 README, Data: "transport.opendata.ch for the timetable and real-time data", but the
-  app reads planned times only: "for the connections".
-- [ ] 4.6 Lines over 100 characters (`CLAUDE.md` 7, the skill 8, README 1; not counting
-  commands, the skill's description and the research tables): reflow along with 4.1–4.3.
+- [x] 4.1 `CLAUDE.md`, finished work: the plan's done steps and items, `catchable()`, the APK
+  sizes, the rename, the first push. The `/v1/locations` idea stays in "Ideas, not decided",
+  where the user's later edit put it.
+- [x] 4.2 `CLAUDE.md`, stale: "Data source" (transport.opendata.ch in use, OJP and Ist-Daten
+  proposed, no boards), open question 1; the keystore line was already fixed by the user.
+- [x] 4.3 Skill, Still untested: only what's untested.
+- [x] 4.4 `research/architecture.md`: the two settled open points dropped.
+- [x] 4.5 README: transport.opendata.ch "for the connections".
+- [x] 4.6 Lines over 100 characters reflowed (`CLAUDE.md`, the skill, README; commands left).
 
 ### Repo, build and CI
-- [ ] 5.1 `git gc` (148 loose objects, 704 KB). Optional.
+- [x] 5.1 `git gc`: 175 loose objects (828 KB) into one 163 KB pack; `git fsck` clean.
 - Nothing else: no unused files, no changelogs yet (nothing released), `gradle.properties`
   has only `jvmargs` and the code style, the workflows are on the latest actions.

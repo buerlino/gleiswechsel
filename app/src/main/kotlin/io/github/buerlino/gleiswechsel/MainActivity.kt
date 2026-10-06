@@ -50,6 +50,8 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.semantics.clearAndSetSemantics
+import androidx.compose.ui.semantics.contentDescription
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.style.TextAlign
@@ -155,7 +157,7 @@ private fun App(prefs: SharedPreferences, minimums: Minimums) {
                         onClick = { val f = from; from = to; to = f; saveCommute("from", from); saveCommute("to", to) },
                         Modifier.align(Alignment.CenterEnd).offset(y = 4.dp).padding(end = 12.dp),
                         enabled = !searching,
-                    ) { Text("⇅", fontSize = 20.sp) }
+                    ) { Text("⇅", Modifier.spokenAs(stringResource(R.string.swap)), fontSize = 20.sp) }
                 }
                 Field(stringResource(R.string.leaving_at), leaving, !searching, "08:50", isError = leaving.isNotEmpty() && time == null, number = true) {
                     leaving = it; saveCommute("leaving", it)
@@ -207,10 +209,13 @@ private fun App(prefs: SharedPreferences, minimums: Minimums) {
 /** Settings (⚙) on the left, Help (?) on the right, as in gridload (user, 2026-10-06). */
 @Composable
 private fun TopBar(onSettings: () -> Unit, onHelp: () -> Unit) = Row(verticalAlignment = Alignment.CenterVertically) {
-    TextButton(onClick = onSettings) { Text("⚙", fontSize = 22.sp) }
+    TextButton(onClick = onSettings) { Text("⚙", Modifier.spokenAs(stringResource(R.string.settings)), fontSize = 22.sp) }
     Text("Gleiswechsel", Modifier.weight(1f), textAlign = TextAlign.Center, style = MaterialTheme.typography.titleLarge)
-    TextButton(onClick = onHelp) { Text("?", fontSize = 22.sp, fontWeight = FontWeight.Bold) }
+    TextButton(onClick = onHelp) { Text("?", Modifier.spokenAs(stringResource(R.string.help)), fontSize = 22.sp, fontWeight = FontWeight.Bold) }
 }
+
+/** A screen reader says [words] instead of the symbol (it would read out "⇅"). */
+internal fun Modifier.spokenAs(words: String) = clearAndSetSemantics { contentDescription = words }
 
 @Composable
 private fun Field(

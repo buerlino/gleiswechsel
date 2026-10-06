@@ -1,0 +1,5 @@
+First release.
+- Enter your daily trip: Gleiswechsel looks for a faster connection than the official timetable shows, through a shorter change of trains.
+- Set your own track switch time at each station where you change; until then, the official one minus 1 minute.
+- Each result as a timetable, with the minutes saved.
+- In English, German, French and Italian.

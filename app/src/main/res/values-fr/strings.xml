@@ -6,6 +6,7 @@
 
     <string name="from">De</string>
     <string name="to">À</string>
+    <string name="swap">Inverser le départ et l\'arrivée</string>
     <string name="leaving_at">Départ</string>
     <string name="search">Rechercher</string>
     <string name="searching">Recherche…</string>
@@ -22,6 +23,7 @@
     <string name="walk">À pied, %1$d min</string>
     <string name="track">voie %1$s</string>
 
+    <string name="back">Retour</string>
     <string name="settings">Paramètres</string>
     <string name="global_offset">Décalage global du temps de changement de voie</string>
 

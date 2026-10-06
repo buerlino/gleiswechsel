@@ -34,9 +34,7 @@ class SearchTest {
     fun aShorterChangeCatchesAnEarlierTrain() {
         // Exactly the transfer time is enough: 08:10 + 4 = 08:14.
         val find = search({ minutes(4) }).single()
-        assertEquals(listOf("S1", "RE3"), find.faster.legs.map { it.train })
-        assertEquals(stop("Xberg", "08:10", "1"), find.arrival)
-        assertEquals(stop("Xberg", "08:14", "9"), find.departure)
+        assertEquals(listOf(s1) + re3.legs, find.faster.legs)
         assertEquals(minutes(10), find.saved)
         assertEquals(40.0 / 30 - 1, find.moreEfficient)
         assertEquals(listOf("Xberg 08:14"), asked)
@@ -53,6 +51,31 @@ class SearchTest {
         // The S1 → RE3 is also an official connection (as Horw → Bern, Bundesplatz, 2026-10-06).
         val alsoOfficial = Connection(listOf(s1, re3.legs.single()))
         assertEquals(emptyList(), search(listOf(official, alsoOfficial), { minutes(4) }) { _, _, _ -> listOf(re3) })
+    }
+
+    @Test
+    fun aFindAnotherFindBeatsIsNone() {
+        // Two changes, a find at each, both leaving 08:00: Xberg's arrives 08:30, Yfeld's 08:50.
+        val ir2 = ride("IR2", stop("Xberg", "08:20"), stop("Yfeld", "08:30"))
+        val re5 = ride("RE5", stop("Yfeld", "08:40"), stop("Bstadt", "08:55"))
+        val r7 = Connection(listOf(ride("R7", stop("Yfeld", "08:35"), stop("Bstadt", "08:50"))))
+        val finds = search({ minutes(4) }, Connection(listOf(s1, ir2, re5)), mapOf("Xberg" to listOf(re3), "Yfeld" to listOf(r7)))
+        assertEquals(listOf(s1) + re3.legs, finds.single().faster.legs)
+    }
+
+    @Test
+    fun anIdenticalTripCountsOnceAgainstTheOfficialArrivingFirst() {
+        // Both official connections ride the S1 to Xberg: one changes twice to arrive 08:35, the
+        // other once to arrive 08:45. The S1 → RE3 beats both; it saves 5 minutes, not 15.
+        val twice = Connection(listOf(
+            s1,
+            ride("IR2", stop("Xberg", "08:20"), stop("Yfeld", "08:25")),
+            ride("RE5", stop("Yfeld", "08:28"), stop("Bstadt", "08:35")),
+        ))
+        val once = Connection(listOf(s1, ride("IC6", stop("Xberg", "08:20"), stop("Bstadt", "08:45"))))
+        val find = search(listOf(twice, once), { minutes(4) }) { from, _, _ -> if (from == "Xberg") listOf(re3) else emptyList() }.single()
+        assertEquals(twice, find.official)
+        assertEquals(minutes(5), find.saved)
     }
 
     @Test
@@ -98,8 +121,7 @@ class SearchTest {
             { minutes(4) },
             onward = mapOf("Xberg" to listOf(walkThenTram, Connection(listOf(ir2))), "Xberg, Platz" to listOf(tram)),
         ).single()
-        assertEquals(listOf("S1", "T8"), find.faster.legs.map { it.train })
-        assertEquals(stop("Xberg, Platz", "08:15", "B"), find.departure)
+        assertEquals(listOf(s1) + tram.legs, find.faster.legs)
         assertEquals(listOf("Xberg 08:14", "Xberg, Platz 08:14"), asked)
     }
 }

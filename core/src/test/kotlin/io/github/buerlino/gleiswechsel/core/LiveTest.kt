@@ -36,12 +36,13 @@ class LiveTest {
 
     private fun findsTheHiddenChange(hour: Int) {
         val find = search(hour, 4).single { it.official.departure.time.toLocalTime() == LocalTime.of(hour, 53) }
+        val (s4, re24) = find.faster.legs
         assertEquals(listOf("S4", "RE24"), find.faster.legs.map { it.train })
-        assertEquals("Horw", find.faster.departure.station)
-        assertEquals("Luzern", find.arrival.station)
-        assertEquals(LocalTime.of(hour + 1, 1), find.arrival.time.toLocalTime())
-        assertEquals(LocalTime.of(hour + 1, 5), find.departure.time.toLocalTime())
-        assertEquals("9", find.departure.platform)
+        assertEquals("Horw", s4.departure.station)
+        assertEquals("Luzern", s4.arrival.station)
+        assertEquals(LocalTime.of(hour + 1, 1), s4.arrival.time.toLocalTime())
+        assertEquals(LocalTime.of(hour + 1, 5), re24.departure.time.toLocalTime())
+        assertEquals("9", re24.departure.platform)
         assertEquals(LocalTime.of(hour + 1, 26), find.faster.arrival.time.toLocalTime())
         assertEquals(LocalTime.of(hour + 1, 40), find.official.arrival.time.toLocalTime())
         assertEquals(Duration.ofMinutes(14), find.saved)

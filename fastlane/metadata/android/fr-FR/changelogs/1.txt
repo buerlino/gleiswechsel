@@ -1,0 +1,5 @@
+Première version.
+- Saisissez votre trajet quotidien : Gleiswechsel cherche une liaison plus rapide que celle de l'horaire officiel, grâce à un changement plus court.
+- Fixez votre propre temps de changement de voie dans chaque gare où vous changez ; d'ici là, c'est le temps officiel moins 1 minute.
+- Chaque résultat sous forme d'horaire, avec les minutes gagnées.
+- En français, allemand, anglais et italien.

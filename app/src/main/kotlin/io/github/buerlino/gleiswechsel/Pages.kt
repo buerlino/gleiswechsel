@@ -55,7 +55,7 @@ private fun SubPage(title: String, onBack: () -> Unit, content: @Composable Colu
     BackHandler(onBack = onBack)
     Column(Modifier.windowInsetsPadding(WindowInsets.safeDrawing)) {
         Row(verticalAlignment = Alignment.CenterVertically) {
-            TextButton(onClick = onBack) { Text("←", fontSize = 22.sp) }
+            TextButton(onClick = onBack) { Text("←", Modifier.spokenAs(stringResource(R.string.back)), fontSize = 22.sp) }
             Text(title, style = MaterialTheme.typography.titleLarge)
         }
         Column(

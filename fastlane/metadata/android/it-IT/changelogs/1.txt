@@ -1,0 +1,5 @@
+Prima versione.
+- Inserisca il suo viaggio quotidiano: Gleiswechsel cerca un collegamento più veloce di quello dell'orario ufficiale, grazie a un cambio più breve.
+- Imposti il suo tempo di cambio binario in ogni stazione dove cambia; finché non lo fa, vale quello ufficiale meno 1 minuto.
+- Ogni risultato come orario, con i minuti risparmiati.
+- In italiano, tedesco, francese e inglese.

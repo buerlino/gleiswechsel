@@ -6,6 +6,7 @@
 
     <string name="from">Da</string>
     <string name="to">A</string>
+    <string name="swap">Invertire partenza e arrivo</string>
     <string name="leaving_at">Partenza</string>
     <string name="search">Cerca</string>
     <string name="searching">Ricerca…</string>
@@ -22,6 +23,7 @@
     <string name="walk">A piedi, %1$d min</string>
     <string name="track">binario %1$s</string>
 
+    <string name="back">Indietro</string>
     <string name="settings">Impostazioni</string>
     <string name="global_offset">Scostamento globale del tempo di cambio binario</string>
 

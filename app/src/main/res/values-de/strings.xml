@@ -6,6 +6,7 @@
 
     <string name="from">Von</string>
     <string name="to">Nach</string>
+    <string name="swap">Von und Nach tauschen</string>
     <string name="leaving_at">Abfahrt</string>
     <string name="search">Suchen</string>
     <string name="searching">Suche läuft…</string>
@@ -22,6 +23,7 @@
     <string name="walk">Fussweg, %1$d min</string>
     <string name="track">Gleis %1$s</string>
 
+    <string name="back">Zurück</string>
     <string name="settings">Einstellungen</string>
     <string name="global_offset">Globaler Offset der Gleiswechselzeit</string>
 

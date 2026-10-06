@@ -8,6 +8,7 @@
 
     <string name="from">From</string>
     <string name="to">To</string>
+    <string name="swap">Swap from and to</string>
     <string name="leaving_at">Leaving at</string>
     <string name="search">Search</string>
     <string name="searching">Searching…</string>
@@ -24,6 +25,7 @@
     <string name="walk">Walk, %1$d min</string>
     <string name="track">track %1$s</string>
 
+    <string name="back">Back</string>
     <string name="settings">Settings</string>
     <string name="global_offset">Global offset of the track switch time</string>
 

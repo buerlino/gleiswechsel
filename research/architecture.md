@@ -63,7 +63,4 @@ Rough effort for a first version: 3–6 weeks part-time. Phase 2: 2–4 weeks mo
 
 ## Open points
 
-- The risk comes after the first version (user, 2026-10-06: wanted, but the core utility
-  first; CLAUDE.md, the plan). How it works is still open there.
-- How a rider sets their transfer time: one number for all stations, or per station.
 - Whether the statistics job needs a database or a plain file is enough (KISS: a file).

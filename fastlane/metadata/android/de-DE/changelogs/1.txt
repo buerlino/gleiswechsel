@@ -1,0 +1,5 @@
+Erste Version.
+- Geben Sie Ihre tägliche Fahrt ein: Gleiswechsel sucht eine schnellere Verbindung, als der offizielle Fahrplan zeigt, dank eines kürzeren Umstiegs.
+- Setzen Sie an jedem Umsteigebahnhof Ihre eigene Gleiswechselzeit; bis dahin gilt die offizielle minus 1 Minute.
+- Jedes Ergebnis als Fahrplan, mit der gesparten Zeit.
+- Auf Deutsch, Englisch, Französisch und Italienisch.

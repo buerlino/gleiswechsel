@@ -16,17 +16,16 @@ includes the subtitle (app label, title, applicationId, repo: just Gleiswechsel)
 goes where a store shows a line under the name: the F-Droid summary
 (`fastlane/.../short_description.txt`; the French and Italian ones add their own after a dash,
 "Schneller umsteigen – Changer plus vite", user 2026-10-06: respectful) and the README's first
-line. applicationId and namespace
-`io.github.buerlino.gleiswechsel`; Kotlin packages `io.github.buerlino.gleiswechsel` (app) and
-`io.github.buerlino.gleiswechsel.core`. Repo https://github.com/buerlino/gleiswechsel (GPLv3, as
-the user's other apps); local folder `gleiswechsel` (renamed from the working name `umsteiger`,
-2026-10-06). Release APKs are named
-`gleiswechsel-vX.Y.Z.apk`. Not affiliated with SBB: no SBB name, logo or colours in the app or
-the listing.
+line. applicationId and namespace `io.github.buerlino.gleiswechsel`; Kotlin packages
+`io.github.buerlino.gleiswechsel` (app) and `io.github.buerlino.gleiswechsel.core`. Repo
+https://github.com/buerlino/gleiswechsel (GPLv3, as the user's other apps). Release APKs are
+named `gleiswechsel-vX.Y.Z.apk`. Not affiliated with SBB: no SBB name, logo or colours in the
+app or the listing.
 
-- How-tos, phone testing and what's still untested: [.claude/skills/build-gleiswechsel-android/SKILL.md](.claude/skills/build-gleiswechsel-android/SKILL.md).
-  Where it and this file disagree, this file wins.
-- Declutter passes: [.claude/skills/build-gleiswechsel-android/declutter.md](.claude/skills/build-gleiswechsel-android/declutter.md).
+- How-tos, phone testing and what's still untested: the
+  [build skill](.claude/skills/build-gleiswechsel-android/SKILL.md). Where it and this file
+  disagree, this file wins.
+- Declutter passes: [declutter.md](.claude/skills/build-gleiswechsel-android/declutter.md).
 - Research from the first session (2026-10-06), in `research/`:
   [hidden_connections.md](research/hidden_connections.md) (why connections go missing),
   [data_sources.md](research/data_sources.md) (APIs, limits, what was checked),
@@ -55,7 +54,8 @@ apps built this way; their CLAUDE.md files explain each choice.
 - Two modules: `:core` (plain Kotlin/JVM, no Android: the logic, parsing and network code,
   unit-tested with JUnit4 via `kotlin-test-junit`) and `:app` (Compose UI, depends on `:core`).
 - Few libraries: kotlinx.serialization, `HttpURLConnection` (no Retrofit/OkHttp), activity-compose,
-  material3. Before any other dependency, check whether the JDK or Android already covers it.
+  material3, core-ktx (declared, as in gridload and APODroid: the code uses `prefs.edit { }`).
+  Before any other dependency, check whether the JDK or Android already covers it.
 - Storage: SharedPreferences for small settings, one JSON file for larger data. No database until
   it's really needed. No background work unless a feature can't work without it.
 - Personal data (the commutes) stays on the phone. Real responses and API keys go in the
@@ -94,22 +94,23 @@ apps built this way; their CLAUDE.md files explain each choice.
   first release on.
 - Release build uses R8 (minify + shrinkResources). The build must be reproducible: no
   timestamps, build paths or machine-specific values in the APK; `dependenciesInfo` off.
-- Icon: a placeholder (two arrows on dark teal, as vectors in `res/drawable/`) until the user
-  makes a logo in `logo/`, as for the other apps.
+- Icon: the user's logo (2026-10-06), `logo/gleiswechsel_back.svg` and `_front.svg` on the
+  108×108 adaptive grid, as vector drawables in `res/drawable/` (background, foreground and the
+  themed monochrome layer); the listing's `icon.png` and `featureGraphic.png` from the same
+  SVGs. How: the skill, Icon.
 - Android SDK in `~/Android/Sdk`. The user tests on a real phone over adb, no emulator.
-- Git branch `master`, remote `origin` https://github.com/buerlino/gleiswechsel.git (added
-  2026-10-06). The first local commit (2026-10-06) sits on the remote's "Initial commit" (only
-  `LICENSE`, the same GPLv3 text), so the user can push without a force.
+- Git branch `master`, remote `origin` https://github.com/buerlino/gleiswechsel.git.
 
-## Data source (proposed 2026-10-06, see research/data_sources.md)
+## Data source (see research/data_sources.md)
 
-- **transport.opendata.ch** first: no key (nothing secret in an open-source app), JSON, the
-  official connections and the stations' arrival and departure boards. Checked with real requests
-  2026-10-06; its quirks are in the research file.
-- **OJP 2.0** only as an option with the user's own free key (20,000 requests a day per key, so
-  no shared key in the app).
-- **Ist-Daten** (every actual arrival and departure, daily CSV, archive since 2016) for the risk
-  of a change, processed off the phone (a nightly GitHub Actions job), never on it.
+- **transport.opendata.ch**, in use: no key (nothing secret in an open-source app), JSON, the
+  official connections. Checked with real requests 2026-10-06; its quirks are in the research
+  file.
+- Proposed (2026-10-06): **OJP 2.0** only as an option with the user's own free key (20,000
+  requests a day per key, so no shared key in the app).
+- Proposed (2026-10-06): **Ist-Daten** (every actual arrival and departure, daily CSV, archive
+  since 2016) for the risk of a change, processed off the phone (a nightly GitHub Actions job),
+  never on it.
 - No server of our own.
 
 ## Test case: Horw → Sursee (user, 2026-10-06)
@@ -135,10 +136,10 @@ transport.opendata.ch for Wed 7 Oct 2026:
 The search page: the commute (from, to, leaving at), a Search button, the finds as cards, and
 under them the rider's transfer time at each change station. A top bar: **⚙** (top left) opens
 Settings, **?** (top right) Help (user, 2026-10-06), text buttons as in gridload; each has ← and
-takes the back gesture. The page's state lives above the
-three, so Help and Settings don't lose the result. Turning the phone doesn't recreate the
-activity (`configChanges`, 2026-10-06: one line, no ViewModel), so the result and a running
-search stay.
+takes the back gesture. A screen reader says a word for each symbol (⚙, ?, ⇅, ←: `spokenAs`).
+The page's state lives above the three, so Help and Settings don't lose the result. Turning the
+phone doesn't recreate the activity (`configChanges`, 2026-10-06: one line, no ViewModel), so
+the result and a running search stay.
 
 **Track switch time** (user, 2026-10-06) is the name, in every text, of the minutes from one
 train to the next, walk included: Gleiswechselzeit, temps de changement de voie, tempo di cambio
@@ -154,13 +155,13 @@ at every station the rider hasn't set.
   clears the result, so it never shows another commute's finds; the fields are locked while it
   searches. A ⇅ button swaps from and to (user, 2026-10-06): on the right, centred over the gap
   between the two fields, which keep their distance.
-- **The transfer times** (user, 2026-10-06): under the result, one row "Track switch time at X [_ min]"
-  per change station of the official connections, each station once, in route order (Horw →
-  Bern, Bundesplatz: Luzern, Olten, Bern). So a commute with nothing faster can be set too;
-  tapping a find's change, the first idea, couldn't do that. Empty shows the default (official
-  minimum − offset) in light grey (`outline`: the usual placeholder grey looked like a set
-  value). Saved in `commute` keyed by station id (`8505000` → `4`) as
-  typed: digits only, up to 2. Editing a time clears the finds but keeps the rows (Search again);
+- **The transfer times** (user, 2026-10-06): under the result, one row "Track switch time at X
+  [_ min]" per change station of the official connections, each station once, in route order
+  (Horw → Bern, Bundesplatz: Luzern, Olten, Bern). So a commute with nothing faster can be set
+  too; tapping a find's change, the first idea, couldn't do that. Empty shows the default
+  (official minimum − offset) in light grey (`outline`: the usual placeholder grey looked like a
+  set value). Saved in `commute` keyed by station id (`8505000` → `4`) as typed: digits only, up
+  to 2. Editing a time clears the finds but keeps the rows (Search again);
   editing the commute clears both. The rows come only with a search that has connections (user,
   2026-10-06: without one they don't help), so after a restart they're back with the next one.
 - **The track switch time is the number the app is about** (user, 2026-10-06): always in the
@@ -170,16 +171,17 @@ at every station the rider hasn't set.
   against 0 (−1 green, 0 orange). A find's own change is so green, the official ones in its card
   orange or red.
 - **The finds** (user, 2026-10-06: before, "a wall of text"): a card each, "14 min earlier",
-  "Sursee 09:26 instead of 09:40", how much more efficient, then the trip as a timetable: a row per stop
-  (time, station, track), the train in between, and at each change its minutes in the box. A walk
-  between two trains is part of the change ("7 min track switch, 6 min walk"); one before the first
-  train or after the last is a row of its own.
+  "Sursee 09:26 instead of 09:40", how much more efficient, then the trip as a timetable: a row
+  per stop (time, station, track), the train in between, and at each change its minutes in the
+  box. A walk between two trains is part of the change ("7 min track switch, 6 min walk"); one
+  before the first train or after the last is a row of its own.
 - **Settings** (user, 2026-10-06): "Global offset of the track switch time [−_ min]" (the − in
-  the box: it's subtracted), key
-  `offset` in `commute`, 1 until set (`DEFAULT_OFFSET`, proposed, see open question 4). Changing
-  it clears the finds and keeps the rows; locked while a search runs.
-- **Help:** what the app does, the track switch time and its colours, how much more efficient, that times are planned only, and the
-  data sources (opentransportdata.swiss wants to be named). Each concept is explained there once.
+  the box: it's subtracted), key `offset` in `commute`, 1 until set (`DEFAULT_OFFSET`, proposed,
+  see open question 4). Changing it clears the finds and keeps the rows; locked while a search
+  runs.
+- **Help:** what the app does, the track switch time and its colours, how much more efficient,
+  that times are planned only, and the data sources (opentransportdata.swiss wants to be named).
+  Each concept is explained there once.
 - **How much more efficient** each find is than its official connection (user, 2026-10-06): the
   official time / the find's − 1, each from the first departure to the last arrival (the wait
   before the first train doesn't count). Efficiency is the fastest trip's time / a trip's, so the
@@ -189,18 +191,20 @@ at every station the rider hasn't set.
   board (it favoured slow trains with short changes).
 - **The client:** `connections(from, to, time, version)` asks transport.opendata.ch
   `/v1/connections` (4 connections leaving at or after `time`), parses only trains, stations,
-  planned times and platforms. User-Agent `Gleiswechsel/<version> (+https://github.com/buerlino/gleiswechsel)`.
+  planned times and platforms. User-Agent
+  `Gleiswechsel/<version> (+https://github.com/buerlino/gleiswechsel)`.
   Any failure (no network, HTTP 429 after many searches) shows one text, `search_failed`
   (2026-10-06: the raw reason was English on every page); the exception goes to the log.
 - **The local search** (`search`): given the official connections A → B (the page asks for them
-  first, so it can tell "no connections" from "nothing faster"); for each
-  change station X on them (where a ride ends and the next begins; a walk belongs to the
-  change), the connections X → B from the arrival at X plus the rider's transfer time at X; of
-  those leaving no earlier, the one arriving first (a tie goes to the later one: more time to
-  change); a find if it reaches B earlier than the official one, unless the planner already
-  offers it: an official connection leaves no earlier and arrives no later (user, 2026-10-06;
-  Horw → Bern, Bundesplatz showed the same trains as a bus instead of a walk, 4 minutes
-  "earlier"). `catchable()` and the boards are gone: not needed for this.
+  first, so it can tell "no connections" from "nothing faster"); for each change station X on
+  them (where a ride ends and the next begins; a walk belongs to the change), the connections
+  X → B from the arrival at X plus the rider's transfer time at X; of those leaving no earlier,
+  the one arriving first (a tie goes to the later one: more time to change); a find if it
+  reaches B earlier than the official one, unless the planner already offers it: an official
+  connection leaves no earlier and arrives no later (user, 2026-10-06; Horw → Bern, Bundesplatz
+  showed the same trains as a bus instead of a walk, 4 minutes "earlier"). The same rule between
+  the finds (2026-10-06): a card another find beats goes, an identical trip shows once, against
+  the official connection arriving first (the smaller saving).
 - **Transfer time per station, covering the whole change, walks included** (user, 2026-10-06:
   "a fixed estimated time we need for a specific trainstation"). `search` takes it as a function
   of the station. **At a station the rider hasn't set: the official minimum there minus the
@@ -210,8 +214,8 @@ at every station the rider hasn't set.
   nothing set (Luzern 5 − 1 = 4).
 - **Official minimums** (2026-10-06): HRDF `UMSTEIGB` from opentransportdata.swiss (timetable
   2026, export of 29 Sep 2026), the Swiss stations (`85…`) and the standard (`9999999`, 2
-  minutes, everywhere else) as `app/src/main/res/raw/umsteigb.txt` (2,971 lines, 106 KB; the APK
-  grew 1.16 → 1.21 MB), read by `Minimums` in `:core`. Luzern 5, Olten 5, Bern 6, Zürich HB 7,
+  minutes, everywhere else) as `app/src/main/res/raw/umsteigb.txt` (2,971 lines, 106 KB), read
+  by `Minimums` in `:core`. Luzern 5, Olten 5, Bern 6, Zürich HB 7,
   Basel SBB 6, Sursee 3, most bus and tram stops 0–1. HRDF also has times per operator, line
   and train pair (`UMSTEIGV`, `UMSTEIGL`, `UMSTEIGZ`); none at Luzern, and not used. Refreshed by
   hand at each timetable change (next: 13 Dec 2026), see the skill.
@@ -230,28 +234,17 @@ at every station the rider hasn't set.
   connections touch; the live check doesn't skip public holidays; the official minimums are a
   copy of one timetable year's.
 
-## Plan for the first version (user, 2026-10-06)
+## The first version (user, 2026-10-06)
 
 The scope: one saved commute, the rider's transfer time per station, the local search, one result
-list (user, 2026-10-06: "focus on the core utility"). Steps, one at a time:
+list (user, 2026-10-06: "focus on the core utility").
 
-1. ~~The search in `:core`~~ and ~~the page with the test case hard-coded~~ (both 2026-10-06).
-2. ~~Edit and save the commute~~ (2026-10-06, [the app](#the-app)). Suggestions from
-   `/v1/locations` only if typing the names turns out to be annoying.
-3. ~~Set the transfer time per station~~ (2026-10-06, [the app](#the-app)), with
-   ~~the official minimum − an offset as the default~~, ~~Settings and Help~~, ~~the finds as a
-   timetable~~ (all 2026-10-06).
-4. **Before the first release (0.1.0):**
-   - ~~The name~~: Gleiswechsel (user, 2026-10-06).
-   - The logo: the user makes it in `logo/` (coming, 2026-10-06); from it the launcher icon,
-     `icon.png` and `featureGraphic.png`.
-   - ~~Turning the phone keeps the result and a running search~~ (2026-10-06).
-   - ~~Plain texts for HTTP 429 (too many searches) and no network~~ (2026-10-06).
-   - Screenshots, `changelogs/1.txt` in the four languages, the README's install section.
-   - The reproducible-build check (two clean unsigned `assembleRelease` builds with the same
-     sha256): Claude does it.
-   - ~~The keystore and CI secrets~~ (user, 2026-10-06).
-   - The F-Droid merge request after the tag: the user, from their fork in `../fdroiddata`.
+Left before the first release (0.1.0):
+
+- The reproducible build passed on the release's code (2026-10-06: two clean copies in different
+  paths and the repo's own build, the same sha256); after the tag, Claude compares the
+  workflow's APK with an unsigned build of the tag (`apksigcopier compare`).
+- The F-Droid merge request after the tag: the user, from their fork in `../fdroiddata`.
 
 ## After the first release
 
@@ -273,14 +266,13 @@ Ideas, not decided (Claude, 2026-10-06; ask the user first):
 - Search the next weekday: on a Friday evening the next 08:50 is Saturday's (the day is shown,
   but a commuter wants a weekday).
 - More than one commute (now one, and ⇅ for the way back).
-- Station suggestions from `/v1/locations` (step 2), only if typing the names is annoying.
+- Station suggestions from `/v1/locations`, only if typing the names is annoying.
 - A change to a different stop: open question 1.
 
 ## Open questions (for the user)
 
 1. **A change to a different stop** (train → tram stop, as in Zürich): its own time, a flag in
-   the result, or nothing? Left for when a commute needs it (user, 2026-10-06). Per-station time
-   is decided above.
+   the result, or nothing? Left for when a commute needs it (user, 2026-10-06).
 2. **The theme:** light (as gridload), or follow the system.
 3. **How the risk indicator works** (a later version). Proposed (research/architecture.md):
    from Ist-Daten, the share of past weekdays on which `actual arrival + transfer time ≤ actual
