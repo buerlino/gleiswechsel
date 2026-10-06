@@ -9,7 +9,7 @@
     <string name="leaving_at">Partenza</string>
     <string name="search">Cerca</string>
     <string name="searching">Ricerca…</string>
-    <string name="search_failed">Ricerca non riuscita: %1$s</string>
+    <string name="search_failed">Nessuna risposta da transport.opendata.ch. Controlli la connessione Internet o riprovi tra un minuto.</string>
     <string name="no_connections">%1$s: nessun collegamento trovato. Controlli i nomi delle stazioni.</string>
     <string name="nothing_faster">%1$s: niente di più veloce.</string>
     <string name="switch_time_at">Tempo di cambio binario a %1$s</string>

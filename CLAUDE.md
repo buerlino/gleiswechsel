@@ -79,12 +79,15 @@ apps built this way; their CLAUDE.md files explain each choice.
   `org.jetbrains.kotlin.plugin.compose`. `compileSdk 37`, `targetSdk 37`, `minSdk 26` (as
   gridload), Java 17.
 - Light theme (`Theme.Material.Light.NoActionBar` + Compose `lightColorScheme()`), as gridload.
+  The bars' icons are always dark (`SystemBarStyle.light`, 2026-10-06): `enableEdgeToEdge()`
+  alone made them white on a phone in dark mode.
 - Backup: no cloud backup, phone-to-phone transfer allowed (`data_extraction_rules.xml`;
   `allowBackup="false"` covers Android 8–11).
 - Release signing from gitignored `keystore.properties` or env vars (`GLEISWECHSEL_KEYSTORE_FILE`,
   `_KEYSTORE_PASSWORD`, `_KEY_ALIAS`, `_KEY_PASSWORD`), unsigned without either (what F-Droid
-  wants). **Not set up yet:** its own keystore (alias `gleiswechsel`, PKCS12, RSA 4096; the user keeps
-  it) and the CI secrets `KEYSTORE_BASE64`, `KEYSTORE_PASSWORD`, `KEY_ALIAS`, `KEY_PASSWORD`.
+  wants). Its own keystore (the user keeps it) and the CI secrets `KEYSTORE_BASE64`,
+  `KEYSTORE_PASSWORD`, `KEY_ALIAS`, `KEY_PASSWORD` are in place (user, 2026-10-06); no release
+  has used them yet.
 - `.github/workflows/release.yml` builds a signed APK on a `vX.Y.Z` tag and attaches it to a
   GitHub Release (Obtainium); `test.yml` runs the `:core` tests on branch pushes and pull requests.
   `fastlane/metadata/android/en-US/` for F-Droid, with `changelogs/<versionCode>.txt` from the
@@ -133,7 +136,9 @@ The search page: the commute (from, to, leaving at), a Search button, the finds 
 under them the rider's transfer time at each change station. A top bar: **⚙** (top left) opens
 Settings, **?** (top right) Help (user, 2026-10-06), text buttons as in gridload; each has ← and
 takes the back gesture. The page's state lives above the
-three, so Help and Settings don't lose the result.
+three, so Help and Settings don't lose the result. Turning the phone doesn't recreate the
+activity (`configChanges`, 2026-10-06: one line, no ViewModel), so the result and a running
+search stay.
 
 **Track switch time** (user, 2026-10-06) is the name, in every text, of the minutes from one
 train to the next, walk included: Gleiswechselzeit, temps de changement de voie, tempo di cambio
@@ -185,6 +190,8 @@ at every station the rider hasn't set.
 - **The client:** `connections(from, to, time, version)` asks transport.opendata.ch
   `/v1/connections` (4 connections leaving at or after `time`), parses only trains, stations,
   planned times and platforms. User-Agent `Gleiswechsel/<version> (+https://github.com/buerlino/gleiswechsel)`.
+  Any failure (no network, HTTP 429 after many searches) shows one text, `search_failed`
+  (2026-10-06: the raw reason was English on every page); the exception goes to the log.
 - **The local search** (`search`): given the official connections A → B (the page asks for them
   first, so it can tell "no connections" from "nothing faster"); for each
   change station X on them (where a ride ends and the next begins; a walk belongs to the
@@ -234,16 +241,40 @@ list (user, 2026-10-06: "focus on the core utility"). Steps, one at a time:
 3. ~~Set the transfer time per station~~ (2026-10-06, [the app](#the-app)), with
    ~~the official minimum − an offset as the default~~, ~~Settings and Help~~, ~~the finds as a
    timetable~~ (all 2026-10-06).
-4. **Before the first release:**
+4. **Before the first release (0.1.0):**
    - ~~The name~~: Gleiswechsel (user, 2026-10-06).
-   - The logo: the user makes it in `logo/`.
+   - The logo: the user makes it in `logo/` (coming, 2026-10-06); from it the launcher icon,
+     `icon.png` and `featureGraphic.png`.
+   - ~~Turning the phone keeps the result and a running search~~ (2026-10-06).
+   - ~~Plain texts for HTTP 429 (too many searches) and no network~~ (2026-10-06).
+   - Screenshots, `changelogs/1.txt` in the four languages, the README's install section.
    - The reproducible-build check (two clean unsigned `assembleRelease` builds with the same
      sha256): Claude does it.
-   - Later: the keystore and CI secrets, the F-Droid merge request.
+   - ~~The keystore and CI secrets~~ (user, 2026-10-06).
+   - The F-Droid merge request after the tag: the user, from their fork in `../fdroiddata`.
 
-Later versions: a risk indicator for each find (user, 2026-10-06: wanted, but after the core
-utility; how is open question 3), routes through stations the official connections don't touch,
-delays.
+## After the first release
+
+Wanted (user, 2026-10-06), one at a time:
+
+- **The risk of a find's change:** after the core utility; how is open question 3.
+- **Routes through stations the official connections don't touch** (research/architecture.md,
+  phase 2): only if the local search finds too little.
+- **Delays:** the search reads planned times only; transport.opendata.ch has the live ones. How
+  they'd show is open.
+
+Each timetable change (next: 13 Dec 2026, timetable 2027): refresh the official minimums (the
+skill), the year in Help, and release, or the app compares against last year's minimums. Later
+versions need no F-Droid merge request: F-Droid picks up the tag (`AutoUpdateMode`), as for
+APODroid.
+
+Ideas, not decided (Claude, 2026-10-06; ask the user first):
+
+- Search the next weekday: on a Friday evening the next 08:50 is Saturday's (the day is shown,
+  but a commuter wants a weekday).
+- More than one commute (now one, and ⇅ for the way back).
+- Station suggestions from `/v1/locations` (step 2), only if typing the names is annoying.
+- A change to a different stop: open question 1.
 
 ## Open questions (for the user)
 

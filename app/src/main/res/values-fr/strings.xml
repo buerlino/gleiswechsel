@@ -9,7 +9,7 @@
     <string name="leaving_at">Départ</string>
     <string name="search">Rechercher</string>
     <string name="searching">Recherche…</string>
-    <string name="search_failed">Échec de la recherche : %1$s</string>
+    <string name="search_failed">Pas de réponse de transport.opendata.ch. Vérifiez la connexion Internet ou réessayez dans une minute.</string>
     <string name="no_connections">%1$s : aucun trajet trouvé. Vérifiez les noms des gares.</string>
     <string name="nothing_faster">%1$s : rien de plus rapide.</string>
     <string name="switch_time_at">Temps de changement de voie à %1$s</string>

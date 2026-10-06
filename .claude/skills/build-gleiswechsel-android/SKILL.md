@@ -30,8 +30,10 @@ is in `research/`.
   station id, all as typed. The rows come from `Result.Found.changes` and stay in `changes` while
   a time or the offset is edited. `app/.../Pages.kt`: Settings, Help and `SubPage`
   (← and the back gesture). Every text is in `res/values*/strings.xml` (en, de, fr, it); a new
-  one goes in all four, or lint fails on the missing translation. The search runs on `Dispatchers.IO`; a failure shows its message and logs under
-  the tag `Gleiswechsel`. `buildConfig` is on for the version name in the User-Agent.
+  one goes in all four, or lint fails on the missing translation. The search runs on
+  `Dispatchers.IO`; a failure shows one text (`search_failed`) and logs the exception under the
+  tag `Gleiswechsel`, in the message too (Android's `Log` drops the stack trace of an
+  `UnknownHostException`). `buildConfig` is on for the version name in the User-Agent.
 - Driving the page over adb: `uiautomator dump` lists the texts and bounds; `input tap` a field,
   `input text` (`%s` for a space), `input keyevent 123` moves to the end and `67` deletes,
   `input keyevent 4` closes the keyboard (a second one goes back from Help or Settings). On the
@@ -101,8 +103,9 @@ Wed 7 Oct 2026.
   and Italian looked at before the rename and the formal texts only. Lint: no issues. Not tried:
   an orange or red box in a card (no such find at hand), the offset at 0 (orange), a phone set
   to German itself, the French row's long label, TalkBack on ⇅.
-- A search right after many others got HTTP 429 from transport.opendata.ch (2026-10-06); the
-  next one a minute later worked. The page shows "Search failed: HTTP 429".
+- The error text (2026-10-06): seen in airplane mode in all four languages, with
+  `UnknownHostException` in the log. Not seen: HTTP 429 (got once before the text, after many
+  searches; a minute later it worked), so not with the new text.
 - Settings, Help and the new cards on the phone (2026-10-06, R8 release build signed with the
   debug key): ? and ⚙ open Help and Settings, ← and the back gesture return with the result
   kept. With nothing set, Luzern shows a grey 4 (5 − 1) and Horw → Sursee finds the test case.
@@ -116,7 +119,7 @@ Wed 7 Oct 2026.
   force-stop; 6 → nothing faster; clearing it brings the grey default back. Typing a time
   cleared the old result and kept the row; editing To cleared both. Horw → Bern, Bundesplatz
   shows three rows (Luzern, Olten, Bern). Not tried: a set time at a second change finding something, a non-digit typed (the filter
-  drops it), rotating with rows shown.
+  drops it).
 - On the phone (2026-10-06, R8 release build signed with the debug key): Horw → Sursee 850
   finds the test case for Wed 7 Oct (Sursee 09:26 instead of 09:40, S4 track 12 → RE24 track 9),
   so R8 with kotlinx.serialization works; the fields survive a force-stop; editing a field
@@ -124,8 +127,7 @@ Wed 7 Oct 2026.
   found. Lint: no issues; release APK 1.16 MB (the text fields; 899 KB before). After the rename
   (new applicationId, so a new install; the old `io.github.buerlino.umsteiger` was uninstalled):
   label Gleiswechsel, same find.
-  Not tried: the debug build on the phone, the error text (no network), rotating while
-  searching (probably cancels the search and loses the result).
+  Not tried: the debug build on the phone.
 - How much more efficient (2026-10-06): a unit test (40 minutes against 30: 33%) and on the
   phone, 42% for the test case (47 / 33), as worked out by hand.
 - The search: `:core:test` 13 tests green, `-Plive` 3 green on 2026-10-06 (rerun after the
@@ -133,8 +135,10 @@ Wed 7 Oct 2026.
   the walk rule once by hand at Zürich HB (CLAUDE.md). On the phone, Horw → Bern, Bundesplatz
   08:50 (three changes): nothing at Olten and Bern, with 5 minutes or the defaults 4 and 5. Not
   tried: a find at a second change.
-- The release workflow (no keystore or secrets yet) and the reproducible build (two clean builds
-  with the same sha256).
+- The dark bar icons (2026-10-06): seen with the phone in dark mode (gesture navigation), on
+  the search page, in Help and in landscape. Not tried: three-button navigation.
+- The release workflow (the secrets are in place, user 2026-10-06; never run) and the
+  reproducible build (two clean builds with the same sha256).
 
 ## Releasing (as in gridload and APODroid)
 
@@ -152,8 +156,15 @@ Not submitted yet. The first submission is a merge request to fdroiddata with a 
 `metadata/io.github.buerlino.gleiswechsel.yml`, made like APODroid's and gridload's (`Binaries` +
 `AllowedAPKSigningKeys`, `UpdateCheckMode: Tags`, `AutoUpdateMode: Version`), from a branch in
 `../fdroiddata` off upstream `master`, checked with `fdroid lint` and `fdroid rewritemeta`.
-Likely anti-feature `NonFreeNet` for transport.opendata.ch, as APODroid has for its data source;
-decide with the user. Reviewer comments: Claude drafts, the user posts.
+`../fdroiddata` is the user's fork clone (`origin` gitlab.com/buerlino/fdroiddata, `upstream`
+fdroid/fdroiddata); the user makes the merge request (user, 2026-10-06). APODroid's commit
+was "New app: APODroid". If a push is rejected with "shallow update not allowed":
+`git fetch --shallow-since=<date before the fork> upstream master`.
+`AllowedAPKSigningKeys` is the release APK's certificate SHA-256 (`apksigner verify
+--print-certs`), lowercase without colons.
+Likely anti-feature `NonFreeNet` for transport.opendata.ch (it runs on search.ch's data), as
+APODroid has for its data source; decide with the user. Category: likely `Public Transport`
+(in fdroiddata's `config/categories.yml`). Reviewer comments: Claude drafts, the user posts.
 
 ## Store listing
 

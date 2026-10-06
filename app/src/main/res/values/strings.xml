@@ -11,7 +11,7 @@
     <string name="leaving_at">Leaving at</string>
     <string name="search">Search</string>
     <string name="searching">Searching…</string>
-    <string name="search_failed">Search failed: %1$s</string>
+    <string name="search_failed">No answer from transport.opendata.ch. Check the internet connection or try again in a minute.</string>
     <string name="no_connections">%1$s: no connections found. Check the station names.</string>
     <string name="nothing_faster">%1$s: nothing faster.</string>
     <string name="switch_time_at">Track switch time at %1$s</string>

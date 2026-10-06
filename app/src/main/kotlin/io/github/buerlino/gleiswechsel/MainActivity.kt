@@ -5,6 +5,7 @@ import android.content.SharedPreferences
 import android.os.Bundle
 import android.util.Log
 import androidx.activity.ComponentActivity
+import androidx.activity.SystemBarStyle
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
 import androidx.compose.foundation.BorderStroke
@@ -83,7 +84,7 @@ private sealed interface Result {
      * change trains, each station once.
      */
     class Found(val day: LocalDateTime, val connections: Int, val changes: List<Stop>, val finds: List<Find>) : Result
-    class Failed(val reason: String) : Result
+    data object Failed : Result
 }
 
 private enum class Screen { SEARCH, SETTINGS, HELP }
@@ -91,7 +92,9 @@ private enum class Screen { SEARCH, SETTINGS, HELP }
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        enableEdgeToEdge()
+        // The page is always light, so the bars' icons are dark, also on a phone in dark mode.
+        val bars = SystemBarStyle.light(android.graphics.Color.TRANSPARENT, android.graphics.Color.TRANSPARENT)
+        enableEdgeToEdge(statusBarStyle = bars, navigationBarStyle = bars)
         val prefs = getSharedPreferences("commute", Context.MODE_PRIVATE)
         val minimums = Minimums(resources.openRawResource(R.raw.umsteigb).bufferedReader().use { it.readText() })
         setContent {
@@ -172,7 +175,7 @@ private fun App(prefs: SharedPreferences, minimums: Minimums) {
                 when (val r = result) {
                     null -> {}
                     Result.Searching -> Text(stringResource(R.string.searching))
-                    is Result.Failed -> Text(stringResource(R.string.search_failed, r.reason), color = MaterialTheme.colorScheme.error)
+                    Result.Failed -> Text(stringResource(R.string.search_failed), color = MaterialTheme.colorScheme.error)
                     is Result.Found -> {
                         // The day in the language of the texts, not the phone's: a Spanish phone gets English.
                         val locale = Locale.forLanguageTag(stringResource(R.string.language))
@@ -294,8 +297,9 @@ private fun find(from: String, to: String, leaving: LocalTime, transfer: (Stop) 
         val officials = ask(from, to, time)
         Result.Found(time, officials.size, officials.flatMap { it.changes }.distinctBy { it.id }, search(officials, transfer, ask))
     } catch (e: Exception) {
-        Log.w("Gleiswechsel", "Search failed", e)
-        Result.Failed("${e.message ?: e::class.simpleName}")
+        // In the message too: Log drops the stack trace of an UnknownHostException (no network).
+        Log.w("Gleiswechsel", "Search failed: $e", e)
+        Result.Failed
     }
 }
 

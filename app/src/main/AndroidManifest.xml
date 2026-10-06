@@ -13,8 +13,11 @@
         android:icon="@mipmap/ic_launcher"
         android:label="Gleiswechsel"
         android:theme="@android:style/Theme.Material.Light.NoActionBar">
+        <!-- Turning the phone keeps the activity, so the result and a running search stay;
+             Compose redraws itself. -->
         <activity
             android:name=".MainActivity"
+            android:configChanges="orientation|screenSize|screenLayout|smallestScreenSize"
             android:exported="true">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />

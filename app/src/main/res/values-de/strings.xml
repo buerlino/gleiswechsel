@@ -9,7 +9,7 @@
     <string name="leaving_at">Abfahrt</string>
     <string name="search">Suchen</string>
     <string name="searching">Suche läuft…</string>
-    <string name="search_failed">Suche fehlgeschlagen: %1$s</string>
+    <string name="search_failed">Keine Antwort von transport.opendata.ch. Prüfen Sie die Internetverbindung oder versuchen Sie es in einer Minute nochmals.</string>
     <string name="no_connections">%1$s: keine Verbindungen gefunden. Prüfen Sie die Stationsnamen.</string>
     <string name="nothing_faster">%1$s: nichts Schnelleres.</string>
     <string name="switch_time_at">Gleiswechselzeit in %1$s</string>
