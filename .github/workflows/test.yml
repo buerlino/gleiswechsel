@@ -1,7 +1,7 @@
 name: Test
 
-# The core unit tests on every branch push and pull request. Tags are left to release.yml,
-# which runs them too.
+# The core unit tests, lint and the app build on every branch push and pull request, so a broken
+# app shows before a tag. Tags are left to release.yml, which runs them too.
 on:
   push:
     branches: ["**"]
@@ -18,4 +18,4 @@ jobs:
           distribution: temurin
           java-version: 21
 
-      - run: ./gradlew :core:test
+      - run: ./gradlew :core:test :app:lintDebug :app:assembleDebug

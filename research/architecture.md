@@ -14,7 +14,8 @@ every day, so a **local search** is enough for most of the gain, and it runs on 
 3. With the rider's own transfer time per station ("at Olten I need 3 minutes"), find the
    departures they can still catch and follow them to B (the official connections from that
    station, or the train's `passList`). Step 1 (2026-10-06, `search` in `:core`) skips the boards:
-   it asks for the official connections from the change station from arrival + transfer time.
+   it asks for the official connections from the change station from arrival + transfer time,
+   and does the same at that connection's own changes (two short changes on one trip).
 4. Keep what arrives earlier, or leaves later and arrives at the same time, than the official
    connection.
 5. Say how risky each change is (below), and what the fallback is if it fails.

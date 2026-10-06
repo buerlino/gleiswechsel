@@ -9,7 +9,7 @@ class SearchTest {
     // Made-up stations (the name is the id) and trains.
     private fun at(hhmm: String) = OffsetDateTime.parse("2026-03-03T$hhmm:00+01:00")
     private fun stop(station: String, hhmm: String, platform: String? = null) = Stop(station, station, at(hhmm), platform)
-    private fun ride(train: String?, from: Stop, to: Stop) = Leg(train, from, to)
+    private fun ride(train: String?, from: Stop, to: Stop, via: List<String> = emptyList()) = Leg(train, from, to, via)
     private fun minutes(n: Long) = Duration.ofMinutes(n)
 
     // Aach 08:00 → Xberg 08:10 (track 1), official change to the IR2 08:20 → Bstadt 08:40.
@@ -123,6 +123,45 @@ class SearchTest {
         ).single()
         assertEquals(listOf(s1) + tram.legs, find.faster.legs)
         assertEquals(listOf("Xberg 08:14", "Xberg, Platz 08:14"), asked)
+    }
+
+    @Test
+    fun twoShortChangesOnOneTrip() {
+        // Officially S1 → IR2 at Xberg → RE5 at Yfeld, 08:55. From Xberg in 4 minutes the RE3 reaches
+        // Yfeld 08:24, but the API changes there to the same RE5; from Yfeld in 4 minutes the R7
+        // 08:28 arrives 08:43.
+        val ir2 = ride("IR2", stop("Xberg", "08:20"), stop("Yfeld", "08:30"))
+        val re5 = ride("RE5", stop("Yfeld", "08:40"), stop("Bstadt", "08:55"))
+        val re3 = ride("RE3", stop("Xberg", "08:14"), stop("Yfeld", "08:24"))
+        val r7 = ride("R7", stop("Yfeld", "08:28"), stop("Bstadt", "08:43"))
+        val find = search(listOf(Connection(listOf(s1, ir2, re5))), { minutes(4) }) { from, _, time ->
+            asked += "$from ${time.toLocalTime()}"
+            when ("$from ${time.toLocalTime()}") {
+                "Xberg 08:14" -> listOf(Connection(listOf(re3, re5)))
+                "Yfeld 08:28" -> listOf(Connection(listOf(r7)))
+                else -> listOf(Connection(listOf(re5)))
+            }
+        }.single()
+        assertEquals(listOf(s1, re3, r7), find.faster.legs)
+        assertEquals(listOf("Xberg 08:14", "Yfeld 08:28", "Yfeld 08:34"), asked)
+    }
+
+    @Test
+    fun eachQuestionIsAskedOnce() {
+        // Both official connections ride the S1 to Xberg and change there.
+        val other = Connection(listOf(s1, ride("IC6", stop("Xberg", "08:20"), stop("Bstadt", "08:45"))))
+        search(listOf(official, other), { minutes(4) }) { from, _, time -> asked += "$from ${time.toLocalTime()}"; listOf(re3) }
+        assertEquals(listOf("Xberg 08:14"), asked)
+    }
+
+    @Test
+    fun aTripPassingAStationTwiceDoublesBack() {
+        // The RE3 passes Yfeld; then the R7 goes back through it.
+        val there = ride("RE3", stop("Xberg", "08:14"), stop("Zdorf", "08:24"), via = listOf("Yfeld"))
+        val back = ride("R7", stop("Zdorf", "08:28"), stop("Bstadt", "08:43"), via = listOf("Yfeld"))
+        assertEquals(true, Connection(listOf(s1, there, back)).doublesBack)
+        assertEquals(false, Connection(listOf(s1, there)).doublesBack)
+        assertEquals(false, official.doublesBack)
     }
 
     @Test

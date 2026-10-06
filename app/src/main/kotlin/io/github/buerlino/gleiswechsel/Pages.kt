@@ -38,7 +38,8 @@ internal fun Settings(
     onBack: () -> Unit,
 ) = SubPage(stringResource(R.string.settings), onBack) {
     MinutesStepper(
-        stringResource(R.string.global_offset), offset.toLongOrNull()?.let { -it }, -DEFAULT_OFFSET, 0, enabled, range = -99L..0,
+        stringResource(R.string.global_offset), offset.toLongOrNull()?.let { -it }, -DEFAULT_OFFSET, 0, enabled,
+        range = -99L..0, arrows = false,
     ) { onOffset(it?.let { "${-it}" } ?: "") }
     Row(verticalAlignment = Alignment.CenterVertically) {
         Text(stringResource(R.string.optimization_setting), Modifier.weight(1f).padding(end = 16.dp))

@@ -19,7 +19,11 @@ class OpendataTest {
             "sections": [
               {
                 "journey": {"name": "012345", "category": "S", "number": "7", "operator": "XYZ", "to": "Xberg",
-                  "passList": [{"station": {"id": "8500001", "name": "Aach"}, "departure": "2026-03-03T08:00:00+0100"}]},
+                  "passList": [
+                  {"station": {"id": "8500001", "name": "Aach"}, "departure": "2026-03-03T08:00:00+0100"},
+                  {"station": {"id": "8500004", "name": "Cweil"}, "arrival": "2026-03-03T08:05:00+0100"},
+                  {"station": {"id": null, "name": "Nameless"}},
+                  {"station": {"id": "8500002", "name": "Xberg"}, "arrival": "2026-03-03T08:10:00+0100"}]},
                 "walk": null,
                 "departure": {"station": {"id": "8500001", "name": "Aach", "coordinate": {"type": "WGS84", "x": 47.0, "y": 8.0}},
                   "arrival": null, "departure": "2026-03-03T08:00:00+0100", "platform": "2", "delay": null,
@@ -54,6 +58,8 @@ class OpendataTest {
         assertEquals(Stop("Xberg", "8500002", at("08:10"), "11A"), c.legs[0].arrival)
         assertEquals(Stop("Xberg, Bahnhof", "8509999", at("08:15"), "C"), c.legs[2].departure)
         assertEquals(Stop("Bstadt", "8500003", at("08:40")), c.arrival)
+        assertEquals(listOf("8500004"), c.legs[0].via)
+        assertEquals(emptyList(), c.legs[2].via)
     }
 
     @Test

@@ -1,0 +1,6 @@
+- Cambi più brevi in più di una stazione dello stesso viaggio.
+- La pagina in tre parti: Destinazione, Viaggio, Ottimizzazione. I tempi di cambio binario con − e +.
+- Un link a sbb.ch per il biglietto, e un avviso quando un viaggio passa due volte dalla stessa stazione.
+- Frecce nei riquadri: ↓ sotto il tempo ufficiale, ↑ sopra. Gli screen reader lo dicono.
+- Dove l'orario stesso cambia più in fretta del minimo, conta come ufficiale.
+- Annullare una ricerca in corso.

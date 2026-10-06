@@ -33,7 +33,8 @@ app or the listing; the one exception is sbb.ch, named as the ticket link's targ
   [hidden_connections.md](research/hidden_connections.md) (why connections go missing),
   [data_sources.md](research/data_sources.md) (APIs, limits, what was checked),
   [existing_tools.md](research/existing_tools.md) (what to reuse, what not),
-  [architecture.md](research/architecture.md) (the proposal, not decided).
+  [architecture.md](research/architecture.md) (the proposal, not decided),
+  [missing_features.md](research/missing_features.md) (what the app can't do yet, ideas only).
 
 ## How the user works (2026-10-06)
 
@@ -84,7 +85,8 @@ apps built this way; their CLAUDE.md files explain each choice.
 - AGP 9 has built-in Kotlin: in `:app` apply only `com.android.application` +
   `org.jetbrains.kotlin.plugin.compose`. `compileSdk 37`, `targetSdk 37`, `minSdk 26` (as
   gridload), Java 17.
-- Light theme (`Theme.Material.Light.NoActionBar` + Compose `lightColorScheme()`), as gridload.
+- Light theme (`Theme.Material.Light.NoActionBar` + Compose `lightColorScheme()`), as gridload;
+  not following the system (user, 2026-10-06).
   The bars' icons are always dark (`SystemBarStyle.light`, 2026-10-06): `enableEdgeToEdge()`
   alone made them white on a phone in dark mode.
 - Backup: no cloud backup, phone-to-phone transfer allowed (`data_extraction_rules.xml`;
@@ -95,7 +97,9 @@ apps built this way; their CLAUDE.md files explain each choice.
   `KEYSTORE_PASSWORD`, `KEY_ALIAS`, `KEY_PASSWORD` are in place (user, 2026-10-06); no release
   has used them yet.
 - `.github/workflows/release.yml` builds a signed APK on a `vX.Y.Z` tag and attaches it to a
-  GitHub Release (Obtainium); `test.yml` runs the `:core` tests on branch pushes and pull requests.
+  GitHub Release (Obtainium); `test.yml` runs the `:core` tests, lint and the debug build on branch
+  pushes and pull requests (2026-10-06: a broken app build first showed on a tag); `release.yml`
+  runs lint too.
   `fastlane/metadata/android/en-US/` for F-Droid, with `changelogs/<versionCode>.txt` from the
   first release on.
 - Release build uses R8 (minify + shrinkResources). The build must be reproducible: no
@@ -151,8 +155,12 @@ the result and a running search stay.
 Destination (user, 2026-10-06): before a search it sits in the middle of the page (of the
 space above the keyboard while typing); Search moves it to the top and folds the three fields
 into one line (from → to, time ▾), a tap on which opens them again. The Search button stays in
-view, folded or not (to search again after editing a time). With no result and no rows (editing
-the commute clears both) it goes back to the middle.
+view, folded or not (to search again after editing a time); while a search runs it reads Cancel
+(user, 2026-10-06: a slow API meant a long, locked wait), which unlocks the fields at once and
+drops the late answer (the requests themselves can't be stopped). With no result and no rows
+(editing the commute clears both) it goes back to the middle. A screen reader says whether a
+fold (this line, Optimization, a card's official connection) is open or folded, not the ▾ or ▸
+(`folding`, `FoldMark`).
 
 **Track switch time** (user, 2026-10-06) is the name, in every text, of the minutes from one
 train to the next, walk included: Gleiswechselzeit, temps de changement de voie, tempo di cambio
@@ -169,8 +177,9 @@ at every station the rider hasn't set.
   searches. A ⇅ button swaps from and to (user, 2026-10-06): on the right, centred over the gap
   between the two fields, which keep their distance.
 - **Optimization** (user, 2026-10-06), under Journey: a line saying to lower the time and search
-  again to find more, then a row per change station of the official connections, each station
-  once, in route order (Horw → Bern, Bundesplatz: Luzern, Olten, Bern): the station, then its
+  again to find more, then a row per station the search changed at (the official connections'
+  changes and those of the onward connections, see the local search), each station once, in
+  the order searched (Horw → Bern, Bundesplatz: Luzern, Olten, Bern): the station, then its
   time in the box between − and +. So a commute with nothing faster can be set too; tapping a
   find's change, the first idea, couldn't do that. Saved in `commute` keyed by station id
   (`8505000` → `4`). A tap on the title folds the panel (▸) or opens it (▾). A switch in Settings
@@ -189,7 +198,10 @@ at every station the rider hasn't set.
   three with its text colours (green `2E7D32` and red `C62828` with white, orange `FFA000` with
   black), no border (user, 2026-10-06). A row's colour follows its value or its default; the
   offset in Settings is coloured against 0 (−1 green, 0 orange). A find's own change is so green,
-  the official ones in its card orange or red.
+  the official ones in its card orange or red. Not by colour alone (user, 2026-10-06, for
+  colour-blind riders): ↓ before the minutes below the official one, ↑ above, none the same, and a
+  screen reader says it ("4 min, below the official 5"); the offset has its sign instead
+  (`arrows = false`).
 - **The finds** (user, 2026-10-06: before, "a wall of text"): a card each with the minutes saved,
   the arrival instead of the official one, how much more efficient, then the trip as a
   timetable: a row per stop (time, station, track), the train in between, and at each change its
@@ -200,6 +212,9 @@ at every station the rider hasn't set.
   the trip, a small grey line (▸) opens the official connection it beats, the same timetable at
   60% (user, 2026-10-06: there but not in the way). With nothing faster, Journey shows the
   official connection leaving first in a card of its own, so the rider sees where it changes.
+  A find that passes a station twice (`Connection.doublesBack`, from the API's `passList`) says
+  under its efficiency to check the ticket (user, 2026-10-06): a route going back over itself may
+  need another one (research/hidden_connections.md).
 - **Ticket on sbb.ch** (user, 2026-10-06): on that grey line's right, a text button opens sbb.ch's
   timetable in the browser with the official connection's from, to and departure, to buy the
   ticket there (`ticketUrl` in `:core`):
@@ -209,14 +224,17 @@ at every station the rider hasn't set.
   Checked on the phone 2026-10-06 in de, en, fr and it. SBB's old format
   (`stops=[{"value":…}]&date="…"`) opens with empty fields. www.sbb.ch has no Android app links;
   the SBB Mobile link (`app.sbbmobile.ch/timetable?from=…&to=…`) takes names only and ignores
-  date and time, so it isn't used.
+  date and time, so it isn't used. A phone without a browser gets a short message
+  (`no_browser`) instead of a crash.
 - **Settings** (user, 2026-10-06): the global offset of the track switch time, shown with a −
   (it's subtracted) and saved without it, key `offset` in `commute`, 1 until set
-  (`DEFAULT_OFFSET`, proposed, see open question 4), and the Optimization switch. Changing either
+  (`DEFAULT_OFFSET`; user, 2026-10-06: 1, the careful one, and the test case needs it; 2 would
+  find more, e.g. 5-minute changes at Zürich HB), and the Optimization switch. Changing either
   clears the finds and keeps the rows; locked while a search runs.
-- **Help:** what the app does, the track switch time and its colours, how much more efficient,
-  that times are planned only, which ticket covers a find (a normal one, a supersaver only the
-  official train), and the data sources (opentransportdata.swiss wants to be named).
+- **Help:** what the app does, the track switch time, what official means and its colours and
+  arrows, how much more efficient, that times are planned only, which ticket covers a find (a
+  normal one, a supersaver only the official train, maybe not one passing a station twice), and
+  the data sources (opentransportdata.swiss wants to be named).
   Each concept is explained there once.
 - **How much more efficient** each find is than its official connection (user, 2026-10-06): the
   official time / the find's − 1, each from the first departure to the last arrival (the wait
@@ -235,12 +253,16 @@ at every station the rider hasn't set.
   first, so it can tell "no connections" from "nothing faster"); for each change station X on
   them (where a ride ends and the next begins; a walk belongs to the change), the connections
   X → B from the arrival at X plus the rider's transfer time at X; of those leaving no earlier,
-  the one arriving first (a tie goes to the later one: more time to change); a find if it
-  reaches B earlier than the official one, unless the planner already offers it: an official
-  connection leaves no earlier and arrives no later (user, 2026-10-06; Horw → Bern, Bundesplatz
-  showed the same trains as a bus instead of a walk, 4 minutes "earlier"). The same rule between
-  the finds (2026-10-06): a card another find beats goes, an identical trip shows once, against
-  the official connection arriving first (the smaller saving).
+  the one arriving first (a tie goes to the later one: more time to change); then the same at
+  that onward connection's own changes, and so on (`shortened`; user, 2026-10-06: the API keeps
+  the official minimum at every later change, so two short changes on one trip, e.g. Luzern and
+  Olten, were never combined). Each question goes to the API once per search (two official
+  connections on the same train to the same change asked it twice; the API answers too many
+  with 429). A find if it reaches B earlier than the official one, unless the planner already
+  offers it: an official connection leaves no earlier and arrives no later (user, 2026-10-06;
+  Horw → Bern, Bundesplatz showed the same trains as a bus instead of a walk, 4 minutes
+  "earlier"). The same rule between the finds (2026-10-06): a card another find beats goes, an
+  identical trip shows once, against the official connection arriving first (the smaller saving).
 - **Transfer time per station, covering the whole change, walks included** (user, 2026-10-06:
   "a fixed estimated time we need for a specific trainstation"). `search` takes it as a function
   of the station. **At a station the rider hasn't set: the official minimum there minus the
@@ -255,10 +277,18 @@ at every station the rider hasn't set.
   Basel SBB 6, Sursee 3, most bus and tram stops 0–1. HRDF also has times per operator, line
   and train pair (`UMSTEIGV`, `UMSTEIGL`, `UMSTEIGZ`); none at Luzern, and not used. Refreshed by
   hand at each timetable change (next: 13 Dec 2026), see the skill.
+  **The planner's own changes count** (user, 2026-10-06): it offers RE24 → IR16 at Olten in 4
+  minutes (track 11 → 8), the table says 5, and `UMSTEIGV`/`L`/`Z` have nothing there (checked in
+  the 29 Sep 2026 export: Olten only has "999" pairs), so it uses finer per-track times that
+  aren't published. So in each search a station's official minimum is the table's or the
+  shortest change any of the API's answers makes there, whichever is less
+  (`Minimums.lowered`): the official card shows Olten's 4 orange, its row starts at 3. A rider's
+  default at a station follows the answers so far.
   Where the API starts an onward connection with a walk to another stop (Zürich HB →
   Bahnhofplatz/HB, 5 minutes on top), the search asks again from that stop, so the rider's time
   replaces the API's walk.
-- **Requests:** 1 + one per change, + one per stop the API walks to (5 for Horw → Sursee).
+- **Requests:** 1 + one per change searched (those of the onward connections too, each question
+  once), + one per stop the API walks to (5 for Horw → Sursee).
 - **Proven live** 2026-10-06 for Wed 7 Oct (`LiveTest`): 08:50 with 4 minutes finds the
   [test case](#test-case-horw--sursee-user-2026-10-06) (14 minutes saved, RE24 track 9), with 6
   minutes nothing; 14:50 finds the same change from the 14:53 (it repeats every hour).
@@ -267,8 +297,9 @@ at every station the rider hasn't set.
   Bahnhofstrasse/HB, so the search found the IR70 (track 9, 08:51) → T10 Bahnhofstrasse/HB 08:54
   (3 minutes saved): probably too short a walk, see open question 1.
 - **Limits, known:** planned times only (delays not read); only stations the official
-  connections touch; the live check doesn't skip public holidays; the official minimums are a
-  copy of one timetable year's.
+  connections or the onward ones touch; the live check doesn't skip public holidays; the official
+  minimums are a copy of one timetable year's, lowered only where an answer shows the planner's
+  finer time; `doublesBack` sees only stations by id (a train station and its bus stop differ).
 
 ## The first version (user, 2026-10-06)
 
@@ -277,13 +308,17 @@ list (user, 2026-10-06: "focus on the core utility").
 
 Released as 0.1.0 (tag `v0.1.0`, 2026-10-06): the workflow's APK is the tag's unsigned build plus
 the signature (`apksigcopier compare`). The F-Droid merge request is open (user, 2026-10-06),
-from the branch `io.github.buerlino.gleiswechsel` in `../fdroiddata`.
+from the branch `io.github.buerlino.gleiswechsel` in `../fdroiddata`. Its `NonFreeNet` text names
+sbb.ch too (user, 2026-10-06: the ticket link), edited there, not committed yet.
+
+0.2.0 is prepared, not tagged (user, 2026-10-06): versionCode 2, `changelogs/2.txt` in all four;
+the new screenshot later. README's "Soon on F-Droid" stays until F-Droid has it.
 
 ## After the first release
 
 Wanted (user, 2026-10-06), one at a time:
 
-- **The risk of a find's change:** after the core utility; how is open question 3.
+- **The risk of a find's change:** after the core utility; how is open question 2.
 - **Routes through stations the official connections don't touch** (research/architecture.md,
   phase 2): only if the local search finds too little.
 - **Show delays in the card** (user, 2026-10-06): the search reads planned times only, but each
@@ -305,18 +340,20 @@ Ideas, not decided (Claude, 2026-10-06; ask the user first):
 - More than one commute (now one, and ⇅ for the way back).
 - Station suggestions from `/v1/locations`, only if typing the names is annoying.
 - A change to a different stop: open question 1.
+- From [missing_features.md](research/missing_features.md) (2026-10-06), its suggested order:
+  keep partial results when one request fails (now a failed onward request drops the official
+  connections too); save the last result in the JSON file (two tight changes in a row: done,
+  2026-10-06). Also there: changes at stops the train only passes through,
+  "arrive by", more than four official connections, "now", the rider's ✓/✗ record of a change
+  (a simpler risk, open question 2), the saving in a year, parallel requests, changed platforms.
 
 ## Open questions (for the user)
 
 1. **A change to a different stop** (train → tram stop, as in Zürich): its own time, a flag in
    the result, or nothing? Left for when a commute needs it (user, 2026-10-06).
-2. **The theme:** light (as gridload), or follow the system.
-3. **How the risk indicator works** (a later version). Proposed (research/architecture.md):
+2. **How the risk indicator works** (a later version). Proposed (research/architecture.md):
    from Ist-Daten, the share of past weekdays on which `actual arrival + transfer time ≤ actual
    departure`, worked out by a nightly GitHub Actions job and downloaded by the app as a small
    file. The most work of all: the job, the file, matching trains between the API and
    Ist-Daten. To decide: this, or something simpler first (e.g. how far a change is below the
    official minimum: the app has the minimums now, but it's not a real risk).
-4. **The offset until set: 1 minute or 2?** Built with 1 (Claude, 2026-10-06): the test case
-   needs it (Luzern 5 → 4, the user's own time), and it's the careful one. 2 finds more, e.g.
-   5-minute changes at Zürich HB (7).

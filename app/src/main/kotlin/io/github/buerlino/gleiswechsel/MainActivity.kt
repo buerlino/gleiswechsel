@@ -7,6 +7,7 @@ import android.os.Build
 import android.os.Bundle
 import android.os.LocaleList
 import android.util.Log
+import android.widget.Toast
 import androidx.activity.ComponentActivity
 import androidx.activity.SystemBarStyle
 import androidx.activity.compose.setContent
@@ -44,6 +45,7 @@ import androidx.compose.material3.FilledTonalIconButton
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
+import androidx.compose.material3.ProvideTextStyle
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
@@ -68,6 +70,8 @@ import androidx.compose.ui.platform.LocalUriHandler
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.semantics.clearAndSetSemantics
 import androidx.compose.ui.semantics.contentDescription
+import androidx.compose.ui.semantics.semantics
+import androidx.compose.ui.semantics.stateDescription
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextDecoration
 import androidx.compose.ui.text.input.KeyboardType
@@ -85,6 +89,7 @@ import io.github.buerlino.gleiswechsel.core.connections
 import io.github.buerlino.gleiswechsel.core.search
 import io.github.buerlino.gleiswechsel.core.ticketUrl
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.Job
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import java.time.Duration
@@ -102,9 +107,16 @@ private sealed interface Result {
     data object Searching : Result
     /**
      * [first]: the official connection leaving first, null if there are none; [changes]: where the
-     * official connections change trains, each station once.
+     * search changed trains, each station once; [official]: the minimums, lowered where the
+     * planner's answers change faster.
      */
-    class Found(val day: LocalDateTime, val first: Connection?, val changes: List<Stop>, val finds: List<Find>) : Result
+    class Found(
+        val day: LocalDateTime,
+        val first: Connection?,
+        val changes: List<Stop>,
+        val finds: List<Find>,
+        val official: Minimums,
+    ) : Result
     data object Failed : Result
 }
 
@@ -145,6 +157,8 @@ private fun App(prefs: SharedPreferences, minimums: Minimums) {
     var optimize by remember { mutableStateOf(prefs.getBoolean("optimize", true)) }
     var result by remember { mutableStateOf<Result?>(null) }
     var changes by remember { mutableStateOf(emptyList<Stop>()) }
+    var official by remember { mutableStateOf(minimums) }
+    var job by remember { mutableStateOf<Job?>(null) }
     var open by remember { mutableStateOf(true) }
     var optimizationOpen by remember { mutableStateOf(true) }
     val scroll = rememberScrollState()
@@ -161,9 +175,10 @@ private fun App(prefs: SharedPreferences, minimums: Minimums) {
         save(key, value)
     }
     // Where the rider hasn't set a time: the offset below the official minimum, at least 0 (user, 2026-10-06).
-    fun defaultAt(stop: Stop) = maxOf(minimums.at(stop).toMinutes() - offsetMinutes, 0)
+    fun defaultAt(stop: Stop, official: Minimums) = maxOf(official.at(stop).toMinutes() - offsetMinutes, 0)
     // With Optimization off, the times set at stations are kept but not used.
-    fun riderAt(stop: Stop) = prefs.getString(stop.id, null)?.toLongOrNull()?.takeIf { optimize } ?: defaultAt(stop)
+    fun riderAt(stop: Stop, official: Minimums) =
+        prefs.getString(stop.id, null)?.toLongOrNull()?.takeIf { optimize } ?: defaultAt(stop, official)
     when (screen) {
         Screen.HELP -> Help(onBack = { screen = Screen.SEARCH })
         Screen.SETTINGS -> Settings(
@@ -215,19 +230,27 @@ private fun App(prefs: SharedPreferences, minimums: Minimums) {
                         AnimatedVisibility(!open && !centred) {
                             Folded("${from.trim()} → ${to.trim()}, ${time?.format(hourMinute) ?: leaving}") { open = true }
                         }
+                        // While it searches, Search is Cancel (user, 2026-10-06): the requests can't be
+                        // stopped, so their late answer is dropped.
                         Button(
-                            enabled = !searching && from.isNotBlank() && to.isNotBlank() && time != null,
+                            enabled = searching || from.isNotBlank() && to.isNotBlank() && time != null,
                             onClick = {
+                                if (searching) {
+                                    job?.cancel()
+                                    result = null
+                                    return@Button
+                                }
                                 open = false
                                 result = Result.Searching
-                                val transfer = { stop: Stop -> Duration.ofMinutes(riderAt(stop)) }
-                                scope.launch {
-                                    val r = withContext(Dispatchers.IO) { find(from.trim(), to.trim(), time!!, transfer) }
+                                val transfer = { stop: Stop, official: Minimums -> Duration.ofMinutes(riderAt(stop, official)) }
+                                job = scope.launch {
+                                    val r = withContext(Dispatchers.IO) { find(from.trim(), to.trim(), time!!, minimums, transfer) }
                                     result = r
+                                    (r as? Result.Found)?.let { official = it.official }
                                     changes = (r as? Result.Found)?.changes.orEmpty()
                                 }
                             },
-                        ) { Text(stringResource(R.string.search)) }
+                        ) { Text(stringResource(if (searching) R.string.cancel else R.string.search)) }
                     }
                     if (result != null) Heading(stringResource(R.string.journey))
                     when (val r = result) {
@@ -243,12 +266,12 @@ private fun App(prefs: SharedPreferences, minimums: Minimums) {
                                 r.finds.isEmpty() -> stringResource(R.string.nothing_faster, day)
                                 else -> "$day:"
                             })
-                            r.finds.forEach { FindCard(it, minimums) }
+                            r.finds.forEach { FindCard(it, r.official) }
                             // Nothing faster: the official connection leaving first, to see where it changes (user, 2026-10-06).
                             if (r.finds.isEmpty() && r.first != null) Card(Modifier.fillMaxWidth()) {
                                 Column(Modifier.padding(12.dp), verticalArrangement = Arrangement.spacedBy(4.dp)) {
                                     Text(stringResource(R.string.official_connection), style = MaterialTheme.typography.titleMedium)
-                                    Trip(r.first, minimums)
+                                    Trip(r.first, r.official)
                                 }
                             }
                         }
@@ -261,7 +284,9 @@ private fun App(prefs: SharedPreferences, minimums: Minimums) {
                                 changes.forEach { stop ->
                                     key(stop.id) {
                                         var minutes by remember { mutableStateOf(prefs.getString(stop.id, null)?.toLongOrNull()) }
-                                        MinutesStepper(stop.station, minutes, defaultAt(stop), minimums.at(stop).toMinutes(), !searching, station = true) {
+                                        MinutesStepper(
+                                            stop.station, minutes, defaultAt(stop, official), official.at(stop).toMinutes(), !searching, station = true,
+                                        ) {
                                             minutes = it; save(stop.id, it?.toString() ?: "")
                                         }
                                     }
@@ -281,18 +306,27 @@ private fun App(prefs: SharedPreferences, minimums: Minimums) {
  */
 @Composable
 private fun Heading(text: String, open: Boolean? = null, onClick: () -> Unit = {}) = Row(
-    Modifier.fillMaxWidth().padding(top = 8.dp)
-        .then(if (open != null) Modifier.clickable(onClick = onClick) else Modifier),
+    Modifier.fillMaxWidth().padding(top = 8.dp).then(if (open != null) Modifier.folding(open, onClick) else Modifier),
     verticalAlignment = Alignment.CenterVertically,
 ) {
     Text(text, Modifier.weight(1f), style = MaterialTheme.typography.titleMedium, fontWeight = FontWeight.Bold)
-    if (open != null) Text(if (open) "▾" else "▸", Modifier.clearAndSetSemantics {})
+    if (open != null) FoldMark(open)
 }
+
+/** Folds or opens something on a tap; a screen reader says which it is (the ▾ or ▸ is hidden from it). */
+@Composable
+private fun Modifier.folding(open: Boolean, onClick: () -> Unit, label: String? = null): Modifier {
+    val state = stringResource(if (open) R.string.state_open else R.string.state_folded)
+    return clickable(onClickLabel = label, onClick = onClick).semantics { stateDescription = state }
+}
+
+@Composable
+private fun FoldMark(open: Boolean) = Text(if (open) "▾" else "▸", Modifier.clearAndSetSemantics {})
 
 /** The trip in one line, [text], after a search; a tap opens the fields again. */
 @Composable
 private fun Folded(text: String, onOpen: () -> Unit) = Surface(
-    Modifier.fillMaxWidth().clickable(onClickLabel = stringResource(R.string.change_trip), onClick = onOpen),
+    Modifier.fillMaxWidth().folding(false, onOpen, stringResource(R.string.change_trip)),
     shape = MaterialTheme.shapes.extraSmall,
     border = BorderStroke(1.dp, MaterialTheme.colorScheme.outline),
 ) {
@@ -358,15 +392,25 @@ private fun Field(
 
 /**
  * A track switch time in a box, the number the app is about (user, 2026-10-06), coloured against
- * the [official] one, without a border (user, 2026-10-06); [faded] when it's a default.
+ * the [official] one, without a border (user, 2026-10-06); [faded] when it's a default. With
+ * [arrows], an ↓ below the official one and an ↑ above, and a screen reader says which (user,
+ * 2026-10-06: the colour alone is lost on colour-blind riders); the offset has its sign instead.
  */
 @Composable
-private fun MinutesBox(minutes: Long, official: Long, faded: Boolean = false, minWidth: Dp = 0.dp) =
+private fun MinutesBox(minutes: Long, official: Long, faded: Boolean = false, minWidth: Dp = 0.dp, arrows: Boolean = true) =
     boxColors(minutes, official).let { (box, ink) ->
+        val words = when {
+            !arrows -> null
+            minutes < official -> stringResource(R.string.box_below, minutes, official)
+            minutes == official -> stringResource(R.string.box_same, minutes)
+            else -> stringResource(R.string.box_above, minutes, official)
+        }
+        val arrow = if (!arrows || minutes == official) "" else if (minutes < official) "↓ " else "↑ "
         Surface(shape = MaterialTheme.shapes.extraSmall, color = box) {
             Text(
-                "$minutes min".replace('-', '−'),
-                Modifier.widthIn(min = minWidth).padding(horizontal = 8.dp, vertical = 2.dp),
+                "$arrow$minutes min".replace('-', '−'),
+                Modifier.widthIn(min = minWidth).padding(horizontal = 8.dp, vertical = 2.dp)
+                    .then(if (words != null) Modifier.spokenAs(words) else Modifier),
                 color = if (faded) ink.copy(alpha = FADED) else ink,
                 fontWeight = FontWeight.Bold,
                 textAlign = TextAlign.Center,
@@ -388,6 +432,7 @@ internal fun MinutesStepper(
     enabled: Boolean,
     station: Boolean = false,
     range: LongRange = 0L..99,
+    arrows: Boolean = true,
     onChange: (Long?) -> Unit,
 ) = Row(verticalAlignment = Alignment.CenterVertically) {
     val value = minutes ?: default
@@ -396,7 +441,7 @@ internal fun MinutesStepper(
     IconButton({ step(-1) }, enabled = enabled && value > range.first) {
         Text("−", Modifier.spokenAs(stringResource(R.string.less)), fontSize = 20.sp)
     }
-    MinutesBox(value, official, faded = minutes == null, minWidth = 72.dp)
+    MinutesBox(value, official, faded = minutes == null, minWidth = 88.dp, arrows = arrows)
     IconButton({ step(1) }, enabled = enabled && value < range.last) {
         Text("+", Modifier.spokenAs(stringResource(R.string.more)), fontSize = 20.sp)
     }
@@ -421,14 +466,27 @@ private fun parseTime(text: String): LocalTime? {
     return runCatching { LocalTime.of(digits.take(2).toInt(), digits.drop(2).toInt()) }.getOrNull()
 }
 
-/** [from] → [to] at the next [leaving], Swiss time, searched live with the rider's [transfer] times. Blocking. */
-private fun find(from: String, to: String, leaving: LocalTime, transfer: (Stop) -> Duration): Result {
+/**
+ * [from] → [to] at the next [leaving], Swiss time, searched live with the rider's [transfer] times,
+ * given the official [minimums] lowered by the planner's answers so far. The changes are the
+ * stations the search changed at, in the order it did. Blocking.
+ */
+private fun find(
+    from: String,
+    to: String,
+    leaving: LocalTime,
+    minimums: Minimums,
+    transfer: (Stop, Minimums) -> Duration,
+): Result {
     val now = LocalDateTime.now(ZoneId.of("Europe/Zurich"))
     val time = now.toLocalDate().atTime(leaving).let { if (it.isBefore(now)) it.plusDays(1) else it }
     return try {
-        val ask = { a: String, b: String, at: LocalDateTime -> connections(a, b, at, BuildConfig.VERSION_NAME) }
+        val answers = mutableListOf<Connection>()
+        val ask = { a: String, b: String, at: LocalDateTime -> connections(a, b, at, BuildConfig.VERSION_NAME).also { answers += it } }
         val officials = ask(from, to, time)
-        Result.Found(time, officials.firstOrNull(), officials.flatMap { it.changes }.distinctBy { it.id }, search(officials, transfer, ask))
+        val changes = mutableListOf<Stop>()
+        val finds = search(officials, { stop -> changes += stop; transfer(stop, minimums.lowered(answers)) }, ask)
+        Result.Found(time, officials.firstOrNull(), changes.distinctBy { it.id }, finds, minimums.lowered(answers))
     } catch (e: Exception) {
         // In the message too: Log drops the stack trace of an UnknownHostException (no network).
         Log.w("Gleiswechsel", "Search failed: $e", e)
@@ -458,22 +516,38 @@ private fun FindCard(find: Find, minimums: Minimums) {
                 color = MaterialTheme.colorScheme.onSurfaceVariant,
                 style = MaterialTheme.typography.bodySmall,
             )
+            // It may need another ticket (user, 2026-10-06).
+            if (find.faster.doublesBack) Text(
+                stringResource(R.string.doubles_back),
+                color = MaterialTheme.colorScheme.error,
+                style = MaterialTheme.typography.bodySmall,
+            )
             Spacer(Modifier.height(4.dp))
             Trip(find.faster, minimums)
             // The official connection, folded and quiet (user, 2026-10-06); on the same line the
             // ticket on sbb.ch, for the official connection's from, to and departure (user, 2026-10-06).
             var official by remember { mutableStateOf(false) }
             val uri = LocalUriHandler.current
+            val context = LocalContext.current
             val ticket = ticketUrl(find.official.departure, find.official.arrival, stringResource(R.string.language))
+            val noBrowser = stringResource(R.string.no_browser)
             Row(verticalAlignment = Alignment.CenterVertically) {
-                Text(
-                    stringResource(R.string.official_connection) + if (official) " ▾" else " ▸",
-                    Modifier.clickable { official = !official },
-                    color = MaterialTheme.colorScheme.onSurfaceVariant,
-                    style = MaterialTheme.typography.bodySmall,
-                )
+                Row(Modifier.folding(official, { official = !official }), verticalAlignment = Alignment.CenterVertically) {
+                    ProvideTextStyle(MaterialTheme.typography.bodySmall.copy(color = MaterialTheme.colorScheme.onSurfaceVariant)) {
+                        Text(stringResource(R.string.official_connection) + " ")
+                        FoldMark(official)
+                    }
+                }
                 Spacer(Modifier.weight(1f))
-                TextButton({ uri.openUri(ticket) }) { Text(stringResource(R.string.ticket)) }
+                TextButton({
+                    // A phone without a browser has nothing to open it with.
+                    try {
+                        uri.openUri(ticket)
+                    } catch (e: Exception) {
+                        Log.w("Gleiswechsel", "No browser: $e", e)
+                        Toast.makeText(context, noBrowser, Toast.LENGTH_SHORT).show()
+                    }
+                }) { Text(stringResource(R.string.ticket)) }
             }
             AnimatedVisibility(official) {
                 Column(Modifier.alpha(FADED), verticalArrangement = Arrangement.spacedBy(4.dp)) { Trip(find.official, minimums) }

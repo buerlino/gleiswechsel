@@ -15,8 +15,11 @@ nothing secret to ship in an open-source app.
   official connections. **No transfer time parameter**: it applies the national timetable's
   per-station times. Checked 2026-10-06 (Luzern → Bern, Luzern → Lausanne): each connection has
   `transfers` and `sections`; a section has either a `journey` (`category` + `number`, e.g. `IR` +
-  `16`, `operator`, `to`, `passList`) with `departure`/`arrival` (`station.id`, ISO time,
-  `platform`, `delay`, `prognosis`), or a `walk`.
+  `16`, `name` (the train number, e.g. `021431`), `operator`, `to`, `passList`) with
+  `departure`/`arrival` (`station.id`, ISO time, `platform`, `delay`, `prognosis`), or a `walk`.
+  `passList` is every stop of the ride, its departure and arrival included; the app reads its
+  station ids (2026-10-06, for a trip that passes a station twice). A `passList` station can have
+  no id.
 - **`/v1/stationboard?station=<id>&type=departure|arrival&limit=`**: a board. Checked 2026-10-06
   at Olten (8500218): **with `type=arrival` the arrival time is still in `stop.departure`**
   (S29 shows 13:48 on the arrival board, 13:49 on the departure board), and `to` is where the
@@ -74,7 +77,12 @@ Every planned and actual arrival and departure of the day before, as CSV, one fi
   `min_transfer_time` (`transfer_type=2`) for stations with their own time and `transfer_type=1`
   for guaranteed connections (since October 2025); the 2-minute default isn't in the file.
 - **HRDF**: the raw format GTFS is made from, with every transfer table (`UMSTEIGB` per station,
-  `UMSTEIGZ` per train pair, …). GTFS carries "most, but not all" of it.
+  `UMSTEIGZ` per train pair, …). GTFS carries "most, but not all" of it. In the 2026 export of
+  29 Sep: `UMSTEIGB` 366 KB, `UMSTEIGV` (per operator pair) 425 lines, `UMSTEIGL` (per line pair)
+  761, `UMSTEIGZ` (per train pair, train numbers and operators) 2,193; mostly foreign and bus
+  stops. Nothing at Luzern, only "999" pairs (no connection) at Olten, so they don't explain the
+  planner's 4 minutes there (hidden_connections.md). Read without the whole 555 MB zip, see the
+  skill.
 - **GTFS-RT**: real-time updates.
 - **Traffic points** ([traffic-point-v2](https://data.opentransportdata.swiss/dataset/traffic-point-v2)):
   platforms with coordinates where `hasGeolocation` is set, for walking times between platforms.

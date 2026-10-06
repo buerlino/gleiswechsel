@@ -34,7 +34,12 @@ official minimum. That's what this app looks for, and why it has to say how risk
 
 Luzern → Lausanne, 14:05: RE24 arrives Olten 14:52 on platform 11, IR16 leaves Olten 14:56 from
 platform 8. The official planner already offers this 4-minute change, so Olten's minimum is at
-most 4 minutes. Big hubs are where the official minimums are longest, so that's where to look.
+most 4 minutes. `UMSTEIGB` says 5, and the tables per operator, line and train pair (`UMSTEIGV`,
+`UMSTEIGL`, `UMSTEIGZ`, export of 29 Sep 2026) have nothing that gives 4: Olten's only lines there
+are "999" (no connection) pairs, Luzern has none. So the planner behind transport.opendata.ch
+uses finer times, probably per track, that aren't published (checked again 2026-10-06, Wed 7 Oct
+14:05 and 15:05). The app counts the planner's own changes as official (CLAUDE.md, Official
+minimums). Big hubs are where the official minimums are longest, so that's where to look.
 
 ## What to expect
 
@@ -46,7 +51,8 @@ most 4 minutes. Big hubs are where the official minimums are longest, so that's 
 - **The risk is the rider's.** A tight change fails when the first train is late, so every
   suggestion needs how often it worked in the past, and the fallback if it doesn't.
 - **Tickets** in Switzerland aren't tied to a train, so tight changes rarely matter for the
-  ticket. Routes that go back on themselves might; check before suggesting one.
+  ticket. Routes that go back on themselves might; check before suggesting one. The app flags a
+  find that passes a station twice (2026-10-06).
 
 ## Sources
 

@@ -1,0 +1,6 @@
+- Shorter changes at more than one station on the same trip.
+- The page in three parts: Destination, Journey, Optimization. Set your track switch times with − and +.
+- A link to sbb.ch for the ticket, and a warning when a trip passes a station twice.
+- Arrows in the boxes: ↓ below the official time, ↑ above. Screen readers say it.
+- Where the planner itself changes faster than the timetable's minimum, that counts as official.
+- Cancel a running search.

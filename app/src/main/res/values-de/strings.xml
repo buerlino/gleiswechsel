@@ -15,6 +15,7 @@
     <string name="change_trip">Von, Nach und Zeit ändern</string>
     <string name="search">Suchen</string>
     <string name="searching">Suche läuft…</string>
+    <string name="cancel">Abbrechen</string>
     <string name="search_failed">Keine Antwort von transport.opendata.ch. Prüfen Sie die Internetverbindung oder versuchen Sie es in einer Minute nochmals.</string>
     <string name="no_connections">%1$s: keine Verbindungen gefunden. Prüfen Sie die Stationsnamen.</string>
     <string name="nothing_faster">%1$s: nichts Schnelleres.</string>
@@ -23,6 +24,10 @@
     <string name="more">Eine Minute mehr</string>
     <string name="official_connection">Offizielle Verbindung</string>
     <string name="ticket">Billett auf sbb.ch</string>
+    <string name="no_browser">Kein Browser, um sbb.ch zu öffnen.</string>
+    <string name="doubles_back">Fährt zweimal durch denselben Bahnhof: Billett prüfen.</string>
+    <string name="state_folded">Zugeklappt</string>
+    <string name="state_open">Aufgeklappt</string>
 
     <string name="earlier">%1$d min früher</string>
     <string name="instead_of">%1$s %2$s statt %3$s</string>
@@ -31,6 +36,9 @@
     <string name="track_switch_walk">Gleiswechsel, %1$d min Fussweg</string>
     <string name="walk">Fussweg, %1$d min</string>
     <string name="track">Gleis</string>
+    <string name="box_below">%1$d min, unter den offiziellen %2$d</string>
+    <string name="box_same">%1$d min, die offizielle Zeit</string>
+    <string name="box_above">%1$d min, über den offiziellen %2$d</string>
 
     <string name="back">Zurück</string>
     <string name="settings">Einstellungen</string>
@@ -42,11 +50,11 @@
     <string name="help_what">Was die App macht</string>
     <string name="help_what_text">Gleiswechsel sucht eine schnellere Verbindung, als der offizielle Fahrplan zeigt. Er bietet einen Umstieg nur an, wenn er mindestens die offizielle Gleiswechselzeit des Bahnhofs dauert, z. B. 5 Minuten in Luzern. Wechseln Sie schneller, erreichen Sie vielleicht einen früheren Zug.</string>
     <string name="help_switch">Gleiswechselzeit</string>
-    <string name="help_switch_text">Die Minuten im Kästchen: wie lange Sie von einem Zug zum nächsten brauchen, Fussweg inbegriffen. Unter Optimierung können Sie an jedem Bahnhof Ihre eigene setzen (− und +); sonst gilt die offizielle plus der globale Offset in den Einstellungen (⚙), z. B. 5\u00A0−\u00A01\u00A0=\u00A04\u00A0Minuten in Luzern. Grün: unter der offiziellen, orange: gleich, rot: darüber.</string>
+    <string name="help_switch_text">Die Minuten im Kästchen: wie lange Sie von einem Zug zum nächsten brauchen, Fussweg inbegriffen. Unter Optimierung können Sie an jedem Bahnhof Ihre eigene setzen (− und +); sonst gilt die offizielle plus der globale Offset in den Einstellungen (⚙), z. B. 5\u00A0−\u00A01\u00A0=\u00A04\u00A0Minuten in Luzern. Die offizielle ist die des Fahrplans, oder weniger, wo er selbst schneller umsteigt. Grün ↓: unter der offiziellen, orange: gleich, rot ↑: darüber.</string>
     <string name="help_efficient">Effizienter</string>
     <string name="help_efficient_text" formatted="false">Wie viel schneller als die offizielle Verbindung, von der ersten Abfahrt bis zur letzten Ankunft: 33 statt 47 Minuten sind 42 % effizienter (47 / 33 = 1,42).</string>
     <string name="help_careful">Vorsicht</string>
-    <string name="help_careful_text">Nur Fahrplanzeiten: Ein verspäteter Zug kann einen kurzen Gleiswechsel unmöglich machen. Ob Sie ihn schaffen, liegt bei Ihnen. Ein normales Billett gilt auch für die schnellere Reise, ein Sparbillett nur für den offiziellen Zug.</string>
+    <string name="help_careful_text">Nur Fahrplanzeiten: Ein verspäteter Zug kann einen kurzen Gleiswechsel unmöglich machen. Ob Sie ihn schaffen, liegt bei Ihnen. Ein normales Billett gilt auch für die schnellere Reise, ein Sparbillett nur für den offiziellen Zug. Eine Reise, die zweimal durch denselben Bahnhof fährt, braucht vielleicht ein anderes Billett.</string>
     <string name="help_data">Daten</string>
     <string name="help_data_text">Verbindungen: transport.opendata.ch. Offizielle Gleiswechselzeiten: opentransportdata.swiss, Fahrplan 2026. Unabhängig von der SBB.</string>
 </resources>

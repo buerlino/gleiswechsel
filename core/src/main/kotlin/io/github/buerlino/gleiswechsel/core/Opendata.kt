@@ -14,8 +14,11 @@ import java.time.format.DateTimeFormatter
 /** Where a leg starts or ends: the station, the planned time there and the platform, if known. */
 data class Stop(val station: String, val id: String, val time: OffsetDateTime, val platform: String? = null)
 
-/** One ride of a connection ([train] e.g. `S4`, `RE24`), or a walk ([train] null). */
-data class Leg(val train: String?, val departure: Stop, val arrival: Stop)
+/**
+ * One ride of a connection ([train] e.g. `S4`, `RE24`), or a walk ([train] null). [via]: the ids of
+ * the stations a ride passes between its departure and its arrival.
+ */
+data class Leg(val train: String?, val departure: Stop, val arrival: Stop, val via: List<String> = emptyList())
 
 /** One connection, as the official planner offers it. */
 data class Connection(val legs: List<Leg>) {
@@ -25,8 +28,23 @@ data class Connection(val legs: List<Leg>) {
     /** From the first departure to the last arrival; the wait before the first train doesn't count. */
     val duration: Duration get() = Duration.between(departure.time, arrival.time)
 
-    /** Where it changes trains: the end of each ride but the last. A walk is part of a change, not one of its own. */
-    val changes: List<Stop> get() = legs.filter { it.train != null }.dropLast(1).map { it.arrival }
+    /**
+     * Where it changes trains and the time it has there: from the end of each ride but the last to
+     * the next ride's departure. A walk is part of a change, not one of its own.
+     */
+    val transfers: List<Pair<Stop, Duration>>
+        get() = legs.filter { it.train != null }.zipWithNext { a, b -> a.arrival to Duration.between(a.arrival.time, b.departure.time) }
+
+    val changes: List<Stop> get() = transfers.map { it.first }
+
+    /**
+     * Passes a station twice, e.g. rides past a station and back to change there. Such a trip may
+     * need another ticket (research/hidden_connections.md).
+     */
+    val doublesBack: Boolean
+        get() = legs.flatMap { listOf(it.departure.id) + it.via + it.arrival.id }
+            .fold(emptyList<String>()) { ids, id -> if (ids.lastOrNull() == id) ids else ids + id }
+            .let { it.size != it.toSet().size }
 }
 
 /**
@@ -69,6 +87,7 @@ internal fun parseConnections(body: String): List<Connection> =
                 train = s.journey?.let { it.category + it.number },
                 departure = s.departure.stop(s.departure.departure),
                 arrival = s.arrival.stop(s.arrival.arrival),
+                via = s.journey?.passList.orEmpty().mapNotNull { it.station.id }.drop(1).dropLast(1),
             )
         })
     }
@@ -92,8 +111,15 @@ private class Conn(val sections: List<Section> = emptyList())
 @Serializable
 private class Section(val journey: Journey? = null, val departure: Checkpoint, val arrival: Checkpoint)
 
+/** [passList]: every stop of the ride, its departure and arrival included. */
 @Serializable
-private class Journey(val category: String = "", val number: String = "")
+private class Journey(val category: String = "", val number: String = "", val passList: List<Pass> = emptyList())
+
+@Serializable
+private class Pass(val station: PassStation)
+
+@Serializable
+private class PassStation(val id: String? = null)
 
 /** At the start of a section only [departure] is set, at its end only [arrival]. */
 @Serializable

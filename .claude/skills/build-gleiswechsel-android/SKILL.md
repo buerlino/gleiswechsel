@@ -12,14 +12,18 @@ is in `research/`.
 
 ## Where things are
 
-- `core/.../Opendata.kt`: `Stop`, `Leg`, `Connection` (with `duration` and `changes`, the change
-  stations: the search and the page both use it), the client `connections()` and its parser.
+- `core/.../Opendata.kt`: `Stop`, `Leg` (`via`: the ids of the stations a ride passes, from the
+  API's `passList`), `Connection` (with `duration`, `transfers` and `changes`, the change stations
+  and their minutes: the search, `Minimums` and the page use them, and `doublesBack`), the client
+  `connections()` and its parser.
   Tests in `OpendataTest` with made-up JSON shaped like a real response.
 - `core/.../Minimums.kt`: `Minimums`, the official minimum transfer time per station from the
-  HRDF `UMSTEIGB` text (`MinimumsTest`, made-up lines). The real file is the app's
+  HRDF `UMSTEIGB` text (`MinimumsTest`, made-up lines); `lowered` takes the API's answers of a
+  search, where the planner changes faster than the table. The real file is the app's
   `res/raw/umsteigb.txt`, see [Official minimums](#official-minimums-each-timetable-change).
 - `core/.../Search.kt`: `Find` (with `saved` and `moreEfficient`), `ticketUrl` (the sbb.ch
-  link), the local search `search()`.
+  link), the local search `search()` (each question once) and `shortened` (the onward
+  connections' changes too, recursively).
   It takes the official connections, the transfer time per station and the request as a
   function, so `SearchTest` runs it on a fake API with made-up connections.
 - `core/.../LiveTest.kt`: the Horw → Sursee test case, live. Excluded from `:core:test` (and so
@@ -28,10 +32,13 @@ is in `research/`.
 - `app/.../MainActivity.kt`: `App` holds all state and shows the search page, Help or Settings
   (`Screen`); the search page (`Heading` for each panel's title, `Folded` for the folded
   Destination), the cards (`FindCard`, `Trip`, `MinutesBox`) and `MinutesStepper` (− and +, the
-  rows and the offset in Settings). SharedPreferences `commute`: `from`, `to`, `leaving` as
-  typed, `offset` and the transfer times keyed by station id as numbers in strings (empty:
-  unset), `optimize`. The rows come from `Result.Found.changes` and stay in `changes` while a
-  time or the offset is edited. `app/.../Pages.kt`: Settings, Help and `SubPage` (← and the back
+  rows and the offset in Settings; `arrows = false` for the offset), `folding` and `FoldMark`
+  (a fold's state for a screen reader, the ▾ or ▸ hidden from it). SharedPreferences
+  `commute`: `from`, `to`, `leaving` as typed, `offset` and the transfer times keyed by station id as numbers in strings (empty:
+  unset), `optimize`. The rows come from `Result.Found.changes` (the stations the search asked
+  the transfer time at, recorded in `find`) and stay in `changes`, with the lowered minimums in
+  `official`, while a time or the offset is edited. While a search runs, the Search button is
+  Cancel (`job`). `app/.../Pages.kt`: Settings, Help and `SubPage` (← and the back
   gesture). A symbol on a button gets `Modifier.spokenAs(…)`, the word a screen
   reader says instead (`uiautomator dump` shows it as the child's `content-desc`). Every text is
   in `res/values*/strings.xml` (en, de, fr, it); a new one goes in all four, or lint fails on
@@ -125,7 +132,15 @@ Everything else was tried on the phone with the R8 release build signed with the
   non-digit typed (the filter drops it).
 - The ticket link (2026-10-06): tapped from the app only in German and only in Brave; the
   English, French and Italian URLs were opened in Brave directly. Another browser, and a phone
-  without one.
+  without one (the `no_browser` message: not seen, the test phone has a browser).
+- Two short changes on one trip (2026-10-06): only `SearchTest`; no live commute at hand that
+  has one. The request cache: only the unit test.
+- The doubling-back line in a card (2026-10-06): only the unit tests and the parser; no real find
+  has shown it.
+- The fold states (2026-10-06): `uiautomator dump` doesn't show `stateDescription`; not heard
+  in TalkBack.
+- CI's lint and app build (2026-10-06): only run locally; the runner's SDK may need to fetch
+  platform 37.
 - The rule between the finds (2026-10-06): only the unit tests; no real search has shown two
   finds yet.
 - Languages: a phone set to German itself (only `set-app-locales`); French and Italian since the
@@ -168,7 +183,8 @@ requests. If a push is rejected with "shallow update not allowed":
 `AllowedAPKSigningKeys` is the release APK's certificate SHA-256 (`apksigner verify
 --print-certs`), lowercase without colons.
 Anti-feature `NonFreeNet` (user, 2026-10-06: as APODroid's, naming the host), `en-US: Loads the
-connections from transport.opendata.ch.`; category `Public Transport` (in fdroiddata's
+connections from transport.opendata.ch and links to sbb.ch for the ticket.` (sbb.ch added
+2026-10-06, not committed in `../fdroiddata` yet; `fdroid` isn't installed here, so not linted); category `Public Transport` (in fdroiddata's
 `config/categories.yml`). Reviewer comments: Claude drafts, the user posts.
 
 ## Store listing

@@ -8,7 +8,7 @@ import java.time.format.DateTimeFormatter
 /**
  * A connection that reaches B before [official]: [faster] rides the official connection to a
  * change station and changes there, quicker than the official minimum transfer time but long
- * enough for the rider.
+ * enough for the rider, and maybe again at a later change.
  */
 data class Find(val official: Connection, val faster: Connection) {
     val saved: Duration get() = Duration.between(faster.arrival.time, official.arrival.time)
@@ -36,29 +36,43 @@ private val sbbTime = DateTimeFormatter.ofPattern("HH_mm")
 typealias Connections = (from: String, to: String, time: LocalDateTime) -> List<Connection>
 
 /**
- * The local search (research/architecture.md). For each of the [officials] (the official A → B) and
- * each station where it changes trains, asks [connections] for the connections from there to B
- * that the rider can still catch with their [transfer] time at that station, and keeps the one
- * arriving first if it reaches B earlier. One request per change, and one more per stop the API
- * walks to (see [onward]). A find the planner already offers (an official connection leaves no earlier and
- * arrives no later) isn't one, nor is a find another find beats the same way; of identical trips,
- * the one against the official connection arriving first, so the saving isn't overstated. The
- * finds come in the order they leave (none beats another, so a later one also arrives later).
+ * The local search (research/architecture.md). For each of the [officials] (the official A → B),
+ * the trips that change faster at one or more of its changes ([shortened]); a find if it reaches B
+ * earlier. A find the planner already offers (an official connection leaves no earlier and arrives
+ * no later) isn't one, nor is a find another find beats the same way; of identical trips, the one
+ * against the official connection arriving first, so the saving isn't overstated. The finds come
+ * in the order they leave (none beats another, so a later one also arrives later).
+ *
+ * [connections] is asked each question once: two official connections on the same train to the
+ * same change would ask it twice, and the API answers too many questions with HTTP 429.
  */
 fun search(
     officials: List<Connection>,
     transfer: (station: Stop) -> Duration,
     connections: Connections,
-): List<Find> = officials.flatMap { official ->
-    official.changes.mapNotNull { change ->
-        val onward = onward(change.id, official.arrival.id, change.time + transfer(change), connections)
-        if (onward == null || !onward.arrival.time.isBefore(official.arrival.time)) return@mapNotNull null
-        val upToChange = official.legs.take(official.legs.indexOfFirst { it.arrival == change } + 1)
-        Find(official, Connection(upToChange + onward.legs))
+): List<Find> {
+    val answers = HashMap<Triple<String, String, LocalDateTime>, List<Connection>>()
+    val ask: Connections = { from, to, time -> answers.getOrPut(Triple(from, to, time)) { connections(from, to, time) } }
+    return officials.flatMap { official ->
+        shortened(official, transfer, ask).filter { it.arrival.time.isBefore(official.arrival.time) }.map { Find(official, it) }
+    }.filter { find -> officials.none { it.noWorseThan(find.faster) } }
+        .sortedWith(compareBy<Find> { it.faster.arrival.time }.thenByDescending { it.faster.departure.time }.thenBy { it.official.arrival.time })
+        .fold(emptyList()) { kept, find -> if (kept.any { it.faster.noWorseThan(find.faster) }) kept else kept + find }
+}
+
+/**
+ * [trip] changing faster: at each of its changes, with the rider's [transfer] time there, the
+ * connection on to B that arrives first ([onward]); and the same again at that connection's own
+ * changes, where the API keeps the official minimum (user, 2026-10-06: two short changes on one
+ * trip, e.g. Luzern and Olten). One request per change searched, and one more per stop the API
+ * walks to.
+ */
+private fun shortened(trip: Connection, transfer: (Stop) -> Duration, connections: Connections): List<Connection> =
+    trip.changes.flatMap { change ->
+        val rest = onward(change.id, trip.arrival.id, change.time + transfer(change), connections) ?: return@flatMap emptyList()
+        val upToChange = trip.legs.take(trip.legs.indexOfFirst { it.arrival == change } + 1)
+        (listOf(rest) + shortened(rest, transfer, connections)).map { Connection(upToChange + it.legs) }
     }
-}.filter { find -> officials.none { it.noWorseThan(find.faster) } }
-    .sortedWith(compareBy<Find> { it.faster.arrival.time }.thenByDescending { it.faster.departure.time }.thenBy { it.official.arrival.time })
-    .fold(emptyList()) { kept, find -> if (kept.any { it.faster.noWorseThan(find.faster) }) kept else kept + find }
 
 /** Leaves no earlier and arrives no later than [other], so [other] says nothing new. */
 private fun Connection.noWorseThan(other: Connection) =

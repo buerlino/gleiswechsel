@@ -15,6 +15,7 @@
     <string name="change_trip">Modificare partenza, arrivo e ora</string>
     <string name="search">Cerca</string>
     <string name="searching">Ricerca…</string>
+    <string name="cancel">Annulla</string>
     <string name="search_failed">Nessuna risposta da transport.opendata.ch. Controlli la connessione Internet o riprovi tra un minuto.</string>
     <string name="no_connections">%1$s: nessun collegamento trovato. Controlli i nomi delle stazioni.</string>
     <string name="nothing_faster">%1$s: niente di più veloce.</string>
@@ -23,6 +24,10 @@
     <string name="more">Un minuto in più</string>
     <string name="official_connection">Collegamento ufficiale</string>
     <string name="ticket">Biglietto su sbb.ch</string>
+    <string name="no_browser">Nessun browser per aprire sbb.ch.</string>
+    <string name="doubles_back">Passa due volte dalla stessa stazione: verifichi il biglietto.</string>
+    <string name="state_folded">Chiuso</string>
+    <string name="state_open">Aperto</string>
 
     <string name="earlier">%1$d min prima</string>
     <string name="instead_of">%1$s %2$s invece delle %3$s</string>
@@ -31,6 +36,9 @@
     <string name="track_switch_walk">cambio binario, %1$d min a piedi</string>
     <string name="walk">A piedi, %1$d min</string>
     <string name="track">binario</string>
+    <string name="box_below">%1$d min, sotto i %2$d ufficiali</string>
+    <string name="box_same">%1$d min, il tempo ufficiale</string>
+    <string name="box_above">%1$d min, sopra i %2$d ufficiali</string>
 
     <string name="back">Indietro</string>
     <string name="settings">Impostazioni</string>
@@ -42,11 +50,11 @@
     <string name="help_what">Cosa fa</string>
     <string name="help_what_text">Gleiswechsel cerca un viaggio più veloce di quello che mostra l\'orario ufficiale. L\'orario propone un cambio solo se dura almeno il tempo di cambio binario ufficiale della stazione, p. es. 5 minuti a Lucerna. Se cambia più in fretta, forse fa ancora in tempo per un treno prima.</string>
     <string name="help_switch">Tempo di cambio binario</string>
-    <string name="help_switch_text">I minuti nel riquadro: quanto le serve da un treno al successivo, a piedi compreso. In Ottimizzazione può impostare il suo in ogni stazione (− e +); altrove vale quello ufficiale più lo scostamento globale nelle impostazioni (⚙), p. es. 5\u00A0−\u00A01\u00A0=\u00A04\u00A0minuti a Lucerna. Verde: sotto quello ufficiale, arancione: uguale, rosso: sopra.</string>
+    <string name="help_switch_text">I minuti nel riquadro: quanto le serve da un treno al successivo, a piedi compreso. In Ottimizzazione può impostare il suo in ogni stazione (− e +); altrove vale quello ufficiale più lo scostamento globale nelle impostazioni (⚙), p. es. 5\u00A0−\u00A01\u00A0=\u00A04\u00A0minuti a Lucerna. Quello ufficiale è quello dell\'orario, o meno dove l\'orario stesso cambia più in fretta. Verde ↓: sotto quello ufficiale, arancione: uguale, rosso ↑: sopra.</string>
     <string name="help_efficient">Più efficiente</string>
     <string name="help_efficient_text" formatted="false">Quanto più veloce del viaggio ufficiale, dalla prima partenza all\'ultimo arrivo: 33 minuti invece di 47, il 42% più efficiente (47 / 33 = 1,42).</string>
     <string name="help_careful">Attenzione</string>
-    <string name="help_careful_text">Solo orari previsti: un treno in ritardo può rendere impossibile un cambio binario breve. Sta a lei giudicare se ce la fa. Un biglietto normale vale anche per il viaggio più veloce; un biglietto risparmio solo per il treno ufficiale.</string>
+    <string name="help_careful_text">Solo orari previsti: un treno in ritardo può rendere impossibile un cambio binario breve. Sta a lei giudicare se ce la fa. Un biglietto normale vale anche per il viaggio più veloce; un biglietto risparmio solo per il treno ufficiale. Un viaggio che passa due volte dalla stessa stazione può richiedere un altro biglietto.</string>
     <string name="help_data">Dati</string>
     <string name="help_data_text">Collegamenti: transport.opendata.ch. Tempi di cambio binario ufficiali: opentransportdata.swiss, orario 2026. Indipendente dalle FFS.</string>
 </resources>

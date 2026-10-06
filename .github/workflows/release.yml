@@ -39,7 +39,7 @@ jobs:
           GLEISWECHSEL_KEYSTORE_PASSWORD: ${{ secrets.KEYSTORE_PASSWORD }}
           GLEISWECHSEL_KEY_ALIAS: ${{ secrets.KEY_ALIAS }}
           GLEISWECHSEL_KEY_PASSWORD: ${{ secrets.KEY_PASSWORD }}
-        run: ./gradlew :core:test :app:assembleRelease
+        run: ./gradlew :core:test :app:lintDebug :app:assembleRelease
 
       - name: Publish release
         env:
