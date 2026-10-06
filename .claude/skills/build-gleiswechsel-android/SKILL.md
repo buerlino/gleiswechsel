@@ -223,7 +223,9 @@ en-US), same day. `images/icon.png`: both logo SVGs at 512 px (`rsvg-convert -w 
 `logo/featureGraphic.svg` (the signs, cropped, on the back's grey, "Gleiswechsel" in Inter Bold
 and the subtitle in Inter Medium, dark text: white on this grey is too faint), render command in
 its header comment. `images/phoneScreenshots/1.png` (user, 2026-10-06: one is enough): the test
-case's find and the green Luzern row, the whole page on one screen; `README.md` embeds it. Taken
+case's find and the green Luzern row (unset, the faded default), in English; since 0.2.0 the page
+is longer than the screen, so it's scrolled to the end, Destination's folded line half under the
+top bar (user, 2026-10-06). `README.md` embeds it. Taken
 with SystemUI demo mode: `settings put global sysui_demo_allowed 1`, then broadcasts
 (`am broadcast -a com.android.systemui.demo -e command …`) `enter`, `clock -e hhmm 1200`,
 `notifications -e visible false`, `network -e wifi show -e level 4 -e fully true -e mobile hide`,
