@@ -19,6 +19,7 @@
     <string name="search_failed">Keine Antwort von transport.opendata.ch. Prüfen Sie die Internetverbindung oder versuchen Sie es in einer Minute nochmals.</string>
     <string name="no_connections">%1$s: keine Verbindungen gefunden. Prüfen Sie die Stationsnamen.</string>
     <string name="nothing_faster">%1$s: nichts Schnelleres.</string>
+    <string name="not_all_checked">Nicht jeder Umstieg konnte geprüft werden: transport.opendata.ch hat nicht geantwortet. Versuchen Sie es in einer Minute nochmals.</string>
     <string name="optimization_text">Ihre Gleiswechselzeit an jedem Bahnhof. Senken Sie sie und suchen Sie erneut, um mehr zu finden.</string>
     <string name="less">Eine Minute weniger</string>
     <string name="more">Eine Minute mehr</string>

@@ -108,7 +108,7 @@ private sealed interface Result {
     /**
      * [first]: the official connection leaving first, null if there are none; [changes]: where the
      * search changed trains, each station once; [official]: the minimums, lowered where the
-     * planner's answers change faster.
+     * planner's answers change faster; [incomplete]: some changes couldn't be checked.
      */
     class Found(
         val day: LocalDateTime,
@@ -116,6 +116,7 @@ private sealed interface Result {
         val changes: List<Stop>,
         val finds: List<Find>,
         val official: Minimums,
+        val incomplete: Boolean,
     ) : Result
     data object Failed : Result
 }
@@ -266,6 +267,7 @@ private fun App(prefs: SharedPreferences, minimums: Minimums) {
                                 r.finds.isEmpty() -> stringResource(R.string.nothing_faster, day)
                                 else -> "$day:"
                             })
+                            if (r.incomplete) Text(stringResource(R.string.not_all_checked), color = MaterialTheme.colorScheme.error)
                             r.finds.forEach { FindCard(it, r.official) }
                             // Nothing faster: the official connection leaving first, to see where it changes (user, 2026-10-06).
                             if (r.finds.isEmpty() && r.first != null) Card(Modifier.fillMaxWidth()) {
@@ -469,7 +471,8 @@ private fun parseTime(text: String): LocalTime? {
 /**
  * [from] → [to] at the next [leaving], Swiss time, searched live with the rider's [transfer] times,
  * given the official [minimums] lowered by the planner's answers so far. The changes are the
- * stations the search changed at, in the order it did. Blocking.
+ * stations the search changed at, in the order it did. Only the official connections' request
+ * failing fails the search; a failed onward request skips its change. Blocking.
  */
 private fun find(
     from: String,
@@ -485,8 +488,11 @@ private fun find(
         val ask = { a: String, b: String, at: LocalDateTime -> connections(a, b, at, BuildConfig.VERSION_NAME).also { answers += it } }
         val officials = ask(from, to, time)
         val changes = mutableListOf<Stop>()
-        val finds = search(officials, { stop -> changes += stop; transfer(stop, minimums.lowered(answers)) }, ask)
-        Result.Found(time, officials.firstOrNull(), changes.distinctBy { it.id }, finds, minimums.lowered(answers))
+        val searched = search(officials, { stop -> changes += stop; transfer(stop, minimums.lowered(answers)) }, ask)
+        searched.failures.forEach { Log.w("Gleiswechsel", "Change not checked: $it", it) }
+        Result.Found(
+            time, officials.firstOrNull(), changes.distinctBy { it.id }, searched.finds, minimums.lowered(answers), searched.failures.isNotEmpty(),
+        )
     } catch (e: Exception) {
         // In the message too: Log drops the stack trace of an UnknownHostException (no network).
         Log.w("Gleiswechsel", "Search failed: $e", e)

@@ -44,34 +44,50 @@ typealias Connections = (from: String, to: String, time: LocalDateTime) -> List<
  * in the order they leave (none beats another, so a later one also arrives later).
  *
  * [connections] is asked each question once: two official connections on the same train to the
- * same change would ask it twice, and the API answers too many questions with HTTP 429.
+ * same change would ask it twice, and the API answers too many questions with HTTP 429. A change
+ * whose question fails is skipped, the others go on; its error is in [Searched.failures].
  */
 fun search(
     officials: List<Connection>,
     transfer: (station: Stop) -> Duration,
     connections: Connections,
-): List<Find> {
+): Searched {
     val answers = HashMap<Triple<String, String, LocalDateTime>, List<Connection>>()
     val ask: Connections = { from, to, time -> answers.getOrPut(Triple(from, to, time)) { connections(from, to, time) } }
-    return officials.flatMap { official ->
-        shortened(official, transfer, ask).filter { it.arrival.time.isBefore(official.arrival.time) }.map { Find(official, it) }
+    val failures = mutableListOf<Exception>()
+    val finds = officials.flatMap { official ->
+        shortened(official, transfer, ask, failures).filter { it.arrival.time.isBefore(official.arrival.time) }.map { Find(official, it) }
     }.filter { find -> officials.none { it.noWorseThan(find.faster) } }
         .sortedWith(compareBy<Find> { it.faster.arrival.time }.thenByDescending { it.faster.departure.time }.thenBy { it.official.arrival.time })
-        .fold(emptyList()) { kept, find -> if (kept.any { it.faster.noWorseThan(find.faster) }) kept else kept + find }
+        .fold(emptyList<Find>()) { kept, find -> if (kept.any { it.faster.noWorseThan(find.faster) }) kept else kept + find }
+    return Searched(finds, failures)
 }
+
+/** What [search] found, and the errors of the changes it couldn't check (e.g. HTTP 429). */
+class Searched(val finds: List<Find>, val failures: List<Exception>)
 
 /**
  * [trip] changing faster: at each of its changes, with the rider's [transfer] time there, the
  * connection on to B that arrives first ([onward]); and the same again at that connection's own
  * changes, where the API keeps the official minimum (user, 2026-10-06: two short changes on one
  * trip, e.g. Luzern and Olten). One request per change searched, and one more per stop the API
- * walks to.
+ * walks to. A change whose request fails gives nothing; the error goes to [failures].
  */
-private fun shortened(trip: Connection, transfer: (Stop) -> Duration, connections: Connections): List<Connection> =
+private fun shortened(
+    trip: Connection,
+    transfer: (Stop) -> Duration,
+    connections: Connections,
+    failures: MutableList<Exception>,
+): List<Connection> =
     trip.changes.flatMap { change ->
-        val rest = onward(change.id, trip.arrival.id, change.time + transfer(change), connections) ?: return@flatMap emptyList()
+        val rest = try {
+            onward(change.id, trip.arrival.id, change.time + transfer(change), connections)
+        } catch (e: Exception) {
+            failures += e
+            null
+        } ?: return@flatMap emptyList()
         val upToChange = trip.legs.take(trip.legs.indexOfFirst { it.arrival == change } + 1)
-        (listOf(rest) + shortened(rest, transfer, connections)).map { Connection(upToChange + it.legs) }
+        (listOf(rest) + shortened(rest, transfer, connections, failures)).map { Connection(upToChange + it.legs) }
     }
 
 /** Leaves no earlier and arrives no later than [other], so [other] says nothing new. */

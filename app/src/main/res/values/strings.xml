@@ -22,6 +22,7 @@
     <string name="search_failed">No answer from transport.opendata.ch. Check the internet connection or try again in a minute.</string>
     <string name="no_connections">%1$s: no connections found. Check the station names.</string>
     <string name="nothing_faster">%1$s: nothing faster.</string>
+    <string name="not_all_checked">Not every change could be checked: transport.opendata.ch did not answer. Try again in a minute.</string>
     <string name="optimization_text">Your track switch time at each station. Lower it and search again to find more.</string>
     <string name="less">One minute less</string>
     <string name="more">One minute more</string>

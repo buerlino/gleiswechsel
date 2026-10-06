@@ -1,5 +1,6 @@
 package io.github.buerlino.gleiswechsel.core
 
+import java.io.IOException
 import java.time.Duration
 import java.time.OffsetDateTime
 import kotlin.test.Test
@@ -28,7 +29,7 @@ class SearchTest {
     ) = search(listOf(official), transfer) { from, _, time ->
         asked += "$from ${time.toLocalTime()}"
         onward[from].orEmpty()
-    }
+    }.finds
 
     @Test
     fun aShorterChangeCatchesAnEarlierTrain() {
@@ -50,7 +51,7 @@ class SearchTest {
     fun aFindThePlannerAlreadyOffersIsNone() {
         // The S1 → RE3 is also an official connection (as Horw → Bern, Bundesplatz, 2026-10-06).
         val alsoOfficial = Connection(listOf(s1, re3.legs.single()))
-        assertEquals(emptyList(), search(listOf(official, alsoOfficial), { minutes(4) }) { _, _, _ -> listOf(re3) })
+        assertEquals(emptyList(), search(listOf(official, alsoOfficial), { minutes(4) }) { _, _, _ -> listOf(re3) }.finds)
     }
 
     @Test
@@ -73,7 +74,7 @@ class SearchTest {
             ride("RE5", stop("Yfeld", "08:28"), stop("Bstadt", "08:35")),
         ))
         val once = Connection(listOf(s1, ride("IC6", stop("Xberg", "08:20"), stop("Bstadt", "08:45"))))
-        val find = search(listOf(twice, once), { minutes(4) }) { from, _, _ -> if (from == "Xberg") listOf(re3) else emptyList() }.single()
+        val find = search(listOf(twice, once), { minutes(4) }) { from, _, _ -> if (from == "Xberg") listOf(re3) else emptyList() }.finds.single()
         assertEquals(twice, find.official)
         assertEquals(minutes(5), find.saved)
     }
@@ -141,9 +142,22 @@ class SearchTest {
                 "Yfeld 08:28" -> listOf(Connection(listOf(r7)))
                 else -> listOf(Connection(listOf(re5)))
             }
-        }.single()
+        }.finds.single()
         assertEquals(listOf(s1, re3, r7), find.faster.legs)
         assertEquals(listOf("Xberg 08:14", "Yfeld 08:28", "Yfeld 08:34"), asked)
+    }
+
+    @Test
+    fun aFailedRequestSkipsOnlyItsChange() {
+        // Two changes: the question at Xberg fails (HTTP 429); Yfeld's R7 still arrives 08:50, not 08:55.
+        val ir2 = ride("IR2", stop("Xberg", "08:20"), stop("Yfeld", "08:30"))
+        val re5 = ride("RE5", stop("Yfeld", "08:40"), stop("Bstadt", "08:55"))
+        val r7 = Connection(listOf(ride("R7", stop("Yfeld", "08:35"), stop("Bstadt", "08:50"))))
+        val searched = search(listOf(Connection(listOf(s1, ir2, re5))), { minutes(4) }) { from, _, _ ->
+            if (from == "Xberg") throw IOException("HTTP 429") else listOf(r7)
+        }
+        assertEquals(listOf(s1, ir2) + r7.legs, searched.finds.single().faster.legs)
+        assertEquals(listOf("HTTP 429"), searched.failures.map { it.message })
     }
 
     @Test

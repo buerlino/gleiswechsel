@@ -42,9 +42,10 @@ is in `research/`.
   gesture). A symbol on a button gets `Modifier.spokenAs(…)`, the word a screen
   reader says instead (`uiautomator dump` shows it as the child's `content-desc`). Every text is
   in `res/values*/strings.xml` (en, de, fr, it); a new one goes in all four, or lint fails on
-  the missing translation. The search runs on `Dispatchers.IO`; a failure shows one text
-  (`search_failed`) and logs the exception under the tag `Gleiswechsel`, in the message too
-  (Android's `Log` drops the stack trace of an `UnknownHostException`). `buildConfig` is on for the version name in the User-Agent.
+  the missing translation. The search runs on `Dispatchers.IO`; a failure of the first request
+  shows one text (`search_failed`), of an onward one `not_all_checked` under the day; each
+  exception goes to the log under the tag `Gleiswechsel`, in the message too (Android's `Log`
+  drops the stack trace of an `UnknownHostException`). `buildConfig` is on for the version name in the User-Agent.
 - Before input over adb, check the app is in front (`adb shell dumpsys activity activities | grep
   topResumedActivity`): the user uses the phone meanwhile, and a back key with no keyboard open
   leaves the app, so later taps and text go into whatever app is behind (2026-10-06: they went
@@ -147,6 +148,8 @@ Everything else was tried on the phone with the R8 release build signed with the
   formal texts (only the error text seen); the long offset label in Settings next to − and +
   (French, Italian).
 - HTTP 429 with the plain error text (got once before it, after many searches).
+- A failed onward request on the phone (2026-10-06): `not_all_checked` and the kept finds, only
+  `SearchTest`; a normal search on the phone shows no such line.
 - TalkBack's speech: the words are in the accessibility tree and TalkBack (FOSS build, turned on
   over adb and off again) frames ← as one element, but nothing was heard (neither it nor eSpeak
   logs the text).

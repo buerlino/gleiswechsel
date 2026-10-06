@@ -19,10 +19,13 @@ class LiveTest {
     private fun search(hour: Int, transfer: Long): List<Find> {
         var calls = 1
         val official = connections("Horw", "Sursee", day.atTime(hour, 50), "test")
-        val finds = search(official, { Duration.ofMinutes(transfer) }) { from, to, time ->
+        val searched = search(official, { Duration.ofMinutes(transfer) }) { from, to, time ->
             calls++
             connections(from, to, time, "test")
         }
+        // A skipped change would make "nothing found" a false result.
+        searched.failures.firstOrNull()?.let { throw it }
+        val finds = searched.finds
         println("$day $hour:50, $transfer min, $calls requests: ${finds.size} found")
         finds.forEach { println("  official ${it.official.text()}\n  faster   ${it.faster.text()}\n  saved ${it.saved.toMinutes()} min") }
         return finds

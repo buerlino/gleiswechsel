@@ -247,8 +247,11 @@ at every station the rider hasn't set.
   `/v1/connections` (4 connections leaving at or after `time`), parses only trains, stations,
   planned times and platforms. User-Agent
   `Gleiswechsel/<version> (+https://github.com/buerlino/gleiswechsel)`.
-  Any failure (no network, HTTP 429 after many searches) shows one text, `search_failed`
-  (2026-10-06: the raw reason was English on every page); the exception goes to the log.
+  If the first request (the official connections) fails, for any reason (no network, HTTP 429
+  after many searches), the page shows one text, `search_failed` (2026-10-06: the raw reason was
+  English on every page). If an onward one fails, only that change is skipped: the page keeps the
+  official connections and the other finds, with a line under the day, `not_all_checked` (user,
+  2026-10-06). Each exception goes to the log.
 - **The local search** (`search`): given the official connections A → B (the page asks for them
   first, so it can tell "no connections" from "nothing faster"); for each change station X on
   them (where a ride ends and the next begins; a walk belongs to the change), the connections
@@ -263,6 +266,8 @@ at every station the rider hasn't set.
   Horw → Bern, Bundesplatz showed the same trains as a bus instead of a walk, 4 minutes
   "earlier"). The same rule between the finds (2026-10-06): a card another find beats goes, an
   identical trip shows once, against the official connection arriving first (the smaller saving).
+  A change whose request fails (also the one to a stop the API walks to) gives nothing and the
+  others go on; `search` returns the finds and the errors (`Searched`).
 - **Transfer time per station, covering the whole change, walks included** (user, 2026-10-06:
   "a fixed estimated time we need for a specific trainstation"). `search` takes it as a function
   of the station. **At a station the rider hasn't set: the official minimum there minus the
@@ -341,9 +346,8 @@ Ideas, not decided (Claude, 2026-10-06; ask the user first):
 - Station suggestions from `/v1/locations`, only if typing the names is annoying.
 - A change to a different stop: open question 1.
 - From [missing_features.md](research/missing_features.md) (2026-10-06), its suggested order:
-  keep partial results when one request fails (now a failed onward request drops the official
-  connections too); save the last result in the JSON file (two tight changes in a row: done,
-  2026-10-06). Also there: changes at stops the train only passes through,
+  save the last result in the JSON file (two tight changes in a row: done, 2026-10-06). Also
+  there: changes at stops the train only passes through,
   "arrive by", more than four official connections, "now", the rider's ✓/✗ record of a change
   (a simpler risk, open question 2), the saving in a year, parallel requests, changed platforms.
 

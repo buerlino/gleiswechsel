@@ -32,11 +32,6 @@ station suggestions, open questions) isn't repeated here. Nothing was tried live
 
 ## Robustness
 
-- **One failed request loses the whole search.** `find` in `MainActivity.kt` catches any
-  exception and shows `search_failed`, also when only an onward request failed (HTTP 429 after many
-  searches): the official connections already fetched are dropped too. Better: keep them and the
-  finds that came back. Since 2026-10-06 a search asks each question only once, so fewer 429s,
-  but more questions on long trips (the onward changes).
 - **The requests run one after another** (5 for Horw → Sursee). In parallel they'd be faster, but
   the API throttles, so carefully.
 - **Changed platforms aren't read.** Luzern's track varies (12–15); the card shows the planned one.
@@ -44,7 +39,6 @@ station suggestions, open questions) isn't repeated here. Nothing was tried live
 
 ## Suggested order (Claude, 2026-10-06)
 
-1. Keep partial results when a request fails (small, every rider gains).
-2. Save the last result in the JSON file (small).
-3. ~~Two tight changes in a row~~ (done 2026-10-06).
-4. Decide the ✓/✗ record before any work on the Ist-Daten risk.
+1. Save the last result in the JSON file (small).
+2. ~~Two tight changes in a row~~ (done 2026-10-06).
+3. Decide the ✓/✗ record before any work on the Ist-Daten risk.
