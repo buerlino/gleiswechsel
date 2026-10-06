@@ -82,16 +82,20 @@ import androidx.compose.ui.unit.sp
 import androidx.core.content.edit
 import io.github.buerlino.gleiswechsel.core.Connection
 import io.github.buerlino.gleiswechsel.core.Find
+import io.github.buerlino.gleiswechsel.core.Found
 import io.github.buerlino.gleiswechsel.core.Leg
 import io.github.buerlino.gleiswechsel.core.Minimums
 import io.github.buerlino.gleiswechsel.core.Stop
 import io.github.buerlino.gleiswechsel.core.connections
+import io.github.buerlino.gleiswechsel.core.found
 import io.github.buerlino.gleiswechsel.core.search
+import io.github.buerlino.gleiswechsel.core.shortestChanges
 import io.github.buerlino.gleiswechsel.core.ticketUrl
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
+import java.io.File
 import java.time.Duration
 import java.time.LocalDateTime
 import java.time.LocalTime
@@ -105,19 +109,7 @@ internal const val DEFAULT_OFFSET = 1L
 
 private sealed interface Result {
     data object Searching : Result
-    /**
-     * [first]: the official connection leaving first, null if there are none; [changes]: where the
-     * search changed trains, each station once; [official]: the minimums, lowered where the
-     * planner's answers change faster; [incomplete]: some changes couldn't be checked.
-     */
-    class Found(
-        val day: LocalDateTime,
-        val first: Connection?,
-        val changes: List<Stop>,
-        val finds: List<Find>,
-        val official: Minimums,
-        val incomplete: Boolean,
-    ) : Result
+    class Done(val found: Found) : Result
     data object Failed : Result
 }
 
@@ -131,9 +123,17 @@ class MainActivity : ComponentActivity() {
         enableEdgeToEdge(statusBarStyle = bars, navigationBarStyle = bars)
         val prefs = getSharedPreferences("commute", Context.MODE_PRIVATE)
         val minimums = Minimums(resources.openRawResource(R.raw.umsteigb).bufferedReader().use { it.readText() })
+        // The last result (user, 2026-10-06); one that can't be read, e.g. an older app's, is ignored.
+        val saved = File(filesDir, "result.json")
+        val last = try {
+            saved.takeIf { it.exists() }?.let { found(it.readText()) }
+        } catch (e: Exception) {
+            Log.w("Gleiswechsel", "Last result not read: $e", e)
+            null
+        }
         setContent {
             MaterialTheme(lightColorScheme()) {
-                Surface(Modifier.fillMaxSize()) { App(prefs, minimums) }
+                Surface(Modifier.fillMaxSize()) { App(prefs, minimums, saved, last) }
             }
         }
     }
@@ -143,32 +143,42 @@ class MainActivity : ComponentActivity() {
  * The search page, or Help or Settings in its place. Every field is saved in [prefs] as it is set:
  * the commute, the rider's transfer time at each change station (keyed by station id), the offset
  * and whether Optimization is on. Editing one clears the result; a time, the offset or Optimization
- * keeps the change stations.
+ * keeps the change stations. A result with connections is kept in [saved] until it's cleared, so
+ * the page opens with it again ([last]).
  *
  * The page has three panels (user, 2026-10-06): Destination (the commute), Journey (the result)
  * and Optimization (the rider's time at each change station).
  */
 @Composable
-private fun App(prefs: SharedPreferences, minimums: Minimums) {
+private fun App(prefs: SharedPreferences, minimums: Minimums, saved: File, last: Found?) {
     var screen by rememberSaveable { mutableStateOf(Screen.SEARCH) }
     var from by remember { mutableStateOf(prefs.getString("from", "")!!) }
     var to by remember { mutableStateOf(prefs.getString("to", "")!!) }
     var leaving by remember { mutableStateOf(prefs.getString("leaving", "")!!) }
     var offset by remember { mutableStateOf(prefs.getString("offset", "")!!) }
     var optimize by remember { mutableStateOf(prefs.getBoolean("optimize", true)) }
-    var result by remember { mutableStateOf<Result?>(null) }
-    var changes by remember { mutableStateOf(emptyList<Stop>()) }
-    var official by remember { mutableStateOf(minimums) }
+    var result by remember { mutableStateOf<Result?>(last?.let { Result.Done(it) }) }
+    var changes by remember { mutableStateOf(last?.changes.orEmpty()) }
+    var official by remember { mutableStateOf(last?.let { minimums.lowered(it.shortest) } ?: minimums) }
     var job by remember { mutableStateOf<Job?>(null) }
-    var open by remember { mutableStateOf(true) }
+    var open by remember { mutableStateOf(last == null) }
     var optimizationOpen by remember { mutableStateOf(true) }
     val scroll = rememberScrollState()
     val scope = rememberCoroutineScope()
     val time = parseTime(leaving)
     val searching = result == Result.Searching
     val offsetMinutes = offset.toLongOrNull() ?: DEFAULT_OFFSET
+    fun show(r: Result?) {
+        result = r
+        val found = (r as? Result.Done)?.found?.takeIf { it.first != null }
+        try {
+            if (found != null) saved.writeText(found.toJson()) else saved.delete()
+        } catch (e: Exception) {
+            Log.w("Gleiswechsel", "Result not saved: $e", e)
+        }
+    }
     fun save(key: String, value: String) {
-        result = null
+        show(null)
         prefs.edit { putString(key, value) }
     }
     fun saveCommute(key: String, value: String) {
@@ -185,7 +195,7 @@ private fun App(prefs: SharedPreferences, minimums: Minimums) {
         Screen.SETTINGS -> Settings(
             offset, optimize, !searching,
             onOffset = { offset = it; save("offset", it) },
-            onOptimize = { optimize = it; result = null; prefs.edit { putBoolean("optimize", it) } },
+            onOptimize = { optimize = it; show(null); prefs.edit { putBoolean("optimize", it) } },
             onBack = { screen = Screen.SEARCH },
         )
         Screen.SEARCH -> Column(Modifier.windowInsetsPadding(WindowInsets.safeDrawing)) {
@@ -205,7 +215,8 @@ private fun App(prefs: SharedPreferences, minimums: Minimums) {
                         Modifier.padding(top = top).onSizeChanged { formHeight = it.height },
                         verticalArrangement = Arrangement.spacedBy(8.dp),
                     ) {
-                        Heading(stringResource(R.string.destination))
+                        // After a search its title folds and opens it, as Optimization's (user, 2026-10-06).
+                        Heading(stringResource(R.string.destination), open.takeIf { !centred }) { open = !open }
                         AnimatedVisibility(open || centred) {
                             Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
                                 // The swap button hovers on the right, centred between From and To,
@@ -238,17 +249,18 @@ private fun App(prefs: SharedPreferences, minimums: Minimums) {
                             onClick = {
                                 if (searching) {
                                     job?.cancel()
-                                    result = null
+                                    show(null)
                                     return@Button
                                 }
                                 open = false
-                                result = Result.Searching
+                                show(Result.Searching)
                                 val transfer = { stop: Stop, official: Minimums -> Duration.ofMinutes(riderAt(stop, official)) }
                                 job = scope.launch {
                                     val r = withContext(Dispatchers.IO) { find(from.trim(), to.trim(), time!!, minimums, transfer) }
-                                    result = r
-                                    (r as? Result.Found)?.let { official = it.official }
-                                    changes = (r as? Result.Found)?.changes.orEmpty()
+                                    show(r)
+                                    val found = (r as? Result.Done)?.found
+                                    found?.let { official = minimums.lowered(it.shortest) }
+                                    changes = found?.changes.orEmpty()
                                 }
                             },
                         ) { Text(stringResource(if (searching) R.string.cancel else R.string.search)) }
@@ -258,22 +270,24 @@ private fun App(prefs: SharedPreferences, minimums: Minimums) {
                         null -> {}
                         Result.Searching -> Text(stringResource(R.string.searching))
                         Result.Failed -> Text(stringResource(R.string.search_failed), color = MaterialTheme.colorScheme.error)
-                        is Result.Found -> {
+                        is Result.Done -> {
+                            val f = r.found
+                            val first = f.first
                             // The day in the language of the texts, not the phone's: a Spanish phone gets English.
                             val locale = Locale.forLanguageTag(stringResource(R.string.language))
-                            val day = r.day.format(DateTimeFormatter.ofPattern(stringResource(R.string.day_pattern), locale))
+                            val day = f.day.format(DateTimeFormatter.ofPattern(stringResource(R.string.day_pattern), locale))
                             Text(when {
-                                r.first == null -> stringResource(R.string.no_connections, day)
-                                r.finds.isEmpty() -> stringResource(R.string.nothing_faster, day)
+                                first == null -> stringResource(R.string.no_connections, day)
+                                f.finds.isEmpty() -> stringResource(R.string.nothing_faster, day)
                                 else -> "$day:"
                             })
-                            if (r.incomplete) Text(stringResource(R.string.not_all_checked), color = MaterialTheme.colorScheme.error)
-                            r.finds.forEach { FindCard(it, r.official) }
+                            if (f.incomplete) Text(stringResource(R.string.not_all_checked), color = MaterialTheme.colorScheme.error)
+                            f.finds.forEach { FindCard(it, official) }
                             // Nothing faster: the official connection leaving first, to see where it changes (user, 2026-10-06).
-                            if (r.finds.isEmpty() && r.first != null) Card(Modifier.fillMaxWidth()) {
+                            if (f.finds.isEmpty() && first != null) Card(Modifier.fillMaxWidth()) {
                                 Column(Modifier.padding(12.dp), verticalArrangement = Arrangement.spacedBy(4.dp)) {
                                     Text(stringResource(R.string.official_connection), style = MaterialTheme.typography.titleMedium)
-                                    Trip(r.first, r.official)
+                                    Trip(first, official)
                                 }
                             }
                         }
@@ -307,7 +321,7 @@ private fun App(prefs: SharedPreferences, minimums: Minimums) {
  * ▾ or ▸ says which.
  */
 @Composable
-private fun Heading(text: String, open: Boolean? = null, onClick: () -> Unit = {}) = Row(
+internal fun Heading(text: String, open: Boolean? = null, onClick: () -> Unit = {}) = Row(
     Modifier.fillMaxWidth().padding(top = 8.dp).then(if (open != null) Modifier.folding(open, onClick) else Modifier),
     verticalAlignment = Alignment.CenterVertically,
 ) {
@@ -488,10 +502,10 @@ private fun find(
         val ask = { a: String, b: String, at: LocalDateTime -> connections(a, b, at, BuildConfig.VERSION_NAME).also { answers += it } }
         val officials = ask(from, to, time)
         val changes = mutableListOf<Stop>()
-        val searched = search(officials, { stop -> changes += stop; transfer(stop, minimums.lowered(answers)) }, ask)
+        val searched = search(officials, { stop -> changes += stop; transfer(stop, minimums.lowered(shortestChanges(answers))) }, ask)
         searched.failures.forEach { Log.w("Gleiswechsel", "Change not checked: $it", it) }
-        Result.Found(
-            time, officials.firstOrNull(), changes.distinctBy { it.id }, searched.finds, minimums.lowered(answers), searched.failures.isNotEmpty(),
+        Result.Done(
+            Found(time, officials.firstOrNull(), changes.distinctBy { it.id }, searched.finds, shortestChanges(answers), searched.failures.isNotEmpty()),
         )
     } catch (e: Exception) {
         // In the message too: Log drops the stack trace of an UnknownHostException (no network).
@@ -613,9 +627,12 @@ private fun StopRow(stop: Stop) = Row(verticalAlignment = Alignment.CenterVertic
     }
 }
 
-/** A track's number as on a platform sign: white on blue (the logo's), a white line inside the edge. */
+/**
+ * A track's number as on a platform sign: white on blue (the logo's), square corners, a rounded
+ * white line inside the edge (user, 2026-10-06).
+ */
 @Composable
-private fun TrackSign(track: String) = Surface(shape = MaterialTheme.shapes.extraSmall, color = Color(0xFF00179B)) {
+private fun TrackSign(track: String) = Surface(color = Color(0xFF00179B)) {
     Text(
         track,
         Modifier.padding(2.dp).border(1.dp, Color.White, MaterialTheme.shapes.extraSmall).padding(horizontal = 5.dp),

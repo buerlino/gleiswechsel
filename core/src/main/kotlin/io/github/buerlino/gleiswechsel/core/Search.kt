@@ -1,5 +1,6 @@
 package io.github.buerlino.gleiswechsel.core
 
+import kotlinx.serialization.Serializable
 import java.time.Duration
 import java.time.LocalDateTime
 import java.time.OffsetDateTime
@@ -10,6 +11,7 @@ import java.time.format.DateTimeFormatter
  * change station and changes there, quicker than the official minimum transfer time but long
  * enough for the rider, and maybe again at a later change.
  */
+@Serializable
 data class Find(val official: Connection, val faster: Connection) {
     val saved: Duration get() = Duration.between(faster.arrival.time, official.arrival.time)
 

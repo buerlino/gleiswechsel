@@ -1,6 +1,8 @@
 - Des changements plus courts dans plusieurs gares du même trajet.
-- Trois parties : Destination, Voyage, Optimisation. Vos temps de changement de voie avec − et +.
-- Un lien vers sbb.ch pour le billet, et un avertissement quand un trajet passe deux fois par la même gare.
-- Des flèches dans les cases : ↓ sous le temps officiel, ↑ au-dessus, lues par les lecteurs d'écran.
-- Là où l'horaire change lui-même plus vite que le minimum, cela compte comme officiel.
+- Trois parties : Destination, Voyage, Optimisation. Vos temps avec − et +.
+- Le billet sur sbb.ch, et un avertissement si un trajet passe deux fois par la même gare.
+- Des flèches : ↓ sous le temps officiel, ↑ au-dessus, aussi pour les lecteurs d'écran.
+- Les changements plus rapides de l'horaire sont officiels.
 - Annuler une recherche en cours.
+- Le dernier résultat reste, p. ex. pour la voie hors ligne.
+- L'aide par thèmes.

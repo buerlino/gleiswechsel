@@ -18,27 +18,33 @@ is in `research/`.
   `connections()` and its parser.
   Tests in `OpendataTest` with made-up JSON shaped like a real response.
 - `core/.../Minimums.kt`: `Minimums`, the official minimum transfer time per station from the
-  HRDF `UMSTEIGB` text (`MinimumsTest`, made-up lines); `lowered` takes the API's answers of a
-  search, where the planner changes faster than the table. The real file is the app's
+  HRDF `UMSTEIGB` text (`MinimumsTest`, made-up lines); `lowered` takes `shortestChanges` of the
+  API's answers of a search, where the planner changes faster than the table. The real file is the app's
   `res/raw/umsteigb.txt`, see [Official minimums](#official-minimums-each-timetable-change).
 - `core/.../Search.kt`: `Find` (with `saved` and `moreEfficient`), `ticketUrl` (the sbb.ch
   link), the local search `search()` (each question once) and `shortened` (the onward
   connections' changes too, recursively).
   It takes the official connections, the transfer time per station and the request as a
   function, so `SearchTest` runs it on a fake API with made-up connections.
+- `core/.../Found.kt`: `Found`, a search's result as the page shows it, and its JSON
+  (`toJson`, `found`; `FoundTest`: written and read back, made-up data). `Stop`, `Leg`,
+  `Connection` and `Find` are `@Serializable` for it; times as ISO text (`IsoText`).
 - `core/.../LiveTest.kt`: the Horw → Sursee test case, live. Excluded from `:core:test` (and so
   from CI); run it with `./gradlew :core:test -Plive`, which also prints the finds and the number
   of requests. It asks for the next weekday, so a public holiday or a timetable change can fail it.
 - `app/.../MainActivity.kt`: `App` holds all state and shows the search page, Help or Settings
-  (`Screen`); the search page (`Heading` for each panel's title, `Folded` for the folded
+  (`Screen`); the search page (`Heading` for each panel's title, foldable with `open`, also
+  Help's topics; `Folded` for the folded
   Destination), the cards (`FindCard`, `Trip`, `MinutesBox`) and `MinutesStepper` (− and +, the
   rows and the offset in Settings; `arrows = false` for the offset), `folding` and `FoldMark`
   (a fold's state for a screen reader, the ▾ or ▸ hidden from it). SharedPreferences
   `commute`: `from`, `to`, `leaving` as typed, `offset` and the transfer times keyed by station id as numbers in strings (empty:
-  unset), `optimize`. The rows come from `Result.Found.changes` (the stations the search asked
+  unset), `optimize`. The rows come from `Found.changes` (the stations the search asked
   the transfer time at, recorded in `find`) and stay in `changes`, with the lowered minimums in
-  `official`, while a time or the offset is edited. While a search runs, the Search button is
-  Cancel (`job`). `app/.../Pages.kt`: Settings, Help and `SubPage` (← and the back
+  `official`, while a time or the offset is edited. The result is set only through `show`, which
+  writes `files/result.json` (a result with connections) or deletes it; `onCreate` reads it
+  back (`last`). While a search runs, the Search button is
+  Cancel (`job`). `app/.../Pages.kt`: Settings, Help (`help`: emoji, title, text; folded until tapped) and `SubPage` (← and the back
   gesture). A symbol on a button gets `Modifier.spokenAs(…)`, the word a screen
   reader says instead (`uiautomator dump` shows it as the child's `content-desc`). Every text is
   in `res/values*/strings.xml` (en, de, fr, it); a new one goes in all four, or lint fails on
@@ -66,8 +72,8 @@ is in `research/`.
   and `accessibility_enabled 0` (both were unset, 2026-10-06). Its tutorial opens first: back key.
 - Another language without changing the phone's (Android 13+; the app has no language picker,
   but this works anyway): `adb shell cmd locale set-app-locales io.github.buerlino.gleiswechsel
-  --locales de-CH` (`fr-CH`, `it-CH`); `""` goes back to the phone's. It restarts the page, so
-  the result is gone: Search again.
+  --locales de-CH` (`fr-CH`, `it-CH`); `""` goes back to the phone's. It restarts the page; the
+  result comes back from its file.
 
 ## Working on the phone
 
@@ -154,6 +160,14 @@ Everything else was tried on the phone with the R8 release build signed with the
   over adb and off again) frames ← as one element, but nothing was heard (neither it nor eSpeak
   logs the text).
 - The dark bar icons with three-button navigation.
+- Help's topics and Destination's foldable title (2026-10-06): seen on the phone in German only;
+  the English, French and Italian texts only built (lint checks they exist), not read on the
+  phone. Not heard in TalkBack (it reads the emoji's name before each title).
+- The saved result (2026-10-06, R8 release build): kept after a force-stop and the language
+  switch, gone after a step in Optimization; the rest only `FoundTest`. Not seen: a file in an
+  older format (none exists yet), a failed write, the system killing the app in the background,
+  a phone-to-phone transfer, a result with a walk or a second change read back on the phone.
+  `run-as` doesn't work on the release build, so the file itself wasn't looked at.
 - Turning the phone in Help or Settings, split screen.
 - The debug build on the phone.
 - The themed icon in a launcher that shows themed icons (Niagara doesn't); only checked as a

@@ -1,6 +1,8 @@
 - Kürzere Umstiege an mehr als einem Bahnhof derselben Reise.
-- Die Seite in drei Teilen: Ziel, Reise, Optimierung. Gleiswechselzeiten mit − und +.
-- Ein Link zu sbb.ch für das Billett, und ein Hinweis, wenn eine Reise zweimal durch denselben Bahnhof fährt.
-- Pfeile in den Kästchen: ↓ unter der offiziellen Zeit, ↑ darüber. Screenreader sagen es.
-- Wo der Fahrplan selbst schneller umsteigt als das Minimum, gilt das als offiziell.
+- Drei Teile: Ziel, Reise, Optimierung. Ihre Gleiswechselzeiten mit − und +.
+- Das Billett auf sbb.ch, und ein Hinweis, wenn eine Reise zweimal durch denselben Bahnhof fährt.
+- Pfeile: ↓ unter der offiziellen Zeit, ↑ darüber, auch für Screenreader.
+- Schnellere Umstiege des Fahrplans gelten als offiziell.
 - Eine laufende Suche abbrechen.
+- Das letzte Ergebnis bleibt, z. B. um das Gleis offline zu lesen.
+- Hilfe nach Themen.

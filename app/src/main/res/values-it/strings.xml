@@ -49,13 +49,17 @@
     <string name="help">Aiuto</string>
     <string name="phone_language">Lingua del telefono</string>
     <string name="help_what">Cosa fa</string>
-    <string name="help_what_text">Gleiswechsel cerca un viaggio più veloce di quello che mostra l\'orario ufficiale. L\'orario propone un cambio solo se dura almeno il tempo di cambio binario ufficiale della stazione, p. es. 5 minuti a Lucerna. Se cambia più in fretta, forse fa ancora in tempo per un treno prima.</string>
+    <string name="help_what_text">Trova viaggi più veloci di quelli dell\'orario ufficiale. L\'orario propone solo cambi che durano almeno il tempo di cambio binario ufficiale, p. es. 5 min a Lucerna. Se lei è più veloce, forse fa ancora in tempo per un treno prima.</string>
     <string name="help_switch">Tempo di cambio binario</string>
-    <string name="help_switch_text">I minuti nel riquadro: quanto le serve da un treno al successivo, a piedi compreso. In Ottimizzazione può impostare il suo in ogni stazione (− e +); altrove vale quello ufficiale più lo scostamento globale nelle impostazioni (⚙), p. es. 5\u00A0−\u00A01\u00A0=\u00A04\u00A0minuti a Lucerna. Quello ufficiale è quello dell\'orario, o meno dove l\'orario stesso cambia più in fretta. Verde ↓: sotto quello ufficiale, arancione: uguale, rosso ↑: sopra.</string>
+    <string name="help_switch_text">I minuti nel riquadro: da un treno al successivo, a piedi compreso. Imposti il suo per ogni stazione in Ottimizzazione (− e +). Altrimenti vale quello ufficiale meno lo scostamento nelle impostazioni (⚙), p. es. 5\u00A0−\u00A01\u00A0=\u00A04\u00A0min a Lucerna.</string>
+    <string name="help_colours">Colori e frecce</string>
+    <string name="help_colours_text">Verde ↓: sotto il tempo ufficiale, arancione: uguale, rosso ↑: sopra. Ufficiale: quello dell\'orario, o meno dove l\'orario stesso cambia più in fretta.</string>
     <string name="help_efficient">Più efficiente</string>
-    <string name="help_efficient_text" formatted="false">Quanto più veloce del viaggio ufficiale, dalla prima partenza all\'ultimo arrivo: 33 minuti invece di 47, il 42% più efficiente (47 / 33 = 1,42).</string>
+    <string name="help_efficient_text" formatted="false">Quanto più veloce del viaggio ufficiale, dalla prima partenza all\'ultimo arrivo: 33 min invece di 47 è il 42% (47 / 33 = 1,42).</string>
+    <string name="help_tickets">Biglietti</string>
+    <string name="help_tickets_text">Un biglietto normale vale anche per il viaggio più veloce, un biglietto risparmio solo per il treno ufficiale. Un viaggio che passa due volte dalla stessa stazione può richiedere un altro biglietto.</string>
     <string name="help_careful">Attenzione</string>
-    <string name="help_careful_text">Solo orari previsti: un treno in ritardo può rendere impossibile un cambio binario breve. Sta a lei giudicare se ce la fa. Un biglietto normale vale anche per il viaggio più veloce; un biglietto risparmio solo per il treno ufficiale. Un viaggio che passa due volte dalla stessa stazione può richiedere un altro biglietto.</string>
+    <string name="help_careful_text">Solo orari previsti: un treno in ritardo può rendere impossibile un cambio binario breve. Sta a lei giudicare se ce la fa. L\'ultimo risultato resta, anche offline: ne controlli il giorno.</string>
     <string name="help_data">Dati</string>
     <string name="help_data_text">Collegamenti: transport.opendata.ch. Tempi di cambio binario ufficiali: opentransportdata.swiss, orario 2026. Indipendente dalle FFS.</string>
 </resources>

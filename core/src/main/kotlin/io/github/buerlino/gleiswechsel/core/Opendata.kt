@@ -12,15 +12,23 @@ import java.time.OffsetDateTime
 import java.time.format.DateTimeFormatter
 
 /** Where a leg starts or ends: the station, the planned time there and the platform, if known. */
-data class Stop(val station: String, val id: String, val time: OffsetDateTime, val platform: String? = null)
+@Serializable
+data class Stop(
+    val station: String,
+    val id: String,
+    @Serializable(with = OffsetDateTimeText::class) val time: OffsetDateTime,
+    val platform: String? = null,
+)
 
 /**
  * One ride of a connection ([train] e.g. `S4`, `RE24`), or a walk ([train] null). [via]: the ids of
  * the stations a ride passes between its departure and its arrival.
  */
+@Serializable
 data class Leg(val train: String?, val departure: Stop, val arrival: Stop, val via: List<String> = emptyList())
 
 /** One connection, as the official planner offers it. */
+@Serializable
 data class Connection(val legs: List<Leg>) {
     val departure: Stop get() = legs.first().departure
     val arrival: Stop get() = legs.last().arrival
@@ -78,7 +86,7 @@ private val hourMinute = DateTimeFormatter.ofPattern("HH:mm")
 /** The API's times have no colon in the offset: `2026-10-07T08:53:00+0200`. */
 private val apiTime = DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ssXX")
 
-private val json = Json { ignoreUnknownKeys = true }
+internal val json = Json { ignoreUnknownKeys = true }
 
 internal fun parseConnections(body: String): List<Connection> =
     json.decodeFromString<Response>(body).connections.filter { it.sections.isNotEmpty() }.map { c ->

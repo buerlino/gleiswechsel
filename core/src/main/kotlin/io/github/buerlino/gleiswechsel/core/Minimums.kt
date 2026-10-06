@@ -17,12 +17,15 @@ class Minimums private constructor(private val minutes: Map<String, Long>) {
     fun at(station: Stop): Duration = Duration.ofMinutes(minutes[station.id] ?: standard)
 
     /**
-     * Lowered where the planner itself changes faster in [offered] (user, 2026-10-06): it has finer
-     * times than the table, per track, not published (Olten: RE24 → IR16 in 4 minutes, the table
-     * says 5; HRDF's times per train pair, line and operator have nothing there).
+     * Lowered to [shortest] ([shortestChanges]) where the planner itself changes faster (user,
+     * 2026-10-06): it has finer times than the table, per track, not published (Olten: RE24 → IR16
+     * in 4 minutes, the table says 5; HRDF's times per train pair, line and operator have nothing
+     * there).
      */
-    fun lowered(offered: List<Connection>): Minimums = Minimums(
-        minutes + offered.flatMap { it.transfers }.groupBy({ it.first.id }, { it.second.toMinutes() })
-            .mapValues { (id, offers) -> minOf(offers.min(), minutes[id] ?: standard) },
-    )
+    fun lowered(shortest: Map<String, Long>): Minimums =
+        Minimums(minutes + shortest.mapValues { (id, offered) -> minOf(offered, minutes[id] ?: standard) })
 }
+
+/** The shortest change the planner makes in [offered] at each station: its id → minutes. */
+fun shortestChanges(offered: List<Connection>): Map<String, Long> =
+    offered.flatMap { it.transfers }.groupBy({ it.first.id }, { it.second.toMinutes() }).mapValues { it.value.min() }

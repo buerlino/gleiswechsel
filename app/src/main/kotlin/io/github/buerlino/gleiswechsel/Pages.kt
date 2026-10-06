@@ -1,6 +1,7 @@
 package io.github.buerlino.gleiswechsel
 
 import androidx.activity.compose.BackHandler
+import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.ColumnScope
@@ -16,6 +17,10 @@ import androidx.compose.material3.Switch
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
@@ -47,22 +52,26 @@ internal fun Settings(
     }
 }
 
+/** One topic each, folded until tapped (user, 2026-10-06: short, friendly, not overwhelming). */
 @Composable
 internal fun Help(onBack: () -> Unit) = SubPage(stringResource(R.string.help), onBack) {
-    help.forEach { (heading, text) ->
+    help.forEach { (emoji, heading, text) ->
+        var open by remember { mutableStateOf(false) }
         Column {
-            Text(stringResource(heading), style = MaterialTheme.typography.titleMedium)
-            Text(stringResource(text))
+            Heading("$emoji  ${stringResource(heading)}", open) { open = !open }
+            AnimatedVisibility(open) { Text(stringResource(text), Modifier.padding(top = 4.dp)) }
         }
     }
 }
 
 private val help = listOf(
-    R.string.help_what to R.string.help_what_text,
-    R.string.help_switch to R.string.help_switch_text,
-    R.string.help_efficient to R.string.help_efficient_text,
-    R.string.help_careful to R.string.help_careful_text,
-    R.string.help_data to R.string.help_data_text,
+    Triple("🚆", R.string.help_what, R.string.help_what_text),
+    Triple("⏱️", R.string.help_switch, R.string.help_switch_text),
+    Triple("🎨", R.string.help_colours, R.string.help_colours_text),
+    Triple("📈", R.string.help_efficient, R.string.help_efficient_text),
+    Triple("🎫", R.string.help_tickets, R.string.help_tickets_text),
+    Triple("⚠️", R.string.help_careful, R.string.help_careful_text),
+    Triple("📡", R.string.help_data, R.string.help_data_text),
 )
 
 /** A page with a back arrow and its [title]; the [content] scrolls. */

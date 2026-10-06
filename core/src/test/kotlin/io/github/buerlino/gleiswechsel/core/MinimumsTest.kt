@@ -28,7 +28,9 @@ class MinimumsTest {
             Leg("S1", stop("Aach", "07:50"), stop(change, arrive)),
             Leg("IR2", stop(change, leave), stop("Bstadt", "08:40")),
         ))
-        val lowered = minimums.lowered(listOf(trip("1234567", "08:10", "08:14"), trip("1234567", "08:20", "08:26"), trip("1111111", "08:10", "08:13")))
+        val shortest = shortestChanges(listOf(trip("1234567", "08:10", "08:14"), trip("1234567", "08:20", "08:26"), trip("1111111", "08:10", "08:13")))
+        assertEquals(mapOf("1234567" to 4L, "1111111" to 3L), shortest)
+        val lowered = minimums.lowered(shortest)
         assertEquals(Duration.ofMinutes(4), lowered.at(stop("1234567")))
         assertEquals(Duration.ofMinutes(2), lowered.at(stop("1111111")))
         assertEquals(Duration.ZERO, lowered.at(stop("7654321")))

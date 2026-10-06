@@ -71,7 +71,7 @@ apps built this way; their CLAUDE.md files explain each choice.
   language setting (user, 2026-10-06: people keep the system language), but a hidden one: a tap
   on the top bar's title picks English, Deutsch, Français, Italiano or the phone's language (user,
   2026-10-06, an easter egg), Android 13+ only (`LocaleManager`; older phones: the title does
-  nothing). It recreates the page, so the result is gone. The day of a
+  nothing). It recreates the page; the result comes back from its file. The day of a
   search is in the texts' language (`language`, `day_pattern`), so a Spanish phone gets English
   throughout. The store listing in the same four (`fastlane/metadata/android/<locale>/`).
 - Migrations: remove migration code two releases after F-Droid has shipped past the version that
@@ -152,9 +152,23 @@ The page's state lives above the three, so Help and Settings don't lose the resu
 phone doesn't recreate the activity (`configChanges`, 2026-10-06: one line, no ViewModel), so
 the result and a running search stay.
 
+**The last result is kept** (user, 2026-10-06: e.g. to read the track on a platform with poor
+reception): a search with connections writes it to `result.json` in the app's own files (`Found`
+in `:core`: the day, the first official connection, the change stations, the finds, the shortest
+change at each station the planner's answers made, and `incomplete`; times as ISO text), and
+whatever clears the result deletes it (editing the commute, a time, the offset or Optimization,
+Search, Cancel), so it never shows another commute's finds. The page opens with it, Destination
+folded, after a restart, the system killing the app or the language switch; the Optimization
+rows and the lowered minimums come back with it. Never dropped by time (user, 2026-10-06): the
+day line says which day it's for, and yesterday's tracks are usually today's. A file that can't
+be read (e.g. an older format after an update) is ignored quietly and logged (user, 2026-10-06);
+no migration. No cloud backup; a phone-to-phone transfer takes it.
+
 Destination (user, 2026-10-06): before a search it sits in the middle of the page (of the
 space above the keyboard while typing); Search moves it to the top and folds the three fields
-into one line (from → to, time ▾), a tap on which opens them again. The Search button stays in
+into one line (from → to, time ▾), a tap on which opens them again. After a search the title
+folds and opens it too, with ▾ or ▸, as Optimization's (user, 2026-10-06: once opened, it
+couldn't be hidden again); before a search it has no mark. The Search button stays in
 view, folded or not (to search again after editing a time); while a search runs it reads Cancel
 (user, 2026-10-06: a slow API meant a long, locked wait), which unlocks the fields at once and
 drops the late answer (the requests themselves can't be stopped). With no result and no rows
@@ -186,7 +200,8 @@ at every station the rider hasn't set.
   turns the panel off (key `optimize`, on until set); off, the times set there are kept but not
   used. Editing a time clears the finds but keeps the rows (Search again); editing the commute
   clears both. The rows come only with a search that has connections (user, 2026-10-06: without
-  one they don't help), so after a restart, or a failed search, they're back with the next one.
+  one they don't help) and are kept with its result, so after a failed search, or a restart
+  once the result was cleared, they're back with the next one.
 - **− and +** (`MinutesStepper`, user, 2026-10-06) set every track switch time the rider sets, in
   Optimization and the offset in Settings: a box to type in didn't look changeable. Plain − and
   +, no circle around them (user, 2026-10-06). A step is a minute (0 to 99). Unset shows the
@@ -206,8 +221,8 @@ at every station the rider hasn't set.
   the arrival instead of the official one, how much more efficient, then the trip as a
   timetable: a row per stop (time, station, track), the train in between, and at each change its
   minutes in the box. Stations underlined, the train (RE24) in a black outline without fill, the
-  track's number as a platform sign: white on the logo's blue `00179B` with a white line inside,
-  a bit bigger (user, 2026-10-06). A walk between two trains is part of the change (the box, then
+  track's number as a platform sign: white on the logo's blue `00179B`, square corners, with a
+  rounded white line inside, a bit bigger (user, 2026-10-06). A walk between two trains is part of the change (the box, then
   the walk's minutes); one before the first train or after the last is a row of its own. Under
   the trip, a small grey line (▸) opens the official connection it beats, the same timetable at
   60% (user, 2026-10-06: there but not in the way). With nothing faster, Journey shows the
@@ -231,11 +246,14 @@ at every station the rider hasn't set.
   (`DEFAULT_OFFSET`; user, 2026-10-06: 1, the careful one, and the test case needs it; 2 would
   find more, e.g. 5-minute changes at Zürich HB), and the Optimization switch. Changing either
   clears the finds and keeps the rows; locked while a search runs.
-- **Help:** what the app does, the track switch time, what official means and its colours and
-  arrows, how much more efficient, that times are planned only, which ticket covers a find (a
-  normal one, a supersaver only the official train, maybe not one passing a station twice), and
-  the data sources (opentransportdata.swiss wants to be named).
-  Each concept is explained there once.
+- **Help** (user, 2026-10-06: by topic, foldable, an emoji each, short texts without fluff but
+  nothing crucial left out): seven titles, all folded until tapped (`Heading`, as the panels'):
+  🚆 what the app does, ⏱️ the track switch time (where it's set, the offset), 🎨 the colours and
+  arrows and what official means, 📈 how much more efficient, 🎫 which ticket covers a find (a
+  normal one, a supersaver only the official train, maybe not one passing a station twice), ⚠️
+  planned times only and that the last result stays (check its day), 📡 the data sources
+  (opentransportdata.swiss wants to be named). Each concept is explained there once. The emojis
+  are in the code, the texts in `strings.xml`.
 - **How much more efficient** each find is than its official connection (user, 2026-10-06): the
   official time / the find's − 1, each from the first departure to the last arrival (the wait
   before the first train doesn't count). Efficiency is the fastest trip's time / a trip's, so the
@@ -287,7 +305,7 @@ at every station the rider hasn't set.
   the 29 Sep 2026 export: Olten only has "999" pairs), so it uses finer per-track times that
   aren't published. So in each search a station's official minimum is the table's or the
   shortest change any of the API's answers makes there, whichever is less
-  (`Minimums.lowered`): the official card shows Olten's 4 orange, its row starts at 3. A rider's
+  (`shortestChanges`, `Minimums.lowered`): the official card shows Olten's 4 orange, its row starts at 3. A rider's
   default at a station follows the answers so far.
   Where the API starts an onward connection with a walk to another stop (Zürich HB →
   Bahnhofplatz/HB, 5 minutes on top), the search asks again from that stop, so the rider's time
@@ -345,9 +363,8 @@ Ideas, not decided (Claude, 2026-10-06; ask the user first):
 - More than one commute (now one, and ⇅ for the way back).
 - Station suggestions from `/v1/locations`, only if typing the names is annoying.
 - A change to a different stop: open question 1.
-- From [missing_features.md](research/missing_features.md) (2026-10-06), its suggested order:
-  save the last result in the JSON file (two tight changes in a row: done, 2026-10-06). Also
-  there: changes at stops the train only passes through,
+- From [missing_features.md](research/missing_features.md) (2026-10-06): changes at stops the
+  train only passes through,
   "arrive by", more than four official connections, "now", the rider's ✓/✗ record of a change
   (a simpler risk, open question 2), the saving in a year, parallel requests, changed platforms.
 

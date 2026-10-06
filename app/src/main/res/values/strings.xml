@@ -52,13 +52,17 @@
     <string name="help">Help</string>
     <string name="phone_language">Phone\'s language</string>
     <string name="help_what">What it does</string>
-    <string name="help_what_text">Gleiswechsel looks for a faster trip than the official planner shows. The planner offers a change only if it takes at least the station\'s official track switch time, e.g. 5 minutes at Luzern. If you switch faster, an earlier train may still be yours.</string>
+    <string name="help_what_text">Finds trips faster than the official planner shows. The planner only offers a change that takes at least the official track switch time, e.g. 5 min at Luzern. If you\'re quicker, an earlier train may still be yours.</string>
     <string name="help_switch">Track switch time</string>
-    <string name="help_switch_text">The minutes in a box: how long you need from one train to the next, walk included. Under Optimization you can set your own at each station (− and +); elsewhere it\'s the official one plus the global offset in Settings (⚙), e.g. 5\u00A0−\u00A01\u00A0=\u00A04\u00A0minutes at Luzern. The official one is the timetable\'s, or less where the planner itself changes faster. Green ↓: below the official one, orange: the same, red ↑: above.</string>
+    <string name="help_switch_text">The minutes in a box: from one train to the next, walk included. Set your own per station under Optimization (− and +). Otherwise: the official time minus the offset in Settings (⚙), e.g. 5\u00A0−\u00A01\u00A0=\u00A04\u00A0min at Luzern.</string>
+    <string name="help_colours">Colours and arrows</string>
+    <string name="help_colours_text">Green ↓: below the official time, orange: the same, red ↑: above. Official: the timetable\'s, or less where the planner itself changes faster.</string>
     <string name="help_efficient">More efficient</string>
-    <string name="help_efficient_text" formatted="false">How much faster than the official trip, from the first departure to the last arrival: 33 minutes instead of 47 is 42% more efficient (47 / 33 = 1.42).</string>
+    <string name="help_efficient_text" formatted="false">How much faster than the official trip, first departure to last arrival: 33 instead of 47 min is 42% (47 / 33 = 1.42).</string>
+    <string name="help_tickets">Tickets</string>
+    <string name="help_tickets_text">A normal ticket covers the faster trip too, a supersaver ticket only the official train. A trip passing a station twice may need another ticket.</string>
     <string name="help_careful">Careful</string>
-    <string name="help_careful_text">Planned times only: a late train can make a short track switch impossible. Whether you make it is up to you. A normal ticket covers the faster trip too; a supersaver ticket only the official train. A trip that passes a station twice may need another ticket.</string>
+    <string name="help_careful_text">Planned times only: a late train can make a short track switch impossible. Whether you make it is up to you. The last result stays, also offline: check its day.</string>
     <string name="help_data">Data</string>
     <string name="help_data_text">Connections: transport.opendata.ch. Official track switch times: opentransportdata.swiss, timetable 2026. Not affiliated with SBB.</string>
 </resources>

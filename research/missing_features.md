@@ -21,12 +21,10 @@ station suggestions, open questions) isn't repeated here. Nothing was tried live
 
 ## Using it every day
 
-- **The result is gone after a restart.** It lives in memory only. Kept in the one JSON file the
-  stack allows, it could be read on the platform with poor reception, when the track matters.
 - **No "now".** The time is required; a trip other than the commute needs the clock typed in.
 - **The rider's own record of a change** (✓ made it, ✗ missed it, after riding a find). The user
   keeps one in their head (50+ times, missed once). On the phone, no Ist-Daten, no nightly job, no
-  matching trains: a candidate for "something simpler first" in open question 3.
+  matching trains: a candidate for "something simpler first" in open question 2.
 - **The saving in a year.** The app's pitch is that 5 minutes a day add up to hours a year; a
   line like "≈ 50 h a year" (14 minutes × about 220 workdays) in the card says it. Small.
 
@@ -39,6 +37,5 @@ station suggestions, open questions) isn't repeated here. Nothing was tried live
 
 ## Suggested order (Claude, 2026-10-06)
 
-1. Save the last result in the JSON file (small).
-2. ~~Two tight changes in a row~~ (done 2026-10-06).
-3. Decide the ✓/✗ record before any work on the Ist-Daten risk.
+1. ~~Two tight changes in a row~~ (done 2026-10-06).
+2. Decide the ✓/✗ record before any work on the Ist-Daten risk.
