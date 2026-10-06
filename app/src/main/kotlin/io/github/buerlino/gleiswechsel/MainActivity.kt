@@ -41,10 +41,9 @@ import androidx.compose.material3.Card
 import androidx.compose.material3.DropdownMenu
 import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.FilledTonalIconButton
-import androidx.compose.material3.LocalTextStyle
+import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
-import androidx.compose.material3.OutlinedTextFieldDefaults
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
@@ -259,9 +258,9 @@ private fun App(prefs: SharedPreferences, minimums: Minimums) {
                                 Text(stringResource(R.string.optimization_text), style = MaterialTheme.typography.bodySmall)
                                 changes.forEach { stop ->
                                     key(stop.id) {
-                                        var minutes by remember { mutableStateOf(prefs.getString(stop.id, "")!!) }
-                                        MinutesStepper(stop.station, minutes, defaultAt(stop), minimums.at(stop).toMinutes(), !searching) {
-                                            minutes = it; save(stop.id, it)
+                                        var minutes by remember { mutableStateOf(prefs.getString(stop.id, null)?.toLongOrNull()) }
+                                        MinutesStepper(stop.station, minutes, defaultAt(stop), minimums.at(stop).toMinutes(), !searching, station = true) {
+                                            minutes = it; save(stop.id, it?.toString() ?: "")
                                         }
                                     }
                                 }
@@ -356,53 +355,15 @@ private fun Field(
 )
 
 /**
- * [label] and its minutes in a box, as typed (digits, up to 2), with a − in front if they're
- * [minus]. Empty shows [default] faded: the usual placeholder grey looks like a set value.
- * The box is the one of [MinutesBox], coloured against [official], without a border (user, 2026-10-06).
- */
-@Composable
-internal fun MinutesField(
-    label: String,
-    minutes: String,
-    default: Long,
-    official: Long,
-    enabled: Boolean,
-    minus: Boolean = false,
-    onValueChange: (String) -> Unit,
-) =
-    Row(verticalAlignment = Alignment.CenterVertically) {
-        Text(label, Modifier.weight(1f))
-        val (box, ink) = boxColors((minutes.toLongOrNull() ?: default) * if (minus) -1 else 1, official)
-        OutlinedTextField(
-            minutes, { onValueChange(it.filter(Char::isDigit).take(2)) }, Modifier.width(104.dp), enabled,
-            textStyle = LocalTextStyle.current.copy(fontWeight = FontWeight.Bold),
-            placeholder = { Text("$default", color = ink.copy(alpha = FADED)) },
-            prefix = if (minus) { { Text("−") } } else null,
-            suffix = { Text("min") },
-            keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
-            singleLine = true,
-            colors = OutlinedTextFieldDefaults.colors(
-                focusedContainerColor = box, unfocusedContainerColor = box, disabledContainerColor = box,
-                focusedTextColor = ink, unfocusedTextColor = ink, disabledTextColor = ink,
-                focusedPrefixColor = ink, unfocusedPrefixColor = ink, disabledPrefixColor = ink,
-                focusedSuffixColor = ink, unfocusedSuffixColor = ink, disabledSuffixColor = ink,
-                cursorColor = ink,
-                focusedBorderColor = Color.Transparent, unfocusedBorderColor = Color.Transparent,
-                disabledBorderColor = Color.Transparent,
-            ),
-        )
-    }
-
-/**
- * A track switch time in a box, the number the app is about (user, 2026-10-06), shaped as in
- * [MinutesField] and coloured against the [official] one; [faded] when it's a default.
+ * A track switch time in a box, the number the app is about (user, 2026-10-06), coloured against
+ * the [official] one, without a border (user, 2026-10-06); [faded] when it's a default.
  */
 @Composable
 private fun MinutesBox(minutes: Long, official: Long, faded: Boolean = false, minWidth: Dp = 0.dp) =
     boxColors(minutes, official).let { (box, ink) ->
         Surface(shape = MaterialTheme.shapes.extraSmall, color = box) {
             Text(
-                "$minutes min",
+                "$minutes min".replace('-', '−'),
                 Modifier.widthIn(min = minWidth).padding(horizontal = 8.dp, vertical = 2.dp),
                 color = if (faded) ink.copy(alpha = FADED) else ink,
                 fontWeight = FontWeight.Bold,
@@ -412,24 +373,32 @@ private fun MinutesBox(minutes: Long, official: Long, faded: Boolean = false, mi
     }
 
 /**
- * A station's track switch time with − and + (user, 2026-10-06: a box to type in didn't look
- * changeable). [minutes] as saved, empty for the [default]; stepping onto the default empties it
- * again, so it follows the offset.
+ * [label] and its track switch time with − and + (user, 2026-10-06: a box to type in didn't look
+ * changeable), within [range]. [minutes] as saved, null for the [default]; stepping onto the
+ * default unsets it again, so it follows the offset. The label is underlined if it's a [station].
  */
 @Composable
-private fun MinutesStepper(station: String, minutes: String, default: Long, official: Long, enabled: Boolean, onChange: (String) -> Unit) =
-    Row(verticalAlignment = Alignment.CenterVertically) {
-        val value = minutes.toLongOrNull() ?: default
-        fun step(by: Long) = (value + by).let { onChange(if (it == default) "" else "$it") }
-        Text(station, Modifier.weight(1f), textDecoration = TextDecoration.Underline)
-        FilledTonalIconButton({ step(-1) }, enabled = enabled && value > 0) {
-            Text("−", Modifier.spokenAs(stringResource(R.string.less)), fontSize = 20.sp)
-        }
-        MinutesBox(value, official, faded = minutes.isEmpty(), minWidth = 72.dp)
-        FilledTonalIconButton({ step(1) }, enabled = enabled && value < 99) {
-            Text("+", Modifier.spokenAs(stringResource(R.string.more)), fontSize = 20.sp)
-        }
+internal fun MinutesStepper(
+    label: String,
+    minutes: Long?,
+    default: Long,
+    official: Long,
+    enabled: Boolean,
+    station: Boolean = false,
+    range: LongRange = 0L..99,
+    onChange: (Long?) -> Unit,
+) = Row(verticalAlignment = Alignment.CenterVertically) {
+    val value = minutes ?: default
+    fun step(by: Long) = (value + by).let { onChange(it.takeIf { it != default }) }
+    Text(label, Modifier.weight(1f), textDecoration = if (station) TextDecoration.Underline else null)
+    IconButton({ step(-1) }, enabled = enabled && value > range.first) {
+        Text("−", Modifier.spokenAs(stringResource(R.string.less)), fontSize = 20.sp)
     }
+    MinutesBox(value, official, faded = minutes == null, minWidth = 72.dp)
+    IconButton({ step(1) }, enabled = enabled && value < range.last) {
+        Text("+", Modifier.spokenAs(stringResource(R.string.more)), fontSize = 20.sp)
+    }
+}
 
 /** A default track switch time's text, not set by the rider. */
 private const val FADED = 0.6f

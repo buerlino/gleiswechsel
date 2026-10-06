@@ -25,17 +25,18 @@ is in `research/`.
   from CI); run it with `./gradlew :core:test -Plive`, which also prints the finds and the number
   of requests. It asks for the next weekday, so a public holiday or a timetable change can fail it.
 - `app/.../MainActivity.kt`: `App` holds all state and shows the search page, Help or Settings
-  (`Screen`); the search page and the cards (`FindCard`, `Trip`, `MinutesBox`, `MinutesField`).
-  SharedPreferences `commute`: `from`, `to`, `leaving`, `offset` and the transfer times keyed by
-  station id, all as typed. The rows come from `Result.Found.changes` and stay in `changes` while
-  a time or the offset is edited. `app/.../Pages.kt`: Settings, Help and `SubPage`
-  (← and the back gesture). A symbol on a button gets `Modifier.spokenAs(…)`, the word a screen
+  (`Screen`); the search page (`Heading` for each panel's title, `Folded` for the folded
+  Destination), the cards (`FindCard`, `Trip`, `MinutesBox`) and `MinutesStepper` (− and +, the
+  rows and the offset in Settings). SharedPreferences `commute`: `from`, `to`, `leaving` as
+  typed, `offset` and the transfer times keyed by station id as numbers in strings (empty:
+  unset), `optimize`. The rows come from `Result.Found.changes` and stay in `changes` while a
+  time or the offset is edited. `app/.../Pages.kt`: Settings, Help and `SubPage` (← and the back
+  gesture). A symbol on a button gets `Modifier.spokenAs(…)`, the word a screen
   reader says instead (`uiautomator dump` shows it as the child's `content-desc`). Every text is
   in `res/values*/strings.xml` (en, de, fr, it); a new one goes in all four, or lint fails on
-  the missing translation. The search runs on
-  `Dispatchers.IO`; a failure shows one text (`search_failed`) and logs the exception under the
-  tag `Gleiswechsel`, in the message too (Android's `Log` drops the stack trace of an
-  `UnknownHostException`). `buildConfig` is on for the version name in the User-Agent.
+  the missing translation. The search runs on `Dispatchers.IO`; a failure shows one text
+  (`search_failed`) and logs the exception under the tag `Gleiswechsel`, in the message too
+  (Android's `Log` drops the stack trace of an `UnknownHostException`). `buildConfig` is on for the version name in the User-Agent.
 - Before input over adb, check the app is in front (`adb shell dumpsys activity activities | grep
   topResumedActivity`): the user uses the phone meanwhile, and a back key with no keyboard open
   leaves the app, so later taps and text go into whatever app is behind (2026-10-06: they went
@@ -43,12 +44,13 @@ is in `research/`.
 - Driving the page over adb: `uiautomator dump` lists the texts and bounds; `input tap` a field,
   `input text` (`%s` for a space), `input keyevent 123` moves to the end and `67` deletes,
   `input keyevent 4` closes the keyboard (a second one goes back from Help or Settings). On the
-  test phone (1116×2484): ⚙ at (87, 182), ? at (1029, 182), the rest moves with
-  the panels (Destination centred before a search, folded after; Journey; Optimization): dump
-  and tap the centre of the bounds. A stepper's − and + show in the dump as their content-desc
-  ("One minute less", "One minute more"); a step clears the finds, so the rows move up. A tap on
-  the title (558, 182) opens the language menu (Android 13+). In Settings: ← at (87, 182), the offset
-  at (912, 338), the Optimization switch at (975, 530). Rows below the screen aren't in the dump: `input swipe 558 2000 558 400` first.
+  test phone (1116×2484): ⚙ at (87, 182), ? at (1029, 182), the rest moves with the panels
+  (Destination centred before a search, folded after; Journey; Optimization): dump and tap the
+  centre of the bounds. A stepper's − and + show in the dump as their content-desc ("One minute
+  less", "One minute more"); a step clears the finds, so the rows move up. A tap on the title
+  (558, 182) opens the language menu (Android 13+). In Settings: ← at (87, 182), the offset's −
+  and + and the Optimization switch: dump. Rows below the screen aren't in the dump:
+  `input swipe 558 2000 558 400` first.
   TalkBack (FOSS build `app.talkbackfoss`) can be turned on with `settings put secure
   enabled_accessibility_services app.talkbackfoss/com.google.android.marvin.talkback.TalkBackService`
   and `accessibility_enabled 1`; off with `settings delete secure enabled_accessibility_services`
@@ -110,14 +112,15 @@ Wed 7 Oct 2026.
 
 Everything else was tried on the phone with the R8 release build signed with the debug key.
 
-- On the page: an orange or red box in a card (no such find at hand); the offset at 0 (orange);
+- On the page: an orange or red box in a card (no such find at hand);
   a find with a walk, or at a second change, drawn as a timetable (only the test case's); a set
   time at a second change finding something; a long station name in a row or a card; a
   non-digit typed (the filter drops it).
 - The rule between the finds (2026-10-06): only the unit tests; no real search has shown two
   finds yet.
 - Languages: a phone set to German itself (only `set-app-locales`); French and Italian since the
-  formal texts (only the error text seen); the French row's long label.
+  formal texts (only the error text seen); the long offset label in Settings next to − and +
+  (French, Italian).
 - HTTP 429 with the plain error text (got once before it, after many searches).
 - TalkBack's speech: the words are in the accessibility tree and TalkBack (FOSS build, turned on
   over adb and off again) frames ← as one element, but nothing was heard (neither it nor eSpeak
@@ -127,27 +130,30 @@ Everything else was tried on the phone with the R8 release build signed with the
 - The debug build on the phone.
 - The themed icon in a launcher that shows themed icons (Niagara doesn't); only checked as a
   render.
-- The release workflow (the secrets are in place, user 2026-10-06; never run).
 
 ## Releasing (as in gridload and APODroid)
 
 1. Bump `versionCode` and `versionName` in `app/build.gradle.kts`.
-2. Add `fastlane/metadata/android/en-US/changelogs/<versionCode>.txt` (max 500 characters).
+2. Add `fastlane/metadata/android/<locale>/changelogs/<versionCode>.txt` in all four (max 500
+   characters). If the page looks different, a new screenshot (Store listing).
 3. Commit and tag `vX.Y.Z` only when the user asks; the user pushes. The tag builds the signed
    GitHub Release for Obtainium.
 4. F-Droid rebuilds the tag and must get a byte-identical APK apart from the signature. For
    build-only changes, compare the unsigned release APK's sha256 before and after.
 5. Push order: `master`, then the tag.
+6. After the workflow: its APK against an unsigned build of the tag from a fresh clone, e.g.
+   `apksigcopier compare gleiswechsel-vX.Y.Z.apk --unsigned app-release-unsigned.apk` (pip, in a
+   venv; it needs build-tools' `apksigner` on PATH). Done for 0.1.0.
 
 ## F-Droid
 
-Not submitted yet. The first submission is a merge request to fdroiddata with a recipe
+The merge request for 0.1.0 is open (user, 2026-10-06): the recipe
 `metadata/io.github.buerlino.gleiswechsel.yml`, made like APODroid's and gridload's (`Binaries` +
-`AllowedAPKSigningKeys`, `UpdateCheckMode: Tags`, `AutoUpdateMode: Version`), from a branch in
-`../fdroiddata` off upstream `master`, checked with `fdroid lint` and `fdroid rewritemeta`.
-`../fdroiddata` is the user's fork clone (`origin` gitlab.com/buerlino/fdroiddata, `upstream`
-fdroid/fdroiddata); the user makes the merge request (user, 2026-10-06). APODroid's commit
-was "New app: APODroid". If a push is rejected with "shallow update not allowed":
+`AllowedAPKSigningKeys`, `UpdateCheckMode: Tags`, `AutoUpdateMode: Version`), on the branch
+`io.github.buerlino.gleiswechsel` (commit "New app: Gleiswechsel") off upstream `master`,
+checked with `fdroid lint` and `fdroid rewritemeta`. `../fdroiddata` is the user's fork clone
+(`origin` gitlab.com/buerlino/fdroiddata, `upstream` fdroid/fdroiddata); the user makes merge
+requests. If a push is rejected with "shallow update not allowed":
 `git fetch --shallow-since=<date before the fork> upstream master`.
 `AllowedAPKSigningKeys` is the release APK's certificate SHA-256 (`apksigner verify
 --print-certs`), lowercase without colons.

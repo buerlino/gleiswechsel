@@ -27,8 +27,8 @@ typealias Connections = (from: String, to: String, time: LocalDateTime) -> List<
  * The local search (research/architecture.md). For each of the [officials] (the official A → B) and
  * each station where it changes trains, asks [connections] for the connections from there to B
  * that the rider can still catch with their [transfer] time at that station, and keeps the one
- * arriving first if it reaches B earlier. One request per change (two where the API walks, see
- * [onward]). A find the planner already offers (an official connection leaves no earlier and
+ * arriving first if it reaches B earlier. One request per change, and one more per stop the API
+ * walks to (see [onward]). A find the planner already offers (an official connection leaves no earlier and
  * arrives no later) isn't one, nor is a find another find beats the same way; of identical trips,
  * the one against the official connection arriving first, so the saving isn't overstated. The
  * finds come in the order they leave (none beats another, so a later one also arrives later).

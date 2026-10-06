@@ -24,8 +24,9 @@ import androidx.compose.ui.unit.sp
 
 /**
  * The global offset of the track switch time, from the official one at every station the rider
- * hasn't set, shown with a − (user, 2026-10-06), coloured against 0, the official time. And
- * whether the Optimization panel is on (user, 2026-10-06); off, the times set there aren't used.
+ * hasn't set, shown with a − (user, 2026-10-06) and saved without it, coloured against 0, the
+ * official time. And whether the Optimization panel is on (user, 2026-10-06); off, the times set
+ * there aren't used.
  */
 @Composable
 internal fun Settings(
@@ -36,7 +37,9 @@ internal fun Settings(
     onOptimize: (Boolean) -> Unit,
     onBack: () -> Unit,
 ) = SubPage(stringResource(R.string.settings), onBack) {
-    MinutesField(stringResource(R.string.global_offset), offset, DEFAULT_OFFSET, 0, enabled, minus = true, onValueChange = onOffset)
+    MinutesStepper(
+        stringResource(R.string.global_offset), offset.toLongOrNull()?.let { -it }, -DEFAULT_OFFSET, 0, enabled, range = -99L..0,
+    ) { onOffset(it?.let { "${-it}" } ?: "") }
     Row(verticalAlignment = Alignment.CenterVertically) {
         Text(stringResource(R.string.optimization_setting), Modifier.weight(1f).padding(end = 16.dp))
         Switch(optimize, onOptimize, enabled = enabled)

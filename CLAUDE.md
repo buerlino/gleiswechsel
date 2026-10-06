@@ -149,9 +149,9 @@ the result and a running search stay.
 
 Destination (user, 2026-10-06): before a search it sits in the middle of the page (of the
 space above the keyboard while typing); Search moves it to the top and folds the three fields
-into one line, "Horw → Sursee, 08:50 ▾", a tap on which opens them again. The Search button stays
-in view, folded or not (to search again after editing a time). With no result and no rows
-(editing the commute clears both) it goes back to the middle.
+into one line (from → to, time ▾), a tap on which opens them again. The Search button stays in
+view, folded or not (to search again after editing a time). With no result and no rows (editing
+the commute clears both) it goes back to the middle.
 
 **Track switch time** (user, 2026-10-06) is the name, in every text, of the minutes from one
 train to the next, walk included: Gleiswechselzeit, temps de changement de voie, tempo di cambio
@@ -168,39 +168,41 @@ at every station the rider hasn't set.
   searches. A ⇅ button swaps from and to (user, 2026-10-06): on the right, centred over the gap
   between the two fields, which keep their distance.
 - **Optimization** (user, 2026-10-06), under Journey: a line saying to lower the time and search
-  again to find more, then one row "X (−) [4 min] (+)" per change station of the official connections, each station once, in route order
-  (Horw → Bern, Bundesplatz: Luzern, Olten, Bern). So a commute with nothing faster can be set
-  too; tapping a find's change, the first idea, couldn't do that. − and + step a minute (0 to 99): a
-  box to type in didn't look changeable (user, 2026-10-06). Unset shows the default (official
-  minimum − offset) faded, the box's text colour at 60%; stepping onto the default unsets it
-  again, so it follows the offset. Saved in `commute` keyed by station id (`8505000` → `4`). A
-  tap on the title folds the panel (▸) or opens it (▾). A switch in Settings turns the panel off
-  (key `optimize`, on until set); off, the times set there are kept but not used. Editing a time clears the finds but keeps the rows (Search again);
-  editing the commute clears both. The rows come only with a search that has connections (user,
-  2026-10-06: without one they don't help), so after a restart they're back with the next one.
+  again to find more, then a row per change station of the official connections, each station
+  once, in route order (Horw → Bern, Bundesplatz: Luzern, Olten, Bern): the station, then its
+  time in the box between − and +. So a commute with nothing faster can be set too; tapping a
+  find's change, the first idea, couldn't do that. Saved in `commute` keyed by station id
+  (`8505000` → `4`). A tap on the title folds the panel (▸) or opens it (▾). A switch in Settings
+  turns the panel off (key `optimize`, on until set); off, the times set there are kept but not
+  used. Editing a time clears the finds but keeps the rows (Search again); editing the commute
+  clears both. The rows come only with a search that has connections (user, 2026-10-06: without
+  one they don't help), so after a restart, or a failed search, they're back with the next one.
+- **− and +** (`MinutesStepper`, user, 2026-10-06) set every track switch time the rider sets, in
+  Optimization and the offset in Settings: a box to type in didn't look changeable. Plain − and
+  +, no circle around them (user, 2026-10-06). A step is a minute (0 to 99). Unset shows the
+  default faded, the box's text colour at 60%; stepping onto the default unsets it again, so a
+  row follows the offset.
 - **The track switch time is the number the app is about** (user, 2026-10-06): always in the
-  same box, in the cards, Optimization and Settings (`MinutesBox`, `MinutesStepper`,
-  `MinutesField` for the offset), coloured against
-  the official one at that station (user, 2026-10-06): green below, orange the same, red above,
-  gridload's three with its text colours (green `2E7D32` and red `C62828` with white, orange
-  `FFA000` with black), no border (user, 2026-10-06).
-  A row's colour follows its value or, empty, its default; the offset in Settings is coloured
-  against 0 (−1 green, 0 orange). A find's own change is so green, the official ones in its card
-  orange or red.
-- **The finds** (user, 2026-10-06: before, "a wall of text"): a card each, "14 min earlier",
-  "Sursee 09:26 instead of 09:40", how much more efficient, then the trip as a timetable: a row
-  per stop (time, station, track), the train in between, and at each change its minutes in the
-  box. Stations underlined, the train (RE24) in a black outline without fill, the track's number
-  as a platform sign: white on the logo's blue `00179B` with a white line inside, a bit bigger
-  (user, 2026-10-06). A walk between two trains is part of the change ("7 min track switch, 6 min walk"); one
-  before the first train or after the last is a row of its own. Under the trip, a small grey
-  "Official connection ▸" opens the official connection it beats, the same timetable at 60%
-  (user, 2026-10-06: there but not in the way). With nothing faster, Journey shows the official
-  connection leaving first in a card of its own, so the rider sees where it changes.
-- **Settings** (user, 2026-10-06): "Global offset of the track switch time [−_ min]" (the − in
-  the box: it's subtracted), key `offset` in `commute`, 1 until set (`DEFAULT_OFFSET`, proposed,
-  see open question 4), and the Optimization switch. Changing either clears the finds and keeps
-  the rows; locked while a search runs.
+  same box (`MinutesBox`), in the cards, Optimization and Settings, coloured against the official
+  one at that station (user, 2026-10-06): green below, orange the same, red above, gridload's
+  three with its text colours (green `2E7D32` and red `C62828` with white, orange `FFA000` with
+  black), no border (user, 2026-10-06). A row's colour follows its value or its default; the
+  offset in Settings is coloured against 0 (−1 green, 0 orange). A find's own change is so green,
+  the official ones in its card orange or red.
+- **The finds** (user, 2026-10-06: before, "a wall of text"): a card each with the minutes saved,
+  the arrival instead of the official one, how much more efficient, then the trip as a
+  timetable: a row per stop (time, station, track), the train in between, and at each change its
+  minutes in the box. Stations underlined, the train (RE24) in a black outline without fill, the
+  track's number as a platform sign: white on the logo's blue `00179B` with a white line inside,
+  a bit bigger (user, 2026-10-06). A walk between two trains is part of the change (the box, then
+  the walk's minutes); one before the first train or after the last is a row of its own. Under
+  the trip, a small grey line (▸) opens the official connection it beats, the same timetable at
+  60% (user, 2026-10-06: there but not in the way). With nothing faster, Journey shows the
+  official connection leaving first in a card of its own, so the rider sees where it changes.
+- **Settings** (user, 2026-10-06): the global offset of the track switch time, shown with a −
+  (it's subtracted) and saved without it, key `offset` in `commute`, 1 until set
+  (`DEFAULT_OFFSET`, proposed, see open question 4), and the Optimization switch. Changing either
+  clears the finds and keeps the rows; locked while a search runs.
 - **Help:** what the app does, the track switch time and its colours, how much more efficient,
   that times are planned only, and the data sources (opentransportdata.swiss wants to be named).
   Each concept is explained there once.
@@ -261,12 +263,9 @@ at every station the rider hasn't set.
 The scope: one saved commute, the rider's transfer time per station, the local search, one result
 list (user, 2026-10-06: "focus on the core utility").
 
-Left before the first release (0.1.0):
-
-- The reproducible build passed on the release's code (2026-10-06: two clean copies in different
-  paths and the repo's own build, the same sha256); after the tag, Claude compares the
-  workflow's APK with an unsigned build of the tag (`apksigcopier compare`).
-- The F-Droid merge request after the tag: the user, from their fork in `../fdroiddata`.
+Released as 0.1.0 (tag `v0.1.0`, 2026-10-06): the workflow's APK is the tag's unsigned build plus
+the signature (`apksigcopier compare`). The F-Droid merge request is open (user, 2026-10-06),
+from the branch `io.github.buerlino.gleiswechsel` in `../fdroiddata`.
 
 ## After the first release
 
