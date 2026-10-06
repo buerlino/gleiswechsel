@@ -7,12 +7,14 @@
     <string name="title">Changement de voie</string>
     <string name="destination">Destination</string>
     <string name="journey">Voyage</string>
+    <string name="close_journey">Fermer le voyage</string>
     <string name="optimization">Optimisation</string>
     <string name="from">De</string>
     <string name="to">À</string>
     <string name="swap">Inverser le départ et l\'arrivée</string>
     <string name="leaving_at">Départ</string>
     <string name="change_trip">Modifier le départ, l\'arrivée et l\'heure</string>
+    <string name="hide_trip">Replier le départ, l\'arrivée et l\'heure</string>
     <string name="search">Rechercher</string>
     <string name="searching">Recherche…</string>
     <string name="cancel">Annuler</string>

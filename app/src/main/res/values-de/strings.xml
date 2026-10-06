@@ -1,18 +1,21 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!-- German, Swiss spelling (ss, no ß); "Sie". -->
-<resources>
+<resources xmlns:tools="http://schemas.android.com/tools">
     <string name="language">de</string>
     <string name="day_pattern">EEE d. MMM</string>
 
     <string name="title">Gleiswechsel</string>
     <string name="destination">Ziel</string>
     <string name="journey">Reise</string>
+    <!-- Swiss spelling (ss), which lint takes for a typo. -->
+    <string name="close_journey" tools:ignore="Typos">Reise schliessen</string>
     <string name="optimization">Optimierung</string>
     <string name="from">Von</string>
     <string name="to">Nach</string>
     <string name="swap">Von und Nach tauschen</string>
     <string name="leaving_at">Abfahrt</string>
     <string name="change_trip">Von, Nach und Zeit ändern</string>
+    <string name="hide_trip">Von, Nach und Zeit einklappen</string>
     <string name="search">Suchen</string>
     <string name="searching">Suche läuft…</string>
     <string name="cancel">Abbrechen</string>

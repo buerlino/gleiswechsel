@@ -215,8 +215,7 @@ private fun App(prefs: SharedPreferences, minimums: Minimums, saved: File, last:
                         Modifier.padding(top = top).onSizeChanged { formHeight = it.height },
                         verticalArrangement = Arrangement.spacedBy(8.dp),
                     ) {
-                        // After a search its title folds and opens it, as Optimization's (user, 2026-10-06).
-                        Heading(stringResource(R.string.destination), open.takeIf { !centred }) { open = !open }
+                        Heading(stringResource(R.string.destination))
                         AnimatedVisibility(open || centred) {
                             Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
                                 // The swap button hovers on the right, centred between From and To,
@@ -243,29 +242,43 @@ private fun App(prefs: SharedPreferences, minimums: Minimums, saved: File, last:
                             Folded("${from.trim()} → ${to.trim()}, ${time?.format(hourMinute) ?: leaving}") { open = true }
                         }
                         // While it searches, Search is Cancel (user, 2026-10-06): the requests can't be
-                        // stopped, so their late answer is dropped.
-                        Button(
-                            enabled = searching || from.isNotBlank() && to.isNotBlank() && time != null,
-                            onClick = {
-                                if (searching) {
-                                    job?.cancel()
-                                    show(null)
-                                    return@Button
-                                }
-                                open = false
-                                show(Result.Searching)
-                                val transfer = { stop: Stop, official: Minimums -> Duration.ofMinutes(riderAt(stop, official)) }
-                                job = scope.launch {
-                                    val r = withContext(Dispatchers.IO) { find(from.trim(), to.trim(), time!!, minimums, transfer) }
-                                    show(r)
-                                    val found = (r as? Result.Done)?.found
-                                    found?.let { official = minimums.lowered(it.shortest) }
-                                    changes = found?.changes.orEmpty()
-                                }
-                            },
-                        ) { Text(stringResource(if (searching) R.string.cancel else R.string.search)) }
+                        // stopped, so their late answer is dropped. Opened after a search, the fields fold
+                        // again with ▴ on its right (user, 2026-10-06; one mark each way, none on the title).
+                        Row(verticalAlignment = Alignment.CenterVertically) {
+                            Button(
+                                enabled = searching || from.isNotBlank() && to.isNotBlank() && time != null,
+                                onClick = {
+                                    if (searching) {
+                                        job?.cancel()
+                                        show(null)
+                                        return@Button
+                                    }
+                                    open = false
+                                    show(Result.Searching)
+                                    val transfer = { stop: Stop, official: Minimums -> Duration.ofMinutes(riderAt(stop, official)) }
+                                    job = scope.launch {
+                                        val r = withContext(Dispatchers.IO) { find(from.trim(), to.trim(), time!!, minimums, transfer) }
+                                        show(r)
+                                        val found = (r as? Result.Done)?.found
+                                        found?.let { official = minimums.lowered(it.shortest) }
+                                        changes = found?.changes.orEmpty()
+                                    }
+                                },
+                            ) { Text(stringResource(if (searching) R.string.cancel else R.string.search)) }
+                            Spacer(Modifier.weight(1f))
+                            if (open && !centred) TextButton({ open = false }) {
+                                Text("▴", Modifier.spokenAs(stringResource(R.string.hide_trip)), fontSize = 22.sp)
+                            }
+                        }
                     }
-                    if (result != null) Heading(stringResource(R.string.journey))
+                    // ✕ closes the result and the rows, so Destination is back in the middle, as on start
+                    // (user, 2026-10-06); while a search runs, Search is Cancel instead.
+                    if (result != null) Row(verticalAlignment = Alignment.CenterVertically) {
+                        Box(Modifier.weight(1f)) { Heading(stringResource(R.string.journey)) }
+                        if (!searching) TextButton({ show(null); changes = emptyList() }, Modifier.padding(top = 8.dp)) {
+                            Text("✕", Modifier.spokenAs(stringResource(R.string.close_journey)), fontSize = 20.sp)
+                        }
+                    }
                     when (val r = result) {
                         null -> {}
                         Result.Searching -> Text(stringResource(R.string.searching))

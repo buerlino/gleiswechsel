@@ -147,7 +147,7 @@ The search page has three panels, each with its title (user, 2026-10-06): **Dest
 commute and Search), **Journey** (the result) and **Optimization** (the rider's track switch time
 at each change station). A top bar: **⚙** (top left) opens
 Settings, **?** (top right) Help (user, 2026-10-06), text buttons as in gridload; each has ← and
-takes the back gesture. A screen reader says a word for each symbol (⚙, ?, ⇅, ←: `spokenAs`).
+takes the back gesture. A screen reader says a word for each symbol (⚙, ?, ⇅, ←, ▴, ✕: `spokenAs`).
 The page's state lives above the three, so Help and Settings don't lose the result. Turning the
 phone doesn't recreate the activity (`configChanges`, 2026-10-06: one line, no ViewModel), so
 the result and a running search stay.
@@ -166,9 +166,11 @@ no migration. No cloud backup; a phone-to-phone transfer takes it.
 
 Destination (user, 2026-10-06): before a search it sits in the middle of the page (of the
 space above the keyboard while typing); Search moves it to the top and folds the three fields
-into one line (from → to, time ▾), a tap on which opens them again. After a search the title
-folds and opens it too, with ▾ or ▸, as Optimization's (user, 2026-10-06: once opened, it
-couldn't be hidden again); before a search it has no mark. The Search button stays in
+into one line (from → to, time ▾), a tap on which opens them again. Opened after a search, a ▴ on the Search button's row
+folds them again (user, 2026-10-06: once opened they couldn't be hidden; one mark each way,
+none on the title). A ✕ on the right of Journey's title closes the result and the Optimization
+rows (and deletes the saved file), so Destination is back in the middle, as on start (user,
+2026-10-06); while a search runs it isn't there (Search is Cancel). The Search button stays in
 view, folded or not (to search again after editing a time); while a search runs it reads Cancel
 (user, 2026-10-06: a slow API meant a long, locked wait), which unlocks the fields at once and
 drops the late answer (the requests themselves can't be stopped). With no result and no rows

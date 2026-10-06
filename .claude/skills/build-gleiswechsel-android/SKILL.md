@@ -34,8 +34,8 @@ is in `research/`.
   of requests. It asks for the next weekday, so a public holiday or a timetable change can fail it.
 - `app/.../MainActivity.kt`: `App` holds all state and shows the search page, Help or Settings
   (`Screen`); the search page (`Heading` for each panel's title, foldable with `open`, also
-  Help's topics; `Folded` for the folded
-  Destination), the cards (`FindCard`, `Trip`, `MinutesBox`) and `MinutesStepper` (− and +, the
+  Help's topics; `Folded` for the folded Destination, ▴ on the Search row to fold it again, ✕
+  on Journey's title to close the result), the cards (`FindCard`, `Trip`, `MinutesBox`) and `MinutesStepper` (− and +, the
   rows and the offset in Settings; `arrows = false` for the offset), `folding` and `FoldMark`
   (a fold's state for a screen reader, the ▾ or ▸ hidden from it). SharedPreferences
   `commute`: `from`, `to`, `leaving` as typed, `offset` and the transfer times keyed by station id as numbers in strings (empty:
@@ -160,7 +160,7 @@ Everything else was tried on the phone with the R8 release build signed with the
   over adb and off again) frames ← as one element, but nothing was heard (neither it nor eSpeak
   logs the text).
 - The dark bar icons with three-button navigation.
-- Help's topics and Destination's foldable title (2026-10-06): seen on the phone in German only;
+- Help's topics, Destination's ▴ and Journey's ✕ (2026-10-06): seen on the phone in German only;
   the English, French and Italian texts only built (lint checks they exist), not read on the
   phone. Not heard in TalkBack (it reads the emoji's name before each title).
 - The saved result (2026-10-06, R8 release build): kept after a force-stop and the language

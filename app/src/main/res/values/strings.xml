@@ -10,12 +10,14 @@
     <string name="title">Track switch</string>
     <string name="destination">Destination</string>
     <string name="journey">Journey</string>
+    <string name="close_journey">Close the journey</string>
     <string name="optimization">Optimization</string>
     <string name="from">From</string>
     <string name="to">To</string>
     <string name="swap">Swap from and to</string>
     <string name="leaving_at">Leaving at</string>
     <string name="change_trip">Change from, to and time</string>
+    <string name="hide_trip">Hide from, to and time</string>
     <string name="search">Search</string>
     <string name="searching">Searching…</string>
     <string name="cancel">Cancel</string>

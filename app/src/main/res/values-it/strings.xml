@@ -7,12 +7,14 @@
     <string name="title">Cambio binario</string>
     <string name="destination">Destinazione</string>
     <string name="journey">Viaggio</string>
+    <string name="close_journey">Chiudere il viaggio</string>
     <string name="optimization">Ottimizzazione</string>
     <string name="from">Da</string>
     <string name="to">A</string>
     <string name="swap">Invertire partenza e arrivo</string>
     <string name="leaving_at">Partenza</string>
     <string name="change_trip">Modificare partenza, arrivo e ora</string>
+    <string name="hide_trip">Chiudere partenza, arrivo e ora</string>
     <string name="search">Cerca</string>
     <string name="searching">Ricerca…</string>
     <string name="cancel">Annulla</string>
