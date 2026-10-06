@@ -4,6 +4,7 @@
     <string name="language">fr</string>
     <string name="day_pattern">EEE d MMM</string>
 
+    <string name="title">Changement de voie</string>
     <string name="from">De</string>
     <string name="to">À</string>
     <string name="swap">Inverser le départ et l\'arrivée</string>
@@ -21,7 +22,7 @@
     <string name="track_switch">changement de voie</string>
     <string name="track_switch_walk">changement de voie, %1$d min à pied</string>
     <string name="walk">À pied, %1$d min</string>
-    <string name="track">voie %1$s</string>
+    <string name="track">voie</string>
 
     <string name="back">Retour</string>
     <string name="settings">Paramètres</string>

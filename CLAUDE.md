@@ -16,7 +16,9 @@ includes the subtitle (app label, title, applicationId, repo: just Gleiswechsel)
 goes where a store shows a line under the name: the F-Droid summary
 (`fastlane/.../short_description.txt`; the French and Italian ones add their own after a dash,
 "Schneller umsteigen – Changer plus vite", user 2026-10-06: respectful) and the README's first
-line. applicationId and namespace `io.github.buerlino.gleiswechsel`; Kotlin packages
+line. The top bar shows the name in the texts' language (user, 2026-10-06): Track switch,
+Gleiswechsel, Changement de voie, Cambio binario (`title`); the launcher label stays
+Gleiswechsel. applicationId and namespace `io.github.buerlino.gleiswechsel`; Kotlin packages
 `io.github.buerlino.gleiswechsel` (app) and `io.github.buerlino.gleiswechsel.core`. Repo
 https://github.com/buerlino/gleiswechsel (GPLv3, as the user's other apps). Release APKs are
 named `gleiswechsel-vX.Y.Z.apk`. Not affiliated with SBB: no SBB name, logo or colours in the
@@ -159,21 +161,25 @@ at every station the rider hasn't set.
   [_ min]" per change station of the official connections, each station once, in route order
   (Horw → Bern, Bundesplatz: Luzern, Olten, Bern). So a commute with nothing faster can be set
   too; tapping a find's change, the first idea, couldn't do that. Empty shows the default
-  (official minimum − offset) in light grey (`outline`: the usual placeholder grey looked like a
-  set value). Saved in `commute` keyed by station id (`8505000` → `4`) as typed: digits only, up
+  (official minimum − offset) faded, the box's text colour at 60% (the usual placeholder grey
+  looked like a set value). Saved in `commute` keyed by station id (`8505000` → `4`) as typed: digits only, up
   to 2. Editing a time clears the finds but keeps the rows (Search again);
   editing the commute clears both. The rows come only with a search that has connections (user,
   2026-10-06: without one they don't help), so after a restart they're back with the next one.
 - **The track switch time is the number the app is about** (user, 2026-10-06): always in the
   same box, in the cards, the rows and Settings (`MinutesBox`, `MinutesField`), coloured against
-  the official one at that station (user, 2026-10-06): green below, orange the same, red above.
+  the official one at that station (user, 2026-10-06): green below, orange the same, red above,
+  gridload's three with its text colours (green `2E7D32` and red `C62828` with white, orange
+  `FFA000` with black), no border (user, 2026-10-06).
   A row's colour follows its value or, empty, its default; the offset in Settings is coloured
   against 0 (−1 green, 0 orange). A find's own change is so green, the official ones in its card
   orange or red.
 - **The finds** (user, 2026-10-06: before, "a wall of text"): a card each, "14 min earlier",
   "Sursee 09:26 instead of 09:40", how much more efficient, then the trip as a timetable: a row
   per stop (time, station, track), the train in between, and at each change its minutes in the
-  box. A walk between two trains is part of the change ("7 min track switch, 6 min walk"); one
+  box. Stations underlined, the train (RE24) in a black outline without fill, the track's number
+  as a platform sign: white on the logo's blue `00179B` with a white line inside, a bit bigger
+  (user, 2026-10-06). A walk between two trains is part of the change ("7 min track switch, 6 min walk"); one
   before the first train or after the last is a row of its own.
 - **Settings** (user, 2026-10-06): "Global offset of the track switch time [−_ min]" (the − in
   the box: it's subtracted), key `offset` in `commute`, 1 until set (`DEFAULT_OFFSET`, proposed,

@@ -4,6 +4,7 @@
     <string name="language">de</string>
     <string name="day_pattern">EEE d. MMM</string>
 
+    <string name="title">Gleiswechsel</string>
     <string name="from">Von</string>
     <string name="to">Nach</string>
     <string name="swap">Von und Nach tauschen</string>
@@ -21,7 +22,7 @@
     <string name="track_switch">Gleiswechsel</string>
     <string name="track_switch_walk">Gleiswechsel, %1$d min Fussweg</string>
     <string name="walk">Fussweg, %1$d min</string>
-    <string name="track">Gleis %1$s</string>
+    <string name="track">Gleis</string>
 
     <string name="back">Zurück</string>
     <string name="settings">Einstellungen</string>

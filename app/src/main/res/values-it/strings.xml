@@ -4,6 +4,7 @@
     <string name="language">it</string>
     <string name="day_pattern">EEE d MMM</string>
 
+    <string name="title">Cambio binario</string>
     <string name="from">Da</string>
     <string name="to">A</string>
     <string name="swap">Invertire partenza e arrivo</string>
@@ -21,7 +22,7 @@
     <string name="track_switch">cambio binario</string>
     <string name="track_switch_walk">cambio binario, %1$d min a piedi</string>
     <string name="walk">A piedi, %1$d min</string>
-    <string name="track">binario %1$s</string>
+    <string name="track">binario</string>
 
     <string name="back">Indietro</string>
     <string name="settings">Impostazioni</string>

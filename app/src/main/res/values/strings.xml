@@ -6,6 +6,8 @@
     <string name="language">en</string>
     <string name="day_pattern">EEE d MMM</string>
 
+    <!-- The name in the top bar, in the texts' language (user, 2026-10-06); the app label stays Gleiswechsel. -->
+    <string name="title">Track switch</string>
     <string name="from">From</string>
     <string name="to">To</string>
     <string name="swap">Swap from and to</string>
@@ -23,7 +25,7 @@
     <string name="track_switch">track switch</string>
     <string name="track_switch_walk">track switch, %1$d min walk</string>
     <string name="walk">Walk, %1$d min</string>
-    <string name="track">track %1$s</string>
+    <string name="track">track</string>
 
     <string name="back">Back</string>
     <string name="settings">Settings</string>

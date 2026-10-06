@@ -8,7 +8,7 @@ import androidx.activity.ComponentActivity
 import androidx.activity.SystemBarStyle
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
-import androidx.compose.foundation.BorderStroke
+import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -53,6 +53,7 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.semantics.clearAndSetSemantics
 import androidx.compose.ui.semantics.contentDescription
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextDecoration
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
@@ -210,7 +211,7 @@ private fun App(prefs: SharedPreferences, minimums: Minimums) {
 @Composable
 private fun TopBar(onSettings: () -> Unit, onHelp: () -> Unit) = Row(verticalAlignment = Alignment.CenterVertically) {
     TextButton(onClick = onSettings) { Text("⚙", Modifier.spokenAs(stringResource(R.string.settings)), fontSize = 22.sp) }
-    Text("Gleiswechsel", Modifier.weight(1f), textAlign = TextAlign.Center, style = MaterialTheme.typography.titleLarge)
+    Text(stringResource(R.string.title), Modifier.weight(1f), textAlign = TextAlign.Center, style = MaterialTheme.typography.titleLarge)
     TextButton(onClick = onHelp) { Text("?", Modifier.spokenAs(stringResource(R.string.help)), fontSize = 22.sp, fontWeight = FontWeight.Bold) }
 }
 
@@ -237,8 +238,8 @@ private fun Field(
 
 /**
  * [label] and its minutes in a box, as typed (digits, up to 2), with a − in front if they're
- * [minus]. Empty shows [default] in light grey: the usual placeholder grey looks like a set value.
- * The box is the one of [MinutesBox], coloured against [official].
+ * [minus]. Empty shows [default] faded: the usual placeholder grey looks like a set value.
+ * The box is the one of [MinutesBox], coloured against [official], without a border (user, 2026-10-06).
  */
 @Composable
 internal fun MinutesField(
@@ -252,17 +253,23 @@ internal fun MinutesField(
 ) =
     Row(verticalAlignment = Alignment.CenterVertically) {
         Text(label, Modifier.weight(1f))
-        val box = boxColor((minutes.toLongOrNull() ?: default) * if (minus) -1 else 1, official)
+        val (box, ink) = boxColors((minutes.toLongOrNull() ?: default) * if (minus) -1 else 1, official)
         OutlinedTextField(
             minutes, { onValueChange(it.filter(Char::isDigit).take(2)) }, Modifier.width(104.dp), enabled,
             textStyle = LocalTextStyle.current.copy(fontWeight = FontWeight.Bold),
-            placeholder = { Text("$default", color = MaterialTheme.colorScheme.outline) },
+            placeholder = { Text("$default", color = ink.copy(alpha = 0.6f)) },
             prefix = if (minus) { { Text("−") } } else null,
             suffix = { Text("min") },
             keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
             singleLine = true,
             colors = OutlinedTextFieldDefaults.colors(
                 focusedContainerColor = box, unfocusedContainerColor = box, disabledContainerColor = box,
+                focusedTextColor = ink, unfocusedTextColor = ink, disabledTextColor = ink,
+                focusedPrefixColor = ink, unfocusedPrefixColor = ink, disabledPrefixColor = ink,
+                focusedSuffixColor = ink, unfocusedSuffixColor = ink, disabledSuffixColor = ink,
+                cursorColor = ink,
+                focusedBorderColor = Color.Transparent, unfocusedBorderColor = Color.Transparent,
+                disabledBorderColor = Color.Transparent,
             ),
         )
     }
@@ -272,19 +279,20 @@ internal fun MinutesField(
  * [MinutesField] and coloured against the [official] one.
  */
 @Composable
-private fun MinutesBox(minutes: Long, official: Long) = Surface(
-    shape = MaterialTheme.shapes.extraSmall,
-    color = boxColor(minutes, official),
-    border = BorderStroke(1.dp, MaterialTheme.colorScheme.outline),
-) {
-    Text("$minutes min", Modifier.padding(horizontal = 8.dp, vertical = 2.dp), fontWeight = FontWeight.Bold)
+private fun MinutesBox(minutes: Long, official: Long) = boxColors(minutes, official).let { (box, ink) ->
+    Surface(shape = MaterialTheme.shapes.extraSmall, color = box, contentColor = ink) {
+        Text("$minutes min", Modifier.padding(horizontal = 8.dp, vertical = 2.dp), fontWeight = FontWeight.Bold)
+    }
 }
 
-/** Green below the official track switch time, orange at it, red above (user, 2026-10-06). */
-private fun boxColor(minutes: Long, official: Long) = when {
-    minutes < official -> Color(0xFFA5D6A7)
-    minutes == official -> Color(0xFFFFCC80)
-    else -> Color(0xFFEF9A9A)
+/**
+ * The box and its text: green below the official track switch time, orange at it, red above
+ * (user, 2026-10-06), gridload's three with its text colours.
+ */
+private fun boxColors(minutes: Long, official: Long) = when {
+    minutes < official -> Color(0xFF2E7D32) to Color.White
+    minutes == official -> Color(0xFFFFA000) to Color.Black
+    else -> Color(0xFFC62828) to Color.White
 }
 
 /** `8:50`, `08:50`, `850` or `0850`; null if it isn't a time. */
@@ -351,7 +359,13 @@ private fun Trip(trip: Connection, minimums: Minimums) {
         when {
             train != null -> {
                 StopRow(leg.departure)
-                Indented { Text(train, fontWeight = FontWeight.Bold) }
+                Indented {
+                    Text(
+                        train,
+                        Modifier.border(1.dp, Color.Black, MaterialTheme.shapes.extraSmall).padding(horizontal = 6.dp),
+                        fontWeight = FontWeight.Bold,
+                    )
+                }
                 StopRow(leg.arrival)
                 if (next != null) Indented {
                     MinutesBox(
@@ -372,10 +386,25 @@ private fun Trip(trip: Connection, minimums: Minimums) {
 }
 
 @Composable
-private fun StopRow(stop: Stop) = Row {
+private fun StopRow(stop: Stop) = Row(verticalAlignment = Alignment.CenterVertically) {
     Text(stop.time.format(hourMinute), Modifier.width(TIME_COLUMN))
-    Text(stop.station, Modifier.weight(1f))
-    stop.platform?.let { Text(stringResource(R.string.track, it), color = MaterialTheme.colorScheme.onSurfaceVariant) }
+    Text(stop.station, Modifier.weight(1f), textDecoration = TextDecoration.Underline)
+    stop.platform?.let {
+        Text(stringResource(R.string.track), Modifier.padding(end = 6.dp), color = MaterialTheme.colorScheme.onSurfaceVariant)
+        TrackSign(it)
+    }
+}
+
+/** A track's number as on a platform sign: white on blue (the logo's), a white line inside the edge. */
+@Composable
+private fun TrackSign(track: String) = Surface(shape = MaterialTheme.shapes.extraSmall, color = Color(0xFF00179B)) {
+    Text(
+        track,
+        Modifier.padding(2.dp).border(1.dp, Color.White, MaterialTheme.shapes.extraSmall).padding(horizontal = 5.dp),
+        color = Color.White,
+        fontSize = 18.sp,
+        fontWeight = FontWeight.Bold,
+    )
 }
 
 /** Under a stop's name, past the times: the train, a walk, a change. */

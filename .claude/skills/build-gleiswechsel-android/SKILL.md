@@ -36,6 +36,10 @@ is in `research/`.
   `Dispatchers.IO`; a failure shows one text (`search_failed`) and logs the exception under the
   tag `Gleiswechsel`, in the message too (Android's `Log` drops the stack trace of an
   `UnknownHostException`). `buildConfig` is on for the version name in the User-Agent.
+- Before input over adb, check the app is in front (`adb shell dumpsys activity activities | grep
+  topResumedActivity`): the user uses the phone meanwhile, and a back key with no keyboard open
+  leaves the app, so later taps and text go into whatever app is behind (2026-10-06: they went
+  into WhatsApp). Editing a time clears the card, so the rows move up: dump again before tapping.
 - Driving the page over adb: `uiautomator dump` lists the texts and bounds; `input tap` a field,
   `input text` (`%s` for a space), `input keyevent 123` moves to the end and `67` deletes,
   `input keyevent 4` closes the keyboard (a second one goes back from Help or Settings). On the
@@ -145,9 +149,9 @@ was "New app: APODroid". If a push is rejected with "shallow update not allowed"
 `git fetch --shallow-since=<date before the fork> upstream master`.
 `AllowedAPKSigningKeys` is the release APK's certificate SHA-256 (`apksigner verify
 --print-certs`), lowercase without colons.
-Likely anti-feature `NonFreeNet` for transport.opendata.ch (it runs on search.ch's data), as
-APODroid has for its data source; decide with the user. Category: likely `Public Transport`
-(in fdroiddata's `config/categories.yml`). Reviewer comments: Claude drafts, the user posts.
+Anti-feature `NonFreeNet` (user, 2026-10-06: as APODroid's, naming the host), `en-US: Loads the
+connections from transport.opendata.ch.`; category `Public Transport` (in fdroiddata's
+`config/categories.yml`). Reviewer comments: Claude drafts, the user posts.
 
 ## Store listing
 
