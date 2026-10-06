@@ -43,10 +43,12 @@ is in `research/`.
 - Driving the page over adb: `uiautomator dump` lists the texts and bounds; `input tap` a field,
   `input text` (`%s` for a space), `input keyevent 123` moves to the end and `67` deletes,
   `input keyevent 4` closes the keyboard (a second one goes back from Help or Settings). On the
-  test phone (1116×2484): ⚙ at (87, 182), ? at (1029, 182), fields at y 350, 566, 782, ⇅ at
-  (960, 470), Search at (186, 974); the first "Track switch time" field at x 1000, y 1250 under
-  "nothing faster", y 2198 under the test case's card. In Settings: ← at (87, 182), the offset
-  at (912, 338). Rows below the screen aren't in the dump: `input swipe 558 2000 558 400` first.
+  test phone (1116×2484): ⚙ at (87, 182), ? at (1029, 182), the rest moves with
+  the panels (Destination centred before a search, folded after; Journey; Optimization): dump
+  and tap the centre of the bounds. A stepper's − and + show in the dump as their content-desc
+  ("One minute less", "One minute more"); a step clears the finds, so the rows move up. A tap on
+  the title (558, 182) opens the language menu (Android 13+). In Settings: ← at (87, 182), the offset
+  at (912, 338), the Optimization switch at (975, 530). Rows below the screen aren't in the dump: `input swipe 558 2000 558 400` first.
   TalkBack (FOSS build `app.talkbackfoss`) can be turned on with `settings put secure
   enabled_accessibility_services app.talkbackfoss/com.google.android.marvin.talkback.TalkBackService`
   and `accessibility_enabled 1`; off with `settings delete secure enabled_accessibility_services`

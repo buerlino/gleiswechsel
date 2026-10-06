@@ -8,16 +8,23 @@
 
     <!-- The name in the top bar, in the texts' language (user, 2026-10-06); the app label stays Gleiswechsel. -->
     <string name="title">Track switch</string>
+    <string name="destination">Destination</string>
+    <string name="journey">Journey</string>
+    <string name="optimization">Optimization</string>
     <string name="from">From</string>
     <string name="to">To</string>
     <string name="swap">Swap from and to</string>
     <string name="leaving_at">Leaving at</string>
+    <string name="change_trip">Change from, to and time</string>
     <string name="search">Search</string>
     <string name="searching">Searching…</string>
     <string name="search_failed">No answer from transport.opendata.ch. Check the internet connection or try again in a minute.</string>
     <string name="no_connections">%1$s: no connections found. Check the station names.</string>
     <string name="nothing_faster">%1$s: nothing faster.</string>
-    <string name="switch_time_at">Track switch time at %1$s</string>
+    <string name="optimization_text">Your track switch time at each station. Lower it and search again to find more.</string>
+    <string name="less">One minute less</string>
+    <string name="more">One minute more</string>
+    <string name="official_connection">Official connection</string>
 
     <string name="earlier">%1$d min earlier</string>
     <string name="instead_of">%1$s %2$s instead of %3$s</string>
@@ -30,12 +37,14 @@
     <string name="back">Back</string>
     <string name="settings">Settings</string>
     <string name="global_offset">Global offset of the track switch time</string>
+    <string name="optimization_setting">Optimization: your own track switch time at each station</string>
 
     <string name="help">Help</string>
+    <string name="phone_language">Phone\'s language</string>
     <string name="help_what">What it does</string>
     <string name="help_what_text">Gleiswechsel looks for a faster trip than the official planner shows. The planner offers a change only if it takes at least the station\'s official track switch time, e.g. 5 minutes at Luzern. If you switch faster, an earlier train may still be yours.</string>
     <string name="help_switch">Track switch time</string>
-    <string name="help_switch_text">The minutes in a box: how long you need from one train to the next, walk included. Under a result you can set your own at each station; elsewhere it\'s the official one plus the global offset in Settings (⚙), e.g. 5\u00A0−\u00A01\u00A0=\u00A04\u00A0minutes at Luzern. Green: below the official one, orange: the same, red: above.</string>
+    <string name="help_switch_text">The minutes in a box: how long you need from one train to the next, walk included. Under Optimization you can set your own at each station (− and +); elsewhere it\'s the official one plus the global offset in Settings (⚙), e.g. 5\u00A0−\u00A01\u00A0=\u00A04\u00A0minutes at Luzern. Green: below the official one, orange: the same, red: above.</string>
     <string name="help_efficient">More efficient</string>
     <string name="help_efficient_text" formatted="false">How much faster than the official trip, from the first departure to the last arrival: 33 minutes instead of 47 is 42% more efficient (47 / 33 = 1.42).</string>
     <string name="help_careful">Careful</string>

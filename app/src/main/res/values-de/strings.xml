@@ -5,16 +5,23 @@
     <string name="day_pattern">EEE d. MMM</string>
 
     <string name="title">Gleiswechsel</string>
+    <string name="destination">Ziel</string>
+    <string name="journey">Reise</string>
+    <string name="optimization">Optimierung</string>
     <string name="from">Von</string>
     <string name="to">Nach</string>
     <string name="swap">Von und Nach tauschen</string>
     <string name="leaving_at">Abfahrt</string>
+    <string name="change_trip">Von, Nach und Zeit ändern</string>
     <string name="search">Suchen</string>
     <string name="searching">Suche läuft…</string>
     <string name="search_failed">Keine Antwort von transport.opendata.ch. Prüfen Sie die Internetverbindung oder versuchen Sie es in einer Minute nochmals.</string>
     <string name="no_connections">%1$s: keine Verbindungen gefunden. Prüfen Sie die Stationsnamen.</string>
     <string name="nothing_faster">%1$s: nichts Schnelleres.</string>
-    <string name="switch_time_at">Gleiswechselzeit in %1$s</string>
+    <string name="optimization_text">Ihre Gleiswechselzeit an jedem Bahnhof. Senken Sie sie und suchen Sie erneut, um mehr zu finden.</string>
+    <string name="less">Eine Minute weniger</string>
+    <string name="more">Eine Minute mehr</string>
+    <string name="official_connection">Offizielle Verbindung</string>
 
     <string name="earlier">%1$d min früher</string>
     <string name="instead_of">%1$s %2$s statt %3$s</string>
@@ -27,12 +34,14 @@
     <string name="back">Zurück</string>
     <string name="settings">Einstellungen</string>
     <string name="global_offset">Globaler Offset der Gleiswechselzeit</string>
+    <string name="optimization_setting">Optimierung: Ihre eigene Gleiswechselzeit an jedem Bahnhof</string>
 
     <string name="help">Hilfe</string>
+    <string name="phone_language">Sprache des Telefons</string>
     <string name="help_what">Was die App macht</string>
     <string name="help_what_text">Gleiswechsel sucht eine schnellere Verbindung, als der offizielle Fahrplan zeigt. Er bietet einen Umstieg nur an, wenn er mindestens die offizielle Gleiswechselzeit des Bahnhofs dauert, z. B. 5 Minuten in Luzern. Wechseln Sie schneller, erreichen Sie vielleicht einen früheren Zug.</string>
     <string name="help_switch">Gleiswechselzeit</string>
-    <string name="help_switch_text">Die Minuten im Kästchen: wie lange Sie von einem Zug zum nächsten brauchen, Fussweg inbegriffen. Unter einem Ergebnis können Sie an jedem Bahnhof Ihre eigene setzen; sonst gilt die offizielle plus der globale Offset in den Einstellungen (⚙), z. B. 5\u00A0−\u00A01\u00A0=\u00A04\u00A0Minuten in Luzern. Grün: unter der offiziellen, orange: gleich, rot: darüber.</string>
+    <string name="help_switch_text">Die Minuten im Kästchen: wie lange Sie von einem Zug zum nächsten brauchen, Fussweg inbegriffen. Unter Optimierung können Sie an jedem Bahnhof Ihre eigene setzen (− und +); sonst gilt die offizielle plus der globale Offset in den Einstellungen (⚙), z. B. 5\u00A0−\u00A01\u00A0=\u00A04\u00A0Minuten in Luzern. Grün: unter der offiziellen, orange: gleich, rot: darüber.</string>
     <string name="help_efficient">Effizienter</string>
     <string name="help_efficient_text" formatted="false">Wie viel schneller als die offizielle Verbindung, von der ersten Abfahrt bis zur letzten Ankunft: 33 statt 47 Minuten sind 42 % effizienter (47 / 33 = 1,42).</string>
     <string name="help_careful">Vorsicht</string>

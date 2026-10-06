@@ -12,6 +12,7 @@ import androidx.compose.foundation.layout.windowInsetsPadding
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Switch
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
@@ -23,13 +24,24 @@ import androidx.compose.ui.unit.sp
 
 /**
  * The global offset of the track switch time, from the official one at every station the rider
- * hasn't set, shown with a − (user, 2026-10-06). Coloured against 0, the official time.
+ * hasn't set, shown with a − (user, 2026-10-06), coloured against 0, the official time. And
+ * whether the Optimization panel is on (user, 2026-10-06); off, the times set there aren't used.
  */
 @Composable
-internal fun Settings(offset: String, enabled: Boolean, onOffset: (String) -> Unit, onBack: () -> Unit) =
-    SubPage(stringResource(R.string.settings), onBack) {
-        MinutesField(stringResource(R.string.global_offset), offset, DEFAULT_OFFSET, 0, enabled, minus = true, onValueChange = onOffset)
+internal fun Settings(
+    offset: String,
+    optimize: Boolean,
+    enabled: Boolean,
+    onOffset: (String) -> Unit,
+    onOptimize: (Boolean) -> Unit,
+    onBack: () -> Unit,
+) = SubPage(stringResource(R.string.settings), onBack) {
+    MinutesField(stringResource(R.string.global_offset), offset, DEFAULT_OFFSET, 0, enabled, minus = true, onValueChange = onOffset)
+    Row(verticalAlignment = Alignment.CenterVertically) {
+        Text(stringResource(R.string.optimization_setting), Modifier.weight(1f).padding(end = 16.dp))
+        Switch(optimize, onOptimize, enabled = enabled)
     }
+}
 
 @Composable
 internal fun Help(onBack: () -> Unit) = SubPage(stringResource(R.string.help), onBack) {

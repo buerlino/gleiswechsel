@@ -5,16 +5,23 @@
     <string name="day_pattern">EEE d MMM</string>
 
     <string name="title">Cambio binario</string>
+    <string name="destination">Destinazione</string>
+    <string name="journey">Viaggio</string>
+    <string name="optimization">Ottimizzazione</string>
     <string name="from">Da</string>
     <string name="to">A</string>
     <string name="swap">Invertire partenza e arrivo</string>
     <string name="leaving_at">Partenza</string>
+    <string name="change_trip">Modificare partenza, arrivo e ora</string>
     <string name="search">Cerca</string>
     <string name="searching">Ricerca…</string>
     <string name="search_failed">Nessuna risposta da transport.opendata.ch. Controlli la connessione Internet o riprovi tra un minuto.</string>
     <string name="no_connections">%1$s: nessun collegamento trovato. Controlli i nomi delle stazioni.</string>
     <string name="nothing_faster">%1$s: niente di più veloce.</string>
-    <string name="switch_time_at">Tempo di cambio binario a %1$s</string>
+    <string name="optimization_text">Il suo tempo di cambio binario in ogni stazione. Lo abbassi e cerchi di nuovo per trovare di più.</string>
+    <string name="less">Un minuto in meno</string>
+    <string name="more">Un minuto in più</string>
+    <string name="official_connection">Collegamento ufficiale</string>
 
     <string name="earlier">%1$d min prima</string>
     <string name="instead_of">%1$s %2$s invece delle %3$s</string>
@@ -27,12 +34,14 @@
     <string name="back">Indietro</string>
     <string name="settings">Impostazioni</string>
     <string name="global_offset">Scostamento globale del tempo di cambio binario</string>
+    <string name="optimization_setting">Ottimizzazione: il suo tempo di cambio binario in ogni stazione</string>
 
     <string name="help">Aiuto</string>
+    <string name="phone_language">Lingua del telefono</string>
     <string name="help_what">Cosa fa</string>
     <string name="help_what_text">Gleiswechsel cerca un viaggio più veloce di quello che mostra l\'orario ufficiale. L\'orario propone un cambio solo se dura almeno il tempo di cambio binario ufficiale della stazione, p. es. 5 minuti a Lucerna. Se cambia più in fretta, forse fa ancora in tempo per un treno prima.</string>
     <string name="help_switch">Tempo di cambio binario</string>
-    <string name="help_switch_text">I minuti nel riquadro: quanto le serve da un treno al successivo, a piedi compreso. Sotto un risultato può impostare il suo in ogni stazione; altrove vale quello ufficiale più lo scostamento globale nelle impostazioni (⚙), p. es. 5\u00A0−\u00A01\u00A0=\u00A04\u00A0minuti a Lucerna. Verde: sotto quello ufficiale, arancione: uguale, rosso: sopra.</string>
+    <string name="help_switch_text">I minuti nel riquadro: quanto le serve da un treno al successivo, a piedi compreso. In Ottimizzazione può impostare il suo in ogni stazione (− e +); altrove vale quello ufficiale più lo scostamento globale nelle impostazioni (⚙), p. es. 5\u00A0−\u00A01\u00A0=\u00A04\u00A0minuti a Lucerna. Verde: sotto quello ufficiale, arancione: uguale, rosso: sopra.</string>
     <string name="help_efficient">Più efficiente</string>
     <string name="help_efficient_text" formatted="false">Quanto più veloce del viaggio ufficiale, dalla prima partenza all\'ultimo arrivo: 33 minuti invece di 47, il 42% più efficiente (47 / 33 = 1,42).</string>
     <string name="help_careful">Attenzione</string>

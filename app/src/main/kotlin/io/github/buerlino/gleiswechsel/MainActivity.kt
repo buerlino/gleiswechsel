@@ -1,14 +1,22 @@
 package io.github.buerlino.gleiswechsel
 
+import android.app.LocaleManager
 import android.content.Context
 import android.content.SharedPreferences
+import android.os.Build
 import android.os.Bundle
+import android.os.LocaleList
 import android.util.Log
 import androidx.activity.ComponentActivity
 import androidx.activity.SystemBarStyle
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
+import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.animation.core.animateDpAsState
+import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.border
+import androidx.compose.foundation.clickable
+import androidx.compose.foundation.layout.BoxWithConstraints
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -23,12 +31,15 @@ import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.safeDrawing
 import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.layout.widthIn
 import androidx.compose.foundation.layout.windowInsetsPadding
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.Button
 import androidx.compose.material3.Card
+import androidx.compose.material3.DropdownMenu
+import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.FilledTonalIconButton
 import androidx.compose.material3.LocalTextStyle
 import androidx.compose.material3.MaterialTheme
@@ -41,6 +52,7 @@ import androidx.compose.material3.lightColorScheme
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.key
+import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
@@ -48,7 +60,11 @@ import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.layout.onSizeChanged
+import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.semantics.clearAndSetSemantics
 import androidx.compose.ui.semantics.contentDescription
@@ -56,6 +72,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextDecoration
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.core.content.edit
@@ -83,10 +100,10 @@ internal const val DEFAULT_OFFSET = 1L
 private sealed interface Result {
     data object Searching : Result
     /**
-     * [connections]: how many official connections the search started from; [changes]: where they
-     * change trains, each station once.
+     * [first]: the official connection leaving first, null if there are none; [changes]: where the
+     * official connections change trains, each station once.
      */
-    class Found(val day: LocalDateTime, val connections: Int, val changes: List<Stop>, val finds: List<Find>) : Result
+    class Found(val day: LocalDateTime, val first: Connection?, val changes: List<Stop>, val finds: List<Find>) : Result
     data object Failed : Result
 }
 
@@ -109,9 +126,13 @@ class MainActivity : ComponentActivity() {
 }
 
 /**
- * The search page, or Help or Settings in its place. Every field is saved in [prefs] as it is typed:
- * the commute, the rider's transfer time at each change station (keyed by station id) and the
- * offset. Editing one clears the result; a time or the offset keeps the change stations.
+ * The search page, or Help or Settings in its place. Every field is saved in [prefs] as it is set:
+ * the commute, the rider's transfer time at each change station (keyed by station id), the offset
+ * and whether Optimization is on. Editing one clears the result; a time, the offset or Optimization
+ * keeps the change stations.
+ *
+ * The page has three panels (user, 2026-10-06): Destination (the commute), Journey (the result)
+ * and Optimization (the rider's time at each change station).
  */
 @Composable
 private fun App(prefs: SharedPreferences, minimums: Minimums) {
@@ -120,8 +141,11 @@ private fun App(prefs: SharedPreferences, minimums: Minimums) {
     var to by remember { mutableStateOf(prefs.getString("to", "")!!) }
     var leaving by remember { mutableStateOf(prefs.getString("leaving", "")!!) }
     var offset by remember { mutableStateOf(prefs.getString("offset", "")!!) }
+    var optimize by remember { mutableStateOf(prefs.getBoolean("optimize", true)) }
     var result by remember { mutableStateOf<Result?>(null) }
     var changes by remember { mutableStateOf(emptyList<Stop>()) }
+    var open by remember { mutableStateOf(true) }
+    var optimizationOpen by remember { mutableStateOf(true) }
     val scroll = rememberScrollState()
     val scope = rememberCoroutineScope()
     val time = parseTime(leaving)
@@ -137,68 +161,111 @@ private fun App(prefs: SharedPreferences, minimums: Minimums) {
     }
     // Where the rider hasn't set a time: the offset below the official minimum, at least 0 (user, 2026-10-06).
     fun defaultAt(stop: Stop) = maxOf(minimums.at(stop).toMinutes() - offsetMinutes, 0)
+    // With Optimization off, the times set at stations are kept but not used.
+    fun riderAt(stop: Stop) = prefs.getString(stop.id, null)?.toLongOrNull()?.takeIf { optimize } ?: defaultAt(stop)
     when (screen) {
         Screen.HELP -> Help(onBack = { screen = Screen.SEARCH })
-        Screen.SETTINGS -> Settings(offset, !searching, { offset = it; save("offset", it) }, onBack = { screen = Screen.SEARCH })
+        Screen.SETTINGS -> Settings(
+            offset, optimize, !searching,
+            onOffset = { offset = it; save("offset", it) },
+            onOptimize = { optimize = it; result = null; prefs.edit { putBoolean("optimize", it) } },
+            onBack = { screen = Screen.SEARCH },
+        )
         Screen.SEARCH -> Column(Modifier.windowInsetsPadding(WindowInsets.safeDrawing)) {
             TopBar(onSettings = { screen = Screen.SETTINGS }, onHelp = { screen = Screen.HELP })
-            Column(
-                Modifier.verticalScroll(scroll).padding(horizontal = 16.dp).padding(bottom = 16.dp),
-                verticalArrangement = Arrangement.spacedBy(8.dp),
-            ) {
-                // The swap button hovers on the right, centred between From and To, without moving
-                // them apart (user, 2026-10-06). Each field has its label's 8 dp above its border,
-                // so the gap between the borders is 4 dp below the middle.
-                Box(Modifier.fillMaxWidth()) {
-                    Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
-                        Field(stringResource(R.string.from), from, !searching) { from = it; saveCommute("from", it) }
-                        Field(stringResource(R.string.to), to, !searching) { to = it; saveCommute("to", it) }
-                    }
-                    FilledTonalIconButton(
-                        onClick = { val f = from; from = to; to = f; saveCommute("from", from); saveCommute("to", to) },
-                        Modifier.align(Alignment.CenterEnd).offset(y = 4.dp).padding(end = 12.dp),
-                        enabled = !searching,
-                    ) { Text("⇅", Modifier.spokenAs(stringResource(R.string.swap)), fontSize = 20.sp) }
-                }
-                Field(stringResource(R.string.leaving_at), leaving, !searching, "08:50", isError = leaving.isNotEmpty() && time == null, number = true) {
-                    leaving = it; saveCommute("leaving", it)
-                }
-                Button(
-                    enabled = !searching && from.isNotBlank() && to.isNotBlank() && time != null,
-                    onClick = {
-                        result = Result.Searching
-                        val transfer = { stop: Stop -> Duration.ofMinutes(prefs.getString(stop.id, null)?.toLongOrNull() ?: defaultAt(stop)) }
-                        scope.launch {
-                            val r = withContext(Dispatchers.IO) { find(from.trim(), to.trim(), time!!, transfer) }
-                            result = r
-                            changes = (r as? Result.Found)?.changes.orEmpty()
+            // Before a search Destination is in the middle of the page; a search moves it to the top,
+            // folded to one line, and a tap on that opens it again (user, 2026-10-06).
+            val centred = result == null && changes.isEmpty()
+            BoxWithConstraints {
+                var formHeight by remember { mutableIntStateOf(0) }
+                val free = maxHeight - with(LocalDensity.current) { formHeight.toDp() }
+                val top by animateDpAsState(if (centred) (free / 2).coerceAtLeast(0.dp) else 0.dp, label = "top")
+                Column(
+                    Modifier.verticalScroll(scroll).padding(horizontal = 16.dp).padding(bottom = 16.dp),
+                    verticalArrangement = Arrangement.spacedBy(8.dp),
+                ) {
+                    Column(
+                        Modifier.padding(top = top).onSizeChanged { formHeight = it.height },
+                        verticalArrangement = Arrangement.spacedBy(8.dp),
+                    ) {
+                        Heading(stringResource(R.string.destination))
+                        AnimatedVisibility(open || centred) {
+                            Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
+                                // The swap button hovers on the right, centred between From and To,
+                                // without moving them apart (user, 2026-10-06). Each field has its
+                                // label's 8 dp above its border, so the gap between the borders is
+                                // 4 dp below the middle.
+                                Box(Modifier.fillMaxWidth()) {
+                                    Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
+                                        Field(stringResource(R.string.from), from, !searching) { from = it; saveCommute("from", it) }
+                                        Field(stringResource(R.string.to), to, !searching) { to = it; saveCommute("to", it) }
+                                    }
+                                    FilledTonalIconButton(
+                                        onClick = { val f = from; from = to; to = f; saveCommute("from", from); saveCommute("to", to) },
+                                        Modifier.align(Alignment.CenterEnd).offset(y = 4.dp).padding(end = 12.dp),
+                                        enabled = !searching,
+                                    ) { Text("⇅", Modifier.spokenAs(stringResource(R.string.swap)), fontSize = 20.sp) }
+                                }
+                                Field(stringResource(R.string.leaving_at), leaving, !searching, "08:50", isError = leaving.isNotEmpty() && time == null, number = true) {
+                                    leaving = it; saveCommute("leaving", it)
+                                }
+                            }
                         }
-                    },
-                ) { Text(stringResource(R.string.search)) }
-                when (val r = result) {
-                    null -> {}
-                    Result.Searching -> Text(stringResource(R.string.searching))
-                    Result.Failed -> Text(stringResource(R.string.search_failed), color = MaterialTheme.colorScheme.error)
-                    is Result.Found -> {
-                        // The day in the language of the texts, not the phone's: a Spanish phone gets English.
-                        val locale = Locale.forLanguageTag(stringResource(R.string.language))
-                        val day = r.day.format(DateTimeFormatter.ofPattern(stringResource(R.string.day_pattern), locale))
-                        Text(when {
-                            r.connections == 0 -> stringResource(R.string.no_connections, day)
-                            r.finds.isEmpty() -> stringResource(R.string.nothing_faster, day)
-                            else -> "$day:"
-                        })
-                        r.finds.forEach { FindCard(it, minimums) }
+                        AnimatedVisibility(!open && !centred) {
+                            Folded("${from.trim()} → ${to.trim()}, ${time?.format(hourMinute) ?: leaving}") { open = true }
+                        }
+                        Button(
+                            enabled = !searching && from.isNotBlank() && to.isNotBlank() && time != null,
+                            onClick = {
+                                open = false
+                                result = Result.Searching
+                                val transfer = { stop: Stop -> Duration.ofMinutes(riderAt(stop)) }
+                                scope.launch {
+                                    val r = withContext(Dispatchers.IO) { find(from.trim(), to.trim(), time!!, transfer) }
+                                    result = r
+                                    changes = (r as? Result.Found)?.changes.orEmpty()
+                                }
+                            },
+                        ) { Text(stringResource(R.string.search)) }
                     }
-                }
-                changes.forEach { stop ->
-                    key(stop.id) {
-                        var minutes by remember { mutableStateOf(prefs.getString(stop.id, "")!!) }
-                        MinutesField(
-                            stringResource(R.string.switch_time_at, stop.station),
-                            minutes, defaultAt(stop), minimums.at(stop).toMinutes(), !searching,
-                        ) {
-                            minutes = it; save(stop.id, it)
+                    if (result != null) Heading(stringResource(R.string.journey))
+                    when (val r = result) {
+                        null -> {}
+                        Result.Searching -> Text(stringResource(R.string.searching))
+                        Result.Failed -> Text(stringResource(R.string.search_failed), color = MaterialTheme.colorScheme.error)
+                        is Result.Found -> {
+                            // The day in the language of the texts, not the phone's: a Spanish phone gets English.
+                            val locale = Locale.forLanguageTag(stringResource(R.string.language))
+                            val day = r.day.format(DateTimeFormatter.ofPattern(stringResource(R.string.day_pattern), locale))
+                            Text(when {
+                                r.first == null -> stringResource(R.string.no_connections, day)
+                                r.finds.isEmpty() -> stringResource(R.string.nothing_faster, day)
+                                else -> "$day:"
+                            })
+                            r.finds.forEach { FindCard(it, minimums) }
+                            // Nothing faster: the official connection leaving first, to see where it changes (user, 2026-10-06).
+                            if (r.finds.isEmpty() && r.first != null) Card(Modifier.fillMaxWidth()) {
+                                Column(Modifier.padding(12.dp), verticalArrangement = Arrangement.spacedBy(4.dp)) {
+                                    Text(stringResource(R.string.official_connection), style = MaterialTheme.typography.titleMedium)
+                                    Trip(r.first, minimums)
+                                }
+                            }
+                        }
+                    }
+                    if (optimize && changes.isNotEmpty()) {
+                        Heading(stringResource(R.string.optimization), optimizationOpen) { optimizationOpen = !optimizationOpen }
+                        AnimatedVisibility(optimizationOpen) {
+                            Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
+                                Text(stringResource(R.string.optimization_text), style = MaterialTheme.typography.bodySmall)
+                                changes.forEach { stop ->
+                                    key(stop.id) {
+                                        var minutes by remember { mutableStateOf(prefs.getString(stop.id, "")!!) }
+                                        MinutesStepper(stop.station, minutes, defaultAt(stop), minimums.at(stop).toMinutes(), !searching) {
+                                            minutes = it; save(stop.id, it)
+                                        }
+                                    }
+                                }
+                            }
                         }
                     }
                 }
@@ -207,13 +274,65 @@ private fun App(prefs: SharedPreferences, minimums: Minimums) {
     }
 }
 
-/** Settings (⚙) on the left, Help (?) on the right, as in gridload (user, 2026-10-06). */
+/**
+ * A panel's title (user, 2026-10-06); with [open] given, a tap folds or opens the panel and a
+ * ▾ or ▸ says which.
+ */
+@Composable
+private fun Heading(text: String, open: Boolean? = null, onClick: () -> Unit = {}) = Row(
+    Modifier.fillMaxWidth().padding(top = 8.dp)
+        .then(if (open != null) Modifier.clickable(onClick = onClick) else Modifier),
+    verticalAlignment = Alignment.CenterVertically,
+) {
+    Text(text, Modifier.weight(1f), style = MaterialTheme.typography.titleMedium, fontWeight = FontWeight.Bold)
+    if (open != null) Text(if (open) "▾" else "▸", Modifier.clearAndSetSemantics {})
+}
+
+/** The trip in one line, [text], after a search; a tap opens the fields again. */
+@Composable
+private fun Folded(text: String, onOpen: () -> Unit) = Surface(
+    Modifier.fillMaxWidth().clickable(onClickLabel = stringResource(R.string.change_trip), onClick = onOpen),
+    shape = MaterialTheme.shapes.extraSmall,
+    border = BorderStroke(1.dp, MaterialTheme.colorScheme.outline),
+) {
+    Row(Modifier.padding(16.dp), verticalAlignment = Alignment.CenterVertically) {
+        Text(text, Modifier.weight(1f))
+        Text("▾", Modifier.clearAndSetSemantics {})
+    }
+}
+
+/**
+ * Settings (⚙) on the left, Help (?) on the right, as in gridload (user, 2026-10-06). A tap on the
+ * title picks the language, a hidden extra (user, 2026-10-06), on Android 13 and later, which keep
+ * an app's own language.
+ */
 @Composable
 private fun TopBar(onSettings: () -> Unit, onHelp: () -> Unit) = Row(verticalAlignment = Alignment.CenterVertically) {
     TextButton(onClick = onSettings) { Text("⚙", Modifier.spokenAs(stringResource(R.string.settings)), fontSize = 22.sp) }
-    Text(stringResource(R.string.title), Modifier.weight(1f), textAlign = TextAlign.Center, style = MaterialTheme.typography.titleLarge)
+    Box(Modifier.weight(1f), contentAlignment = Alignment.Center) {
+        var menu by remember { mutableStateOf(false) }
+        val context = LocalContext.current
+        Text(
+            stringResource(R.string.title),
+            if (Build.VERSION.SDK_INT >= 33) Modifier.clickable { menu = true } else Modifier,
+            style = MaterialTheme.typography.titleLarge,
+        )
+        if (Build.VERSION.SDK_INT >= 33) DropdownMenu(menu, { menu = false }) {
+            languages.forEach { (tag, name) ->
+                DropdownMenuItem({ Text(name ?: stringResource(R.string.phone_language)) }, {
+                    menu = false
+                    context.getSystemService(LocaleManager::class.java).applicationLocales = LocaleList.forLanguageTags(tag)
+                })
+            }
+        }
+    }
     TextButton(onClick = onHelp) { Text("?", Modifier.spokenAs(stringResource(R.string.help)), fontSize = 22.sp, fontWeight = FontWeight.Bold) }
 }
+
+/** Each language in itself; an empty tag (no name) goes back to the phone's. */
+private val languages = listOf(
+    "en" to "English", "de-CH" to "Deutsch", "fr-CH" to "Français", "it-CH" to "Italiano", "" to null,
+)
 
 /** A screen reader says [words] instead of the symbol (it would read out "⇅"). */
 internal fun Modifier.spokenAs(words: String) = clearAndSetSemantics { contentDescription = words }
@@ -257,7 +376,7 @@ internal fun MinutesField(
         OutlinedTextField(
             minutes, { onValueChange(it.filter(Char::isDigit).take(2)) }, Modifier.width(104.dp), enabled,
             textStyle = LocalTextStyle.current.copy(fontWeight = FontWeight.Bold),
-            placeholder = { Text("$default", color = ink.copy(alpha = 0.6f)) },
+            placeholder = { Text("$default", color = ink.copy(alpha = FADED)) },
             prefix = if (minus) { { Text("−") } } else null,
             suffix = { Text("min") },
             keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
@@ -276,14 +395,44 @@ internal fun MinutesField(
 
 /**
  * A track switch time in a box, the number the app is about (user, 2026-10-06), shaped as in
- * [MinutesField] and coloured against the [official] one.
+ * [MinutesField] and coloured against the [official] one; [faded] when it's a default.
  */
 @Composable
-private fun MinutesBox(minutes: Long, official: Long) = boxColors(minutes, official).let { (box, ink) ->
-    Surface(shape = MaterialTheme.shapes.extraSmall, color = box, contentColor = ink) {
-        Text("$minutes min", Modifier.padding(horizontal = 8.dp, vertical = 2.dp), fontWeight = FontWeight.Bold)
+private fun MinutesBox(minutes: Long, official: Long, faded: Boolean = false, minWidth: Dp = 0.dp) =
+    boxColors(minutes, official).let { (box, ink) ->
+        Surface(shape = MaterialTheme.shapes.extraSmall, color = box) {
+            Text(
+                "$minutes min",
+                Modifier.widthIn(min = minWidth).padding(horizontal = 8.dp, vertical = 2.dp),
+                color = if (faded) ink.copy(alpha = FADED) else ink,
+                fontWeight = FontWeight.Bold,
+                textAlign = TextAlign.Center,
+            )
+        }
     }
-}
+
+/**
+ * A station's track switch time with − and + (user, 2026-10-06: a box to type in didn't look
+ * changeable). [minutes] as saved, empty for the [default]; stepping onto the default empties it
+ * again, so it follows the offset.
+ */
+@Composable
+private fun MinutesStepper(station: String, minutes: String, default: Long, official: Long, enabled: Boolean, onChange: (String) -> Unit) =
+    Row(verticalAlignment = Alignment.CenterVertically) {
+        val value = minutes.toLongOrNull() ?: default
+        fun step(by: Long) = (value + by).let { onChange(if (it == default) "" else "$it") }
+        Text(station, Modifier.weight(1f), textDecoration = TextDecoration.Underline)
+        FilledTonalIconButton({ step(-1) }, enabled = enabled && value > 0) {
+            Text("−", Modifier.spokenAs(stringResource(R.string.less)), fontSize = 20.sp)
+        }
+        MinutesBox(value, official, faded = minutes.isEmpty(), minWidth = 72.dp)
+        FilledTonalIconButton({ step(1) }, enabled = enabled && value < 99) {
+            Text("+", Modifier.spokenAs(stringResource(R.string.more)), fontSize = 20.sp)
+        }
+    }
+
+/** A default track switch time's text, not set by the rider. */
+private const val FADED = 0.6f
 
 /**
  * The box and its text: green below the official track switch time, orange at it, red above
@@ -308,7 +457,7 @@ private fun find(from: String, to: String, leaving: LocalTime, transfer: (Stop) 
     return try {
         val ask = { a: String, b: String, at: LocalDateTime -> connections(a, b, at, BuildConfig.VERSION_NAME) }
         val officials = ask(from, to, time)
-        Result.Found(time, officials.size, officials.flatMap { it.changes }.distinctBy { it.id }, search(officials, transfer, ask))
+        Result.Found(time, officials.firstOrNull(), officials.flatMap { it.changes }.distinctBy { it.id }, search(officials, transfer, ask))
     } catch (e: Exception) {
         // In the message too: Log drops the stack trace of an UnknownHostException (no network).
         Log.w("Gleiswechsel", "Search failed: $e", e)
@@ -340,6 +489,17 @@ private fun FindCard(find: Find, minimums: Minimums) {
             )
             Spacer(Modifier.height(4.dp))
             Trip(find.faster, minimums)
+            // The official connection, folded and quiet (user, 2026-10-06).
+            var official by remember { mutableStateOf(false) }
+            Text(
+                stringResource(R.string.official_connection) + if (official) " ▾" else " ▸",
+                Modifier.padding(top = 8.dp).clickable { official = !official },
+                color = MaterialTheme.colorScheme.onSurfaceVariant,
+                style = MaterialTheme.typography.bodySmall,
+            )
+            AnimatedVisibility(official) {
+                Column(Modifier.alpha(FADED), verticalArrangement = Arrangement.spacedBy(4.dp)) { Trip(find.official, minimums) }
+            }
         }
     }
 }

@@ -66,7 +66,10 @@ apps built this way; their CLAUDE.md files explain each choice.
   (`values`, `values-de`, `-fr`, `-it`), following the phone's language. Formal wherever the
   language has it (user, 2026-10-06): German "Sie" (Swiss spelling: ss, no ß), French "vous",
   Italian "lei". Short texts: one idea per line, explain each concept in one place only. No
-  per-app language picker (user, 2026-10-06: people keep the system language). The day of a
+  language setting (user, 2026-10-06: people keep the system language), but a hidden one: a tap
+  on the top bar's title picks English, Deutsch, Français, Italiano or the phone's language (user,
+  2026-10-06, an easter egg), Android 13+ only (`LocaleManager`; older phones: the title does
+  nothing). It recreates the page, so the result is gone. The day of a
   search is in the texts' language (`language`, `day_pattern`), so a Spanish phone gets English
   throughout. The store listing in the same four (`fastlane/metadata/android/<locale>/`).
 - Migrations: remove migration code two releases after F-Droid has shipped past the version that
@@ -135,13 +138,20 @@ transport.opendata.ch for Wed 7 Oct 2026:
 
 ## The app
 
-The search page: the commute (from, to, leaving at), a Search button, the finds as cards, and
-under them the rider's transfer time at each change station. A top bar: **⚙** (top left) opens
+The search page has three panels, each with its title (user, 2026-10-06): **Destination** (the
+commute and Search), **Journey** (the result) and **Optimization** (the rider's track switch time
+at each change station). A top bar: **⚙** (top left) opens
 Settings, **?** (top right) Help (user, 2026-10-06), text buttons as in gridload; each has ← and
 takes the back gesture. A screen reader says a word for each symbol (⚙, ?, ⇅, ←: `spokenAs`).
 The page's state lives above the three, so Help and Settings don't lose the result. Turning the
 phone doesn't recreate the activity (`configChanges`, 2026-10-06: one line, no ViewModel), so
 the result and a running search stay.
+
+Destination (user, 2026-10-06): before a search it sits in the middle of the page (of the
+space above the keyboard while typing); Search moves it to the top and folds the three fields
+into one line, "Horw → Sursee, 08:50 ▾", a tap on which opens them again. The Search button stays
+in view, folded or not (to search again after editing a time). With no result and no rows
+(editing the commute clears both) it goes back to the middle.
 
 **Track switch time** (user, 2026-10-06) is the name, in every text, of the minutes from one
 train to the next, walk included: Gleiswechselzeit, temps de changement de voie, tempo di cambio
@@ -157,17 +167,20 @@ at every station the rider hasn't set.
   clears the result, so it never shows another commute's finds; the fields are locked while it
   searches. A ⇅ button swaps from and to (user, 2026-10-06): on the right, centred over the gap
   between the two fields, which keep their distance.
-- **The transfer times** (user, 2026-10-06): under the result, one row "Track switch time at X
-  [_ min]" per change station of the official connections, each station once, in route order
+- **Optimization** (user, 2026-10-06), under Journey: a line saying to lower the time and search
+  again to find more, then one row "X (−) [4 min] (+)" per change station of the official connections, each station once, in route order
   (Horw → Bern, Bundesplatz: Luzern, Olten, Bern). So a commute with nothing faster can be set
-  too; tapping a find's change, the first idea, couldn't do that. Empty shows the default
-  (official minimum − offset) faded, the box's text colour at 60% (the usual placeholder grey
-  looked like a set value). Saved in `commute` keyed by station id (`8505000` → `4`) as typed: digits only, up
-  to 2. Editing a time clears the finds but keeps the rows (Search again);
+  too; tapping a find's change, the first idea, couldn't do that. − and + step a minute (0 to 99): a
+  box to type in didn't look changeable (user, 2026-10-06). Unset shows the default (official
+  minimum − offset) faded, the box's text colour at 60%; stepping onto the default unsets it
+  again, so it follows the offset. Saved in `commute` keyed by station id (`8505000` → `4`). A
+  tap on the title folds the panel (▸) or opens it (▾). A switch in Settings turns the panel off
+  (key `optimize`, on until set); off, the times set there are kept but not used. Editing a time clears the finds but keeps the rows (Search again);
   editing the commute clears both. The rows come only with a search that has connections (user,
   2026-10-06: without one they don't help), so after a restart they're back with the next one.
 - **The track switch time is the number the app is about** (user, 2026-10-06): always in the
-  same box, in the cards, the rows and Settings (`MinutesBox`, `MinutesField`), coloured against
+  same box, in the cards, Optimization and Settings (`MinutesBox`, `MinutesStepper`,
+  `MinutesField` for the offset), coloured against
   the official one at that station (user, 2026-10-06): green below, orange the same, red above,
   gridload's three with its text colours (green `2E7D32` and red `C62828` with white, orange
   `FFA000` with black), no border (user, 2026-10-06).
@@ -180,11 +193,14 @@ at every station the rider hasn't set.
   box. Stations underlined, the train (RE24) in a black outline without fill, the track's number
   as a platform sign: white on the logo's blue `00179B` with a white line inside, a bit bigger
   (user, 2026-10-06). A walk between two trains is part of the change ("7 min track switch, 6 min walk"); one
-  before the first train or after the last is a row of its own.
+  before the first train or after the last is a row of its own. Under the trip, a small grey
+  "Official connection ▸" opens the official connection it beats, the same timetable at 60%
+  (user, 2026-10-06: there but not in the way). With nothing faster, Journey shows the official
+  connection leaving first in a card of its own, so the rider sees where it changes.
 - **Settings** (user, 2026-10-06): "Global offset of the track switch time [−_ min]" (the − in
   the box: it's subtracted), key `offset` in `commute`, 1 until set (`DEFAULT_OFFSET`, proposed,
-  see open question 4). Changing it clears the finds and keeps the rows; locked while a search
-  runs.
+  see open question 4), and the Optimization switch. Changing either clears the finds and keeps
+  the rows; locked while a search runs.
 - **Help:** what the app does, the track switch time and its colours, how much more efficient,
   that times are planned only, and the data sources (opentransportdata.swiss wants to be named).
   Each concept is explained there once.
@@ -289,6 +305,3 @@ Ideas, not decided (Claude, 2026-10-06; ask the user first):
 4. **The offset until set: 1 minute or 2?** Built with 1 (Claude, 2026-10-06): the test case
    needs it (Luzern 5 → 4, the user's own time), and it's the careful one. 2 finds more, e.g.
    5-minute changes at Zürich HB (7).
-5. **A switch to turn off the per-station rows**, the offset only (user, 2026-10-06: "maybe").
-   Claude's take: not yet. Untouched rows already mean "offset only"; with the switch a time set
-   at a station would be silently ignored.
