@@ -30,6 +30,11 @@ nothing secret to ship in an open-source app.
   Luzern and Olten board at "…, Bahnhof" right at the requested time, no walk; Zürich HB starts
   every connection with a 5-minute walk to Bahnhofplatz/HB. Asked from a stop, the API also
   uses its neighbours (from Bahnhofplatz/HB it offered trams from Bahnhofstrasse/HB).
+- **Real time**, checked 2026-10-06 (Luzern → Zürich HB at 21:51): every departure and arrival
+  has `delay` (minutes, `1`) and `prognosis.departure`/`.arrival` (the expected time, 22:10 for
+  the 22:09) and `prognosis.platform`. No field for a cancelled train or a disruption anywhere in
+  the answer; how a cancelled train shows (left out, or as planned) is untested. `from`/`to` with
+  a raw "ü" got "Invalid HTTP request": encode it.
 - Station ids are the national ids (`8505000` Luzern, `8507000` Bern, `8500218` Olten).
 - CORS is open (`access-control-allow-origin: *`), responses are plain JSON.
 

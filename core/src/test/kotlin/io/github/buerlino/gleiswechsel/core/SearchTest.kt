@@ -124,4 +124,14 @@ class SearchTest {
         assertEquals(listOf(s1) + tram.legs, find.faster.legs)
         assertEquals(listOf("Xberg 08:14", "Xberg, Platz 08:14"), asked)
     }
+
+    @Test
+    fun theTicketLinkHasTheIdsDayAndTime() {
+        val from = Stop("Aach, Platz", "8500001", at("08:05"))
+        val to = Stop("Bstadt", "8500002", at("08:40"))
+        assertEquals(
+            "https://www.sbb.ch/fr?stops=_I8500001~_I8500002&day=2026-03-03&time=08_05&moment=dep",
+            ticketUrl(from, to, "fr"),
+        )
+    }
 }

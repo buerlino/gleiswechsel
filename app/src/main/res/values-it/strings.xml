@@ -22,6 +22,7 @@
     <string name="less">Un minuto in meno</string>
     <string name="more">Un minuto in più</string>
     <string name="official_connection">Collegamento ufficiale</string>
+    <string name="ticket">Biglietto su sbb.ch</string>
 
     <string name="earlier">%1$d min prima</string>
     <string name="instead_of">%1$s %2$s invece delle %3$s</string>
@@ -45,7 +46,7 @@
     <string name="help_efficient">Più efficiente</string>
     <string name="help_efficient_text" formatted="false">Quanto più veloce del viaggio ufficiale, dalla prima partenza all\'ultimo arrivo: 33 minuti invece di 47, il 42% più efficiente (47 / 33 = 1,42).</string>
     <string name="help_careful">Attenzione</string>
-    <string name="help_careful_text">Solo orari previsti: un treno in ritardo può rendere impossibile un cambio binario breve. Sta a lei giudicare se ce la fa.</string>
+    <string name="help_careful_text">Solo orari previsti: un treno in ritardo può rendere impossibile un cambio binario breve. Sta a lei giudicare se ce la fa. Un biglietto normale vale anche per il viaggio più veloce; un biglietto risparmio solo per il treno ufficiale.</string>
     <string name="help_data">Dati</string>
     <string name="help_data_text">Collegamenti: transport.opendata.ch. Tempi di cambio binario ufficiali: opentransportdata.swiss, orario 2026. Indipendente dalle FFS.</string>
 </resources>

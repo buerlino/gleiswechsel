@@ -25,6 +25,7 @@
     <string name="less">One minute less</string>
     <string name="more">One minute more</string>
     <string name="official_connection">Official connection</string>
+    <string name="ticket">Ticket on sbb.ch</string>
 
     <string name="earlier">%1$d min earlier</string>
     <string name="instead_of">%1$s %2$s instead of %3$s</string>
@@ -48,7 +49,7 @@
     <string name="help_efficient">More efficient</string>
     <string name="help_efficient_text" formatted="false">How much faster than the official trip, from the first departure to the last arrival: 33 minutes instead of 47 is 42% more efficient (47 / 33 = 1.42).</string>
     <string name="help_careful">Careful</string>
-    <string name="help_careful_text">Planned times only: a late train can make a short track switch impossible. Whether you make it is up to you.</string>
+    <string name="help_careful_text">Planned times only: a late train can make a short track switch impossible. Whether you make it is up to you. A normal ticket covers the faster trip too; a supersaver ticket only the official train.</string>
     <string name="help_data">Data</string>
     <string name="help_data_text">Connections: transport.opendata.ch. Official track switch times: opentransportdata.swiss, timetable 2026. Not affiliated with SBB.</string>
 </resources>

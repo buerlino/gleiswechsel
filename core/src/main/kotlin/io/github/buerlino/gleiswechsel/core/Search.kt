@@ -3,6 +3,7 @@ package io.github.buerlino.gleiswechsel.core
 import java.time.Duration
 import java.time.LocalDateTime
 import java.time.OffsetDateTime
+import java.time.format.DateTimeFormatter
 
 /**
  * A connection that reaches B before [official]: [faster] rides the official connection to a
@@ -19,6 +20,17 @@ data class Find(val official: Connection, val faster: Connection) {
      */
     val moreEfficient: Double get() = official.duration.toSeconds().toDouble() / faster.duration.toSeconds() - 1
 }
+
+/**
+ * sbb.ch's timetable [from] → [to] at [from]'s time, in [language] (`de`, `en`, `fr`, `it`), to buy
+ * the ticket there. Undocumented: the format sbb.ch uses itself (checked 2026-10-06). The station
+ * ids are enough, sbb.ch fills in the names.
+ */
+fun ticketUrl(from: Stop, to: Stop, language: String): String =
+    "https://www.sbb.ch/$language?stops=_I${from.id}~_I${to.id}" +
+        "&day=${from.time.toLocalDate()}&time=${from.time.format(sbbTime)}&moment=dep"
+
+private val sbbTime = DateTimeFormatter.ofPattern("HH_mm")
 
 /** The request: connections from, to, leaving at or after a time (Swiss local time). */
 typealias Connections = (from: String, to: String, time: LocalDateTime) -> List<Connection>

@@ -22,6 +22,7 @@
     <string name="less">Une minute de moins</string>
     <string name="more">Une minute de plus</string>
     <string name="official_connection">Trajet officiel</string>
+    <string name="ticket">Billet sur sbb.ch</string>
 
     <string name="earlier">%1$d min plus tôt</string>
     <string name="instead_of">%1$s %2$s au lieu de %3$s</string>
@@ -45,7 +46,7 @@
     <string name="help_efficient">Plus efficace</string>
     <string name="help_efficient_text" formatted="false">De combien plus rapide que le trajet officiel, du premier départ à la dernière arrivée : 33 minutes au lieu de 47, c\'est 42 % plus efficace (47 / 33 = 1,42).</string>
     <string name="help_careful">Attention</string>
-    <string name="help_careful_text">Horaires prévus uniquement : un train en retard peut rendre impossible un changement de voie court. À vous de juger si vous y arrivez.</string>
+    <string name="help_careful_text">Horaires prévus uniquement : un train en retard peut rendre impossible un changement de voie court. À vous de juger si vous y arrivez. Un billet normal est aussi valable pour le trajet plus rapide ; un billet dégriffé seulement pour le train officiel.</string>
     <string name="help_data">Données</string>
     <string name="help_data_text">Trajets : transport.opendata.ch. Temps de changement de voie officiels : opentransportdata.swiss, horaire 2026. Sans lien avec les CFF.</string>
 </resources>

@@ -22,6 +22,7 @@
     <string name="less">Eine Minute weniger</string>
     <string name="more">Eine Minute mehr</string>
     <string name="official_connection">Offizielle Verbindung</string>
+    <string name="ticket">Billett auf sbb.ch</string>
 
     <string name="earlier">%1$d min früher</string>
     <string name="instead_of">%1$s %2$s statt %3$s</string>
@@ -45,7 +46,7 @@
     <string name="help_efficient">Effizienter</string>
     <string name="help_efficient_text" formatted="false">Wie viel schneller als die offizielle Verbindung, von der ersten Abfahrt bis zur letzten Ankunft: 33 statt 47 Minuten sind 42 % effizienter (47 / 33 = 1,42).</string>
     <string name="help_careful">Vorsicht</string>
-    <string name="help_careful_text">Nur Fahrplanzeiten: Ein verspäteter Zug kann einen kurzen Gleiswechsel unmöglich machen. Ob Sie ihn schaffen, liegt bei Ihnen.</string>
+    <string name="help_careful_text">Nur Fahrplanzeiten: Ein verspäteter Zug kann einen kurzen Gleiswechsel unmöglich machen. Ob Sie ihn schaffen, liegt bei Ihnen. Ein normales Billett gilt auch für die schnellere Reise, ein Sparbillett nur für den offiziellen Zug.</string>
     <string name="help_data">Daten</string>
     <string name="help_data_text">Verbindungen: transport.opendata.ch. Offizielle Gleiswechselzeiten: opentransportdata.swiss, Fahrplan 2026. Unabhängig von der SBB.</string>
 </resources>

@@ -64,6 +64,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.onSizeChanged
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalDensity
+import androidx.compose.ui.platform.LocalUriHandler
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.semantics.clearAndSetSemantics
 import androidx.compose.ui.semantics.contentDescription
@@ -82,6 +83,7 @@ import io.github.buerlino.gleiswechsel.core.Minimums
 import io.github.buerlino.gleiswechsel.core.Stop
 import io.github.buerlino.gleiswechsel.core.connections
 import io.github.buerlino.gleiswechsel.core.search
+import io.github.buerlino.gleiswechsel.core.ticketUrl
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
@@ -458,14 +460,21 @@ private fun FindCard(find: Find, minimums: Minimums) {
             )
             Spacer(Modifier.height(4.dp))
             Trip(find.faster, minimums)
-            // The official connection, folded and quiet (user, 2026-10-06).
+            // The official connection, folded and quiet (user, 2026-10-06); on the same line the
+            // ticket on sbb.ch, for the official connection's from, to and departure (user, 2026-10-06).
             var official by remember { mutableStateOf(false) }
-            Text(
-                stringResource(R.string.official_connection) + if (official) " ▾" else " ▸",
-                Modifier.padding(top = 8.dp).clickable { official = !official },
-                color = MaterialTheme.colorScheme.onSurfaceVariant,
-                style = MaterialTheme.typography.bodySmall,
-            )
+            val uri = LocalUriHandler.current
+            val ticket = ticketUrl(find.official.departure, find.official.arrival, stringResource(R.string.language))
+            Row(verticalAlignment = Alignment.CenterVertically) {
+                Text(
+                    stringResource(R.string.official_connection) + if (official) " ▾" else " ▸",
+                    Modifier.clickable { official = !official },
+                    color = MaterialTheme.colorScheme.onSurfaceVariant,
+                    style = MaterialTheme.typography.bodySmall,
+                )
+                Spacer(Modifier.weight(1f))
+                TextButton({ uri.openUri(ticket) }) { Text(stringResource(R.string.ticket)) }
+            }
             AnimatedVisibility(official) {
                 Column(Modifier.alpha(FADED), verticalArrangement = Arrangement.spacedBy(4.dp)) { Trip(find.official, minimums) }
             }

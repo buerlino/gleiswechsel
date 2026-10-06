@@ -18,7 +18,8 @@ is in `research/`.
 - `core/.../Minimums.kt`: `Minimums`, the official minimum transfer time per station from the
   HRDF `UMSTEIGB` text (`MinimumsTest`, made-up lines). The real file is the app's
   `res/raw/umsteigb.txt`, see [Official minimums](#official-minimums-each-timetable-change).
-- `core/.../Search.kt`: `Find` (with `saved` and `moreEfficient`), the local search `search()`.
+- `core/.../Search.kt`: `Find` (with `saved` and `moreEfficient`), `ticketUrl` (the sbb.ch
+  link), the local search `search()`.
   It takes the official connections, the transfer time per station and the request as a
   function, so `SearchTest` runs it on a fake API with made-up connections.
 - `core/.../LiveTest.kt`: the Horw → Sursee test case, live. Excluded from `:core:test` (and so
@@ -76,6 +77,12 @@ is in `research/`.
   it in App info → Mobile data & Wi-Fi.
 - Don't pipe Gradle into `tail` before `&& adb install`: the pipe hides a failed build and the old
   APK gets installed.
+- What a link opened in the browser: the default is Brave, a Chromium with the devtools socket.
+  `adb forward tcp:9333 localabstract:chrome_devtools_remote`, then
+  `curl -s -m 10 http://127.0.0.1:9333/json/list` gives each tab's full URL (Brave must be in
+  front, or curl hangs); `adb forward --remove tcp:9333` after. sbb.ch's fields and connections
+  are in shadow DOM: read them with `Runtime.evaluate` over the tab's WebSocket (Node 22 has
+  `WebSocket` built in), walking `shadowRoot`s.
 - Logs: `adb logcat -d -s Gleiswechsel`; crashes: `adb logcat -d | grep AndroidRuntime`.
 - If the phone is locked, ask the user; don't try to unlock it.
 
@@ -116,6 +123,9 @@ Everything else was tried on the phone with the R8 release build signed with the
   a find with a walk, or at a second change, drawn as a timetable (only the test case's); a set
   time at a second change finding something; a long station name in a row or a card; a
   non-digit typed (the filter drops it).
+- The ticket link (2026-10-06): tapped from the app only in German and only in Brave; the
+  English, French and Italian URLs were opened in Brave directly. Another browser, and a phone
+  without one.
 - The rule between the finds (2026-10-06): only the unit tests; no real search has shown two
   finds yet.
 - Languages: a phone set to German itself (only `set-app-locales`); French and Italian since the

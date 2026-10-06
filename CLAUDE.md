@@ -22,7 +22,8 @@ Gleiswechsel. applicationId and namespace `io.github.buerlino.gleiswechsel`; Kot
 `io.github.buerlino.gleiswechsel` (app) and `io.github.buerlino.gleiswechsel.core`. Repo
 https://github.com/buerlino/gleiswechsel (GPLv3, as the user's other apps). Release APKs are
 named `gleiswechsel-vX.Y.Z.apk`. Not affiliated with SBB: no SBB name, logo or colours in the
-app or the listing.
+app or the listing; the one exception is sbb.ch, named as the ticket link's target (user,
+2026-10-06).
 
 - How-tos, phone testing and what's still untested: the
   [build skill](.claude/skills/build-gleiswechsel-android/SKILL.md). Where it and this file
@@ -199,12 +200,23 @@ at every station the rider hasn't set.
   the trip, a small grey line (▸) opens the official connection it beats, the same timetable at
   60% (user, 2026-10-06: there but not in the way). With nothing faster, Journey shows the
   official connection leaving first in a card of its own, so the rider sees where it changes.
+- **Ticket on sbb.ch** (user, 2026-10-06): on that grey line's right, a text button opens sbb.ch's
+  timetable in the browser with the official connection's from, to and departure, to buy the
+  ticket there (`ticketUrl` in `:core`):
+  `https://www.sbb.ch/<language>?stops=_I<from id>~_I<to id>&day=yyyy-MM-dd&time=HH_mm&moment=dep`,
+  Swiss time, the texts' `language`. Undocumented: the format sbb.ch uses itself (its own URLs put
+  the name before `_I`; the id alone is enough, sbb.ch fills in the name), so it can change.
+  Checked on the phone 2026-10-06 in de, en, fr and it. SBB's old format
+  (`stops=[{"value":…}]&date="…"`) opens with empty fields. www.sbb.ch has no Android app links;
+  the SBB Mobile link (`app.sbbmobile.ch/timetable?from=…&to=…`) takes names only and ignores
+  date and time, so it isn't used.
 - **Settings** (user, 2026-10-06): the global offset of the track switch time, shown with a −
   (it's subtracted) and saved without it, key `offset` in `commute`, 1 until set
   (`DEFAULT_OFFSET`, proposed, see open question 4), and the Optimization switch. Changing either
   clears the finds and keeps the rows; locked while a search runs.
 - **Help:** what the app does, the track switch time and its colours, how much more efficient,
-  that times are planned only, and the data sources (opentransportdata.swiss wants to be named).
+  that times are planned only, which ticket covers a find (a normal one, a supersaver only the
+  official train), and the data sources (opentransportdata.swiss wants to be named).
   Each concept is explained there once.
 - **How much more efficient** each find is than its official connection (user, 2026-10-06): the
   official time / the find's − 1, each from the first departure to the last arrival (the wait
@@ -274,8 +286,12 @@ Wanted (user, 2026-10-06), one at a time:
 - **The risk of a find's change:** after the core utility; how is open question 3.
 - **Routes through stations the official connections don't touch** (research/architecture.md,
   phase 2): only if the local search finds too little.
-- **Delays:** the search reads planned times only; transport.opendata.ch has the live ones. How
-  they'd show is open.
+- **Show delays in the card** (user, 2026-10-06): the search reads planned times only, but each
+  departure and arrival in the API's answer has `delay` (minutes) and `prognosis` (expected time,
+  platform), so no extra request. Proposed (Claude, not decided): "+3" next to a time, and a
+  warning when a delay eats up the change. Cancellations: the API has no field for them (see
+  research/data_sources.md); OJP and GTFS-RT do, both with a key. A missed or cancelled onward
+  train falls back to the official one: a find follows the official connection up to the change.
 
 Each timetable change (next: 13 Dec 2026, timetable 2027): refresh the official minimums (the
 skill), the year in Help, and release, or the app compares against last year's minimums. Later
