@@ -118,9 +118,6 @@ apps built this way; their CLAUDE.md files explain each choice.
   file.
 - Proposed (2026-10-06): **OJP 2.0** only as an option with the user's own free key (20,000
   requests a day per key, so no shared key in the app).
-- Proposed (2026-10-06): **Ist-Daten** (every actual arrival and departure, daily CSV, archive
-  since 2016) for the risk of a change, processed off the phone (a nightly GitHub Actions job),
-  never on it.
 - No server of our own.
 
 ## Test case: Horw → Sursee (user, 2026-10-06)
@@ -138,8 +135,7 @@ transport.opendata.ch for Wed 7 Oct 2026:
   track 9 at :55 and turns around there, so it's already waiting (why it's "almost always 9").
   The S4 at :23 has no such train.
 - **The user's record:** 50+ times, missed once. They feel it as "arrive :00, 5 minutes"; the
-  timetable says :01 and 4. With a late S4 (:02–:03) they run. A reference for the risk
-  statistics later.
+  timetable says :01 and 4. With a late S4 (:02–:03) they run.
 
 ## The app
 
@@ -155,7 +151,8 @@ the result and a running search stay.
 **The last result is kept** (user, 2026-10-06: e.g. to read the track on a platform with poor
 reception): a search with connections writes it to `result.json` in the app's own files (`Found`
 in `:core`: the day, the first official connection, the change stations, the finds, the shortest
-change at each station the planner's answers made, and `incomplete`; times as ISO text), and
+change at each station the planner's answers made, `incomplete` and when it searched (`asOf`);
+times as ISO text), and
 whatever clears the result deletes it (editing the commute, a time, the offset or Optimization,
 Search, Cancel), so it never shows another commute's finds. The page opens with it, Destination
 folded, after a restart, the system killing the app or the language switch; the Optimization
@@ -232,6 +229,20 @@ at every station the rider hasn't set.
   A find that passes a station twice (`Connection.doublesBack`, from the API's `passList`) says
   under its efficiency to check the ticket (user, 2026-10-06): a route going back over itself may
   need another one (research/hidden_connections.md).
+- **Delays and changed tracks** (user, 2026-10-06), from the same answers, no extra request
+  (`Stop.delay`, `Stop.newPlatform`): in every card's timetable (the finds, the folded official
+  connection, the official one alone), a delay of a minute or more as a red "+3" after the
+  planned time (it pushes that row's station a little to the right), and a changed track on the
+  sign with the planned one struck through before it; a screen reader says "3 min late", "track
+  14 instead of 12". Where the delays make a change shorter than planned and than the rider's
+  time there (`tooShort` in `:core`), its box is a red "! 1 min", the minutes left, instead of
+  the usual one; below zero a grey "−2 min" without the "!", the next train gone (user,
+  2026-10-06). They go stale (user, 2026-10-06): kept in result.json, with a line under the day,
+  "Delays as of 23:07" (`Found.asOf`, the search's time), whenever a trip has a delay known
+  (`delaysKnown`). The API knows them only a few hours ahead (checked 2026-10-06 at 23:07: 2
+  hours ahead yes, 5 no, tomorrow morning not), `delay` null until then, 0 on time; the card
+  shows nothing for either. The search itself still uses planned times. Cancellations: no field
+  in the API (research/data_sources.md); OJP and GTFS-RT have them, both with a key.
 - **Ticket on sbb.ch** (user, 2026-10-06): on that grey line's right, a text button opens sbb.ch's
   timetable in the browser with the official connection's from, to and departure, to buy the
   ticket there (`ticketUrl` in `:core`):
@@ -251,9 +262,10 @@ at every station the rider hasn't set.
 - **Help** (user, 2026-10-06: by topic, foldable, an emoji each, short texts without fluff but
   nothing crucial left out): seven titles, all folded until tapped (`Heading`, as the panels'):
   🚆 what the app does, ⏱️ the track switch time (where it's set, the offset), 🎨 the colours and
-  arrows and what official means, 📈 how much more efficient, 🎫 which ticket covers a find (a
+  arrows, what official means and the red ! and grey boxes, 📈 how much more efficient, 🎫 which ticket covers a find (a
   normal one, a supersaver only the official train, maybe not one passing a station twice), ⚠️
-  planned times only and that the last result stays (check its day), 📡 the data sources
+  delays and changed tracks as known at the search (cancellations not) and that the last result
+  stays (check its day and its delays' time), 📡 the data sources
   (opentransportdata.swiss wants to be named). Each concept is explained there once. The emojis
   are in the code, the texts in `strings.xml`.
 - **How much more efficient** each find is than its official connection (user, 2026-10-06): the
@@ -265,7 +277,8 @@ at every station the rider hasn't set.
   board (it favoured slow trains with short changes).
 - **The client:** `connections(from, to, time, version)` asks transport.opendata.ch
   `/v1/connections` (4 connections leaving at or after `time`), parses only trains, stations,
-  planned times and platforms. User-Agent
+  planned times, platforms and each departure's and arrival's `delay` and `prognosis.platform`
+  (its expected times are the planned ones plus `delay`). User-Agent
   `Gleiswechsel/<version> (+https://github.com/buerlino/gleiswechsel)`.
   If the first request (the official connections) fails, for any reason (no network, HTTP 429
   after many searches), the page shows one text, `search_failed` (2026-10-06: the raw reason was
@@ -321,7 +334,7 @@ at every station the rider hasn't set.
   minutes at Zürich HB. Asked from Bahnhofplatz/HB, the API also offers the neighbouring
   Bahnhofstrasse/HB, so the search found the IR70 (track 9, 08:51) → T10 Bahnhofstrasse/HB 08:54
   (3 minutes saved): probably too short a walk, see open question 1.
-- **Limits, known:** planned times only (delays not read); only stations the official
+- **Limits, known:** the search uses planned times only (delays are shown, not searched with); only stations the official
   connections or the onward ones touch; the live check doesn't skip public holidays; the official
   minimums are a copy of one timetable year's, lowered only where an answer shows the planner's
   finer time; `doublesBack` sees only stations by id (a train station and its bus stop differ).
@@ -336,22 +349,16 @@ the signature (`apksigcopier compare`). The F-Droid merge request is open (user,
 from the branch `io.github.buerlino.gleiswechsel` in `../fdroiddata`. Its `NonFreeNet` text names
 sbb.ch too (user, 2026-10-06: the ticket link), edited there, not committed yet.
 
-0.2.0 is prepared, not tagged (user, 2026-10-06): versionCode 2, `changelogs/2.txt` in all four;
-the new screenshot later. README's "Soon on F-Droid" stays until F-Droid has it.
+0.2.0 is committed and tagged locally, `v0.2.0`, not pushed (user, 2026-10-06): versionCode 2,
+`changelogs/2.txt` in all four, the new phone screenshot (the test case's find and Luzern's row).
+README's "Soon on F-Droid" stays until F-Droid has it.
 
 ## After the first release
 
 Wanted (user, 2026-10-06), one at a time:
 
-- **The risk of a find's change:** after the core utility; how is open question 2.
 - **Routes through stations the official connections don't touch** (research/architecture.md,
   phase 2): only if the local search finds too little.
-- **Show delays in the card** (user, 2026-10-06): the search reads planned times only, but each
-  departure and arrival in the API's answer has `delay` (minutes) and `prognosis` (expected time,
-  platform), so no extra request. Proposed (Claude, not decided): "+3" next to a time, and a
-  warning when a delay eats up the change. Cancellations: the API has no field for them (see
-  research/data_sources.md); OJP and GTFS-RT do, both with a key. A missed or cancelled onward
-  train falls back to the official one: a find follows the official connection up to the change.
 
 Each timetable change (next: 13 Dec 2026, timetable 2027): refresh the official minimums (the
 skill), the year in Help, and release, or the app compares against last year's minimums. Later
@@ -367,16 +374,13 @@ Ideas, not decided (Claude, 2026-10-06; ask the user first):
 - A change to a different stop: open question 1.
 - From [missing_features.md](research/missing_features.md) (2026-10-06): changes at stops the
   train only passes through,
-  "arrive by", more than four official connections, "now", the rider's ✓/✗ record of a change
-  (a simpler risk, open question 2), the saving in a year, parallel requests, changed platforms.
+  "arrive by", more than four official connections, "now", the saving in a year, parallel
+  requests.
 
 ## Open questions (for the user)
 
-1. **A change to a different stop** (train → tram stop, as in Zürich): its own time, a flag in
-   the result, or nothing? Left for when a commute needs it (user, 2026-10-06).
-2. **How the risk indicator works** (a later version). Proposed (research/architecture.md):
-   from Ist-Daten, the share of past weekdays on which `actual arrival + transfer time ≤ actual
-   departure`, worked out by a nightly GitHub Actions job and downloaded by the app as a small
-   file. The most work of all: the job, the file, matching trains between the API and
-   Ist-Daten. To decide: this, or something simpler first (e.g. how far a change is below the
-   official minimum: the app has the minimums now, but it's not a real risk).
+1. **A change to a different stop** (train → tram stop, as in Zürich). The planner sometimes
+   offers a change to a stop a few hundred metres away (Zürich HB → Bahnhofstrasse/HB, 3
+   minutes), and the app shows it as any other change. Undecided: give such a change its own
+   time, mark it in the result, or leave it out. Deferred until a commute needs it (user,
+   2026-10-06).

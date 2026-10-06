@@ -12,7 +12,8 @@ is in `research/`.
 
 ## Where things are
 
-- `core/.../Opendata.kt`: `Stop`, `Leg` (`via`: the ids of the stations a ride passes, from the
+- `core/.../Opendata.kt`: `Stop` (`delay`, null while not known; `newPlatform`, a changed
+  track; `expected`), `tooShort` (a change the delays make shorter than the rider's time), `Leg` (`via`: the ids of the stations a ride passes, from the
   API's `passList`), `Connection` (with `duration`, `transfers` and `changes`, the change stations
   and their minutes: the search, `Minimums` and the page use them, and `doublesBack`), the client
   `connections()` and its parser.
@@ -26,7 +27,8 @@ is in `research/`.
   connections' changes too, recursively).
   It takes the official connections, the transfer time per station and the request as a
   function, so `SearchTest` runs it on a fake API with made-up connections.
-- `core/.../Found.kt`: `Found`, a search's result as the page shows it, and its JSON
+- `core/.../Found.kt`: `Found`, a search's result as the page shows it (`asOf`: when it searched,
+  shown as the delays' time while `delaysKnown`), and its JSON
   (`toJson`, `found`; `FoundTest`: written and read back, made-up data). `Stop`, `Leg`,
   `Connection` and `Find` are `@Serializable` for it; times as ISO text (`IsoText`).
 - `core/.../LiveTest.kt`: the Horw → Sursee test case, live. Excluded from `:core:test` (and so
@@ -35,7 +37,8 @@ is in `research/`.
 - `app/.../MainActivity.kt`: `App` holds all state and shows the search page, Help or Settings
   (`Screen`); the search page (`Heading` for each panel's title, foldable with `open`, also
   Help's topics; `Folded` for the folded Destination, ▴ on the Search row to fold it again, ✕
-  on Journey's title to close the result), the cards (`FindCard`, `Trip`, `MinutesBox`) and `MinutesStepper` (− and +, the
+  on Journey's title to close the result), the cards (`FindCard`, `Trip`, `StopRow` with the
+  delay and a changed track, `MinutesBox`, `LateBox` for a change the delays make too short) and `MinutesStepper` (− and +, the
   rows and the offset in Settings; `arrows = false` for the offset), `folding` and `FoldMark`
   (a fold's state for a screen reader, the ▾ or ▸ hidden from it). SharedPreferences
   `commute`: `from`, `to`, `leaving` as typed, `offset` and the transfer times keyed by station id as numbers in strings (empty:
@@ -169,6 +172,13 @@ Everything else was tried on the phone with the R8 release build signed with the
   a phone-to-phone transfer, a result with a walk or a second change read back on the phone.
   `run-as` doesn't work on the release build, so the file itself wasn't looked at.
 - Turning the phone in Help or Settings, split screen.
+- Delays (2026-10-06, R8 release build, German only): real "+1"s and the "as of" line seen live
+  (Horw → Sursee at 23:22 and 23:30), kept after a force-stop, absent for tomorrow's 08:50. The
+  red "! 1 min", the grey "−2 min" and a changed track (14 instead of 12) only from a made-up
+  `result.json` written with `run-as` into the debug build (and read back by the R8 build); no
+  real changed track or too-short change seen (`prognosis.platform` was null everywhere). Not
+  seen: English, French, Italian; a delay of 10 or more next to the time; a negative delay;
+  a cancelled train; the new Help texts on the phone; TalkBack reading the delay words.
 - The debug build on the phone.
 - The themed icon in a launcher that shows themed icons (Niagara doesn't); only checked as a
   render.

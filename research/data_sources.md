@@ -35,7 +35,12 @@ nothing secret to ship in an open-source app.
   uses its neighbours (from Bahnhofplatz/HB it offered trams from Bahnhofstrasse/HB).
 - **Real time**, checked 2026-10-06 (Luzern → Zürich HB at 21:51): every departure and arrival
   has `delay` (minutes, `1`) and `prognosis.departure`/`.arrival` (the expected time, 22:10 for
-  the 22:09) and `prognosis.platform`. No field for a cancelled train or a disruption anywhere in
+  the 22:09) and `prognosis.platform`. Checked again 2026-10-06 at 23:07 (saved in `private/`,
+  `*-20261006-2307.json`): not known yet is `delay: null` with every `prognosis` field null (trains
+  5 hours ahead, tomorrow 08:50: its answer was byte-identical to the afternoon's); on time is
+  `delay: 0` with `prognosis` = planned; trains up to 2 hours ahead had values (the exact window
+  not checked by day). Values seen 0, 1, 2, 5, none negative. `prognosis.platform` was null in
+  every answer and on the Zürich HB and Luzern boards (no changed track at hand). No field for a cancelled train or a disruption anywhere in
   the answer; how a cancelled train shows (left out, or as planned) is untested. `from`/`to` with
   a raw "ü" got "Invalid HTTP request": encode it.
 - Station ids are the national ids (`8505000` Luzern, `8507000` Bern, `8500218` Olten).

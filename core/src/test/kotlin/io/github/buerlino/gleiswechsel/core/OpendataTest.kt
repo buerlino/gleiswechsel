@@ -8,7 +8,8 @@ import kotlin.test.assertEquals
 
 class OpendataTest {
     // Made-up stations and trains, shaped like a real /v1/connections response (more fields than
-    // the app reads, times with a `+0100` offset): a ride, a walk, a ride.
+    // the app reads, times with a `+0100` offset): a ride, a walk, a ride. The S7 arrives 3 minutes
+    // late on another platform; the B42's delay isn't known yet.
     private val body = """
         {
           "connections": [{
@@ -29,7 +30,8 @@ class OpendataTest {
                   "arrival": null, "departure": "2026-03-03T08:00:00+0100", "platform": "2", "delay": null,
                   "prognosis": {"platform": null, "arrival": null, "departure": null}},
                 "arrival": {"station": {"id": "8500002", "name": "Xberg"},
-                  "arrival": "2026-03-03T08:10:00+0100", "departure": null, "platform": "11A"}
+                  "arrival": "2026-03-03T08:10:00+0100", "departure": null, "platform": "11A", "delay": 3,
+                  "prognosis": {"platform": "12", "arrival": "2026-03-03T08:13:00+0100", "departure": null}}
               },
               {
                 "journey": null,
@@ -40,7 +42,8 @@ class OpendataTest {
               {
                 "journey": {"category": "B", "number": "42", "operator": "XYZ", "to": "Bstadt"},
                 "walk": null,
-                "departure": {"station": {"id": "8509999", "name": "Xberg, Bahnhof"}, "departure": "2026-03-03T08:15:00+0100", "platform": "C"},
+                "departure": {"station": {"id": "8509999", "name": "Xberg, Bahnhof"}, "departure": "2026-03-03T08:15:00+0100", "platform": "C",
+                  "delay": 0, "prognosis": {"platform": "C", "arrival": null, "departure": "2026-03-03T08:15:00+0100"}},
                 "arrival": {"station": {"id": "8500003", "name": "Bstadt"}, "arrival": "2026-03-03T08:40:00+0100", "platform": null}
               }
             ]
@@ -55,8 +58,8 @@ class OpendataTest {
         val c = parseConnections(body).single()
         assertEquals(listOf("S7", null, "B42"), c.legs.map { it.train })
         assertEquals(Stop("Aach", "8500001", at("08:00"), "2"), c.departure)
-        assertEquals(Stop("Xberg", "8500002", at("08:10"), "11A"), c.legs[0].arrival)
-        assertEquals(Stop("Xberg, Bahnhof", "8509999", at("08:15"), "C"), c.legs[2].departure)
+        assertEquals(Stop("Xberg", "8500002", at("08:10"), "11A", delay = 3, newPlatform = "12"), c.legs[0].arrival)
+        assertEquals(Stop("Xberg, Bahnhof", "8509999", at("08:15"), "C", delay = 0), c.legs[2].departure)
         assertEquals(Stop("Bstadt", "8500003", at("08:40")), c.arrival)
         assertEquals(listOf("8500004"), c.legs[0].via)
         assertEquals(emptyList(), c.legs[2].via)
@@ -66,6 +69,41 @@ class OpendataTest {
     fun theDurationIsFirstDepartureToLastArrival() {
         // 08:00 to 08:40, the walk and the wait included.
         assertEquals(Duration.ofMinutes(40), parseConnections(body).single().duration)
+    }
+
+    @Test
+    fun theExpectedTimeHasTheDelay() {
+        val c = parseConnections(body).single()
+        assertEquals(at("08:13"), c.legs[0].arrival.expected)
+        assertEquals(at("08:00"), c.departure.expected) // not known yet: as planned
+    }
+
+    // A planned change of 4 minutes, 08:10 to 08:14.
+    private fun change(arrivalDelay: Long?, departureDelay: Long?, needed: Long) = tooShort(
+        Stop("Xberg", "8500002", at("08:10"), delay = arrivalDelay),
+        Stop("Xberg", "8500002", at("08:14"), delay = departureDelay),
+        Duration.ofMinutes(needed),
+    )?.toMinutes()
+
+    @Test
+    fun aDelayCanMakeAChangeTooShort() {
+        assertEquals(1, change(3, 0, needed = 4))
+        assertEquals(1, change(3, null, needed = 2))
+        assertEquals(-2, change(6, 0, needed = 4)) // the next train has left
+    }
+
+    @Test
+    fun aChangeThatStillWorksIsNotTooShort() {
+        assertEquals(null, change(null, null, needed = 4))
+        assertEquals(null, change(1, 1, needed = 4)) // both late: still 4
+        assertEquals(null, change(2, 0, needed = 2))
+        assertEquals(null, change(0, 2, needed = 4)) // the next train later: longer
+    }
+
+    @Test
+    fun aChangeShorterThanTheRidersTimeWithoutADelayIsNotTooShort() {
+        // An official change of 4 where the rider set 6: not the delays' doing.
+        assertEquals(null, change(0, 0, needed = 6))
     }
 
     @Test

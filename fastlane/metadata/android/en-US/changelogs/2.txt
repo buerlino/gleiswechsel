@@ -1,8 +1,8 @@
-- Shorter changes at more than one station on the same trip.
-- The page in three parts: Destination, Journey, Optimization. Set your track switch times with − and +.
-- A link to sbb.ch for the ticket, and a warning when a trip passes a station twice.
-- Arrows in the boxes: ↓ below the official time, ↑ above. Screen readers say it.
+- Shorter changes at more than one station of a trip.
+- Delays and changed tracks; a red ! when a delay makes a change too short.
+- Three parts: Destination, Journey, Optimization; times with − and +.
+- Ticket on sbb.ch; a warning when a trip passes a station twice.
+- Arrows ↓ ↑ against the official time, also for screen readers.
 - The planner's own faster changes count as official.
-- Cancel a running search.
 - The last result stays, e.g. to read the track offline.
-- Help by topic.
+- Cancel a search. Help by topic.

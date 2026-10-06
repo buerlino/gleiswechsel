@@ -91,6 +91,7 @@ import io.github.buerlino.gleiswechsel.core.found
 import io.github.buerlino.gleiswechsel.core.search
 import io.github.buerlino.gleiswechsel.core.shortestChanges
 import io.github.buerlino.gleiswechsel.core.ticketUrl
+import io.github.buerlino.gleiswechsel.core.tooShort
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.launch
@@ -294,13 +295,20 @@ private fun App(prefs: SharedPreferences, minimums: Minimums, saved: File, last:
                                 f.finds.isEmpty() -> stringResource(R.string.nothing_faster, day)
                                 else -> "$day:"
                             })
+                            // Delays go stale: when they were read (user, 2026-10-06).
+                            if (f.delaysKnown) Text(
+                                stringResource(R.string.delays_as_of, f.asOf.format(hourMinute)),
+                                color = MaterialTheme.colorScheme.onSurfaceVariant,
+                                style = MaterialTheme.typography.bodySmall,
+                            )
                             if (f.incomplete) Text(stringResource(R.string.not_all_checked), color = MaterialTheme.colorScheme.error)
-                            f.finds.forEach { FindCard(it, official) }
+                            val rider = { stop: Stop -> riderAt(stop, official) }
+                            f.finds.forEach { FindCard(it, official, rider) }
                             // Nothing faster: the official connection leaving first, to see where it changes (user, 2026-10-06).
                             if (f.finds.isEmpty() && first != null) Card(Modifier.fillMaxWidth()) {
                                 Column(Modifier.padding(12.dp), verticalArrangement = Arrangement.spacedBy(4.dp)) {
                                     Text(stringResource(R.string.official_connection), style = MaterialTheme.typography.titleMedium)
-                                    Trip(first, official)
+                                    Trip(first, official, rider)
                                 }
                             }
                         }
@@ -476,6 +484,27 @@ internal fun MinutesStepper(
     }
 }
 
+/**
+ * A change the delays make shorter than the rider's [needed] minutes (user, 2026-10-06): red with
+ * a "!" and the [minutes] left; grey and without it once they're below zero, the next train gone.
+ */
+@Composable
+private fun LateBox(minutes: Long, needed: Long) {
+    val missed = minutes < 0
+    Surface(shape = MaterialTheme.shapes.extraSmall, color = if (missed) Color(0xFF757575) else RED) {
+        Text(
+            (if (missed) "$minutes min" else "! $minutes min").replace('-', '−'),
+            Modifier.padding(horizontal = 8.dp, vertical = 2.dp).spokenAs(
+                if (missed) stringResource(R.string.box_missed, -minutes) else stringResource(R.string.box_too_short, minutes, needed),
+            ),
+            color = Color.White,
+            fontWeight = FontWeight.Bold,
+        )
+    }
+}
+
+private val RED = Color(0xFFC62828)
+
 /** A default track switch time's text, not set by the rider. */
 private const val FADED = 0.6f
 
@@ -486,7 +515,7 @@ private const val FADED = 0.6f
 private fun boxColors(minutes: Long, official: Long) = when {
     minutes < official -> Color(0xFF2E7D32) to Color.White
     minutes == official -> Color(0xFFFFA000) to Color.Black
-    else -> Color(0xFFC62828) to Color.White
+    else -> RED to Color.White
 }
 
 /** `8:50`, `08:50`, `850` or `0850`; null if it isn't a time. */
@@ -518,7 +547,7 @@ private fun find(
         val searched = search(officials, { stop -> changes += stop; transfer(stop, minimums.lowered(shortestChanges(answers))) }, ask)
         searched.failures.forEach { Log.w("Gleiswechsel", "Change not checked: $it", it) }
         Result.Done(
-            Found(time, officials.firstOrNull(), changes.distinctBy { it.id }, searched.finds, shortestChanges(answers), searched.failures.isNotEmpty()),
+            Found(time, officials.firstOrNull(), changes.distinctBy { it.id }, searched.finds, shortestChanges(answers), searched.failures.isNotEmpty(), now),
         )
     } catch (e: Exception) {
         // In the message too: Log drops the stack trace of an UnknownHostException (no network).
@@ -528,7 +557,7 @@ private fun find(
 }
 
 @Composable
-private fun FindCard(find: Find, minimums: Minimums) {
+private fun FindCard(find: Find, minimums: Minimums, rider: (Stop) -> Long) {
     Card(Modifier.fillMaxWidth()) {
         Column(Modifier.padding(12.dp), verticalArrangement = Arrangement.spacedBy(4.dp)) {
             Text(
@@ -556,7 +585,7 @@ private fun FindCard(find: Find, minimums: Minimums) {
                 style = MaterialTheme.typography.bodySmall,
             )
             Spacer(Modifier.height(4.dp))
-            Trip(find.faster, minimums)
+            Trip(find.faster, minimums, rider)
             // The official connection, folded and quiet (user, 2026-10-06); on the same line the
             // ticket on sbb.ch, for the official connection's from, to and departure (user, 2026-10-06).
             var official by remember { mutableStateOf(false) }
@@ -583,7 +612,7 @@ private fun FindCard(find: Find, minimums: Minimums) {
                 }) { Text(stringResource(R.string.ticket)) }
             }
             AnimatedVisibility(official) {
-                Column(Modifier.alpha(FADED), verticalArrangement = Arrangement.spacedBy(4.dp)) { Trip(find.official, minimums) }
+                Column(Modifier.alpha(FADED), verticalArrangement = Arrangement.spacedBy(4.dp)) { Trip(find.official, minimums, rider) }
             }
         }
     }
@@ -591,11 +620,12 @@ private fun FindCard(find: Find, minimums: Minimums) {
 
 /**
  * [trip] as a timetable: a row per stop, the train in between, and at each change its minutes in a
- * box, coloured against the station's [minimums]. A walk between two trains is part of the change;
- * one before the first train or after the last is shown on its own.
+ * box, coloured against the station's [minimums], or a [LateBox] where the delays make it shorter than
+ * the [rider]'s time there. A walk between two trains is part of the change; one before the first
+ * train or after the last is shown on its own.
  */
 @Composable
-private fun Trip(trip: Connection, minimums: Minimums) {
+private fun Trip(trip: Connection, minimums: Minimums, rider: (Stop) -> Long) {
     val legs = trip.legs
     val rides = legs.indices.filter { legs[it].train != null }
     legs.forEachIndexed { i, leg ->
@@ -613,7 +643,9 @@ private fun Trip(trip: Connection, minimums: Minimums) {
                 }
                 StopRow(leg.arrival)
                 if (next != null) Indented {
-                    MinutesBox(
+                    val needed = rider(leg.arrival)
+                    val late = tooShort(leg.arrival, legs[next].departure, Duration.ofMinutes(needed))
+                    if (late != null) LateBox(late.toMinutes(), needed) else MinutesBox(
                         Duration.between(leg.arrival.time, legs[next].departure.time).toMinutes(),
                         minimums.at(leg.arrival).toMinutes(),
                     )
@@ -630,13 +662,39 @@ private fun Trip(trip: Connection, minimums: Minimums) {
     }
 }
 
+/**
+ * A stop: the planned time and a delay of a minute or more in red after it, the station, the track.
+ * A changed track (user, 2026-10-06): the new one on the sign, the planned one struck through.
+ */
 @Composable
 private fun StopRow(stop: Stop) = Row(verticalAlignment = Alignment.CenterVertically) {
-    Text(stop.time.format(hourMinute), Modifier.width(TIME_COLUMN))
+    Row(Modifier.widthIn(min = TIME_COLUMN), verticalAlignment = Alignment.CenterVertically) {
+        Text(stop.time.format(hourMinute))
+        stop.delay?.takeIf { it > 0 }?.let {
+            Text(
+                "+$it",
+                Modifier.padding(horizontal = 4.dp).spokenAs(stringResource(R.string.late, it)),
+                color = RED,
+                fontWeight = FontWeight.Bold,
+                style = MaterialTheme.typography.bodySmall,
+            )
+        }
+    }
     Text(stop.station, Modifier.weight(1f), textDecoration = TextDecoration.Underline)
-    stop.platform?.let {
+    val track = stop.newPlatform ?: stop.platform ?: return@Row
+    val words = stop.newPlatform?.let { new -> stop.platform?.let { stringResource(R.string.track_changed, new, it) } }
+    Row(if (words != null) Modifier.spokenAs(words) else Modifier, verticalAlignment = Alignment.CenterVertically) {
         Text(stringResource(R.string.track), Modifier.padding(end = 6.dp), color = MaterialTheme.colorScheme.onSurfaceVariant)
-        TrackSign(it)
+        if (stop.newPlatform != null) stop.platform?.let {
+            Text(
+                it,
+                Modifier.padding(end = 6.dp),
+                color = MaterialTheme.colorScheme.onSurfaceVariant,
+                textDecoration = TextDecoration.LineThrough,
+                style = MaterialTheme.typography.bodySmall,
+            )
+        }
+        TrackSign(track)
     }
 }
 

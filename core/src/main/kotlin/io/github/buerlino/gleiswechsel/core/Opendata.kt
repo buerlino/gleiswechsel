@@ -11,14 +11,33 @@ import java.time.LocalDateTime
 import java.time.OffsetDateTime
 import java.time.format.DateTimeFormatter
 
-/** Where a leg starts or ends: the station, the planned time there and the platform, if known. */
+/**
+ * Where a leg starts or ends: the station, the planned time there and the platform, if known.
+ * [delay]: the minutes it's expected late, 0 on time, null while not known (the API knows it only
+ * a few hours ahead, checked 2026-10-06); [newPlatform]: the expected platform where it isn't the
+ * planned one.
+ */
 @Serializable
 data class Stop(
     val station: String,
     val id: String,
     @Serializable(with = OffsetDateTimeText::class) val time: OffsetDateTime,
     val platform: String? = null,
-)
+    val delay: Long? = null,
+    val newPlatform: String? = null,
+) {
+    /** The time with the delay. */
+    val expected: OffsetDateTime get() = time.plusMinutes(delay ?: 0)
+}
+
+/**
+ * The change from [arrival] to [departure] with the delays, if they make it shorter than planned
+ * and than the rider's [needed] track switch time (user, 2026-10-06); null while it still works.
+ * Below zero, the next train leaves before this one arrives.
+ */
+fun tooShort(arrival: Stop, departure: Stop, needed: Duration): Duration? =
+    Duration.between(arrival.expected, departure.expected)
+        .takeIf { it < needed && it < Duration.between(arrival.time, departure.time) }
 
 /**
  * One ride of a connection ([train] e.g. `S4`, `RE24`), or a walk ([train] null). [via]: the ids of
@@ -105,6 +124,8 @@ private fun Checkpoint.stop(time: String?) = Stop(
     id = station.id,
     time = OffsetDateTime.parse(time ?: throw IOException("No time at ${station.name}"), apiTime),
     platform = platform,
+    delay = delay,
+    newPlatform = prognosis?.platform?.takeIf { it != platform },
 )
 
 // Only the fields the app uses; the API sends many more.
@@ -129,14 +150,23 @@ private class Pass(val station: PassStation)
 @Serializable
 private class PassStation(val id: String? = null)
 
-/** At the start of a section only [departure] is set, at its end only [arrival]. */
+/**
+ * At the start of a section only [departure] is set, at its end only [arrival]. [delay] and
+ * [prognosis] are null while the API doesn't know them yet; on time, [delay] is 0.
+ */
 @Serializable
 private class Checkpoint(
     val station: Station,
     val departure: String? = null,
     val arrival: String? = null,
     val platform: String? = null,
+    val delay: Long? = null,
+    val prognosis: Prognosis? = null,
 )
+
+/** The expected [platform], null while not known or unchanged. Its times are the planned ones plus the delay. */
+@Serializable
+private class Prognosis(val platform: String? = null)
 
 @Serializable
 private class Station(val id: String, val name: String)

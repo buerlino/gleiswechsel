@@ -22,9 +22,6 @@ station suggestions, open questions) isn't repeated here. Nothing was tried live
 ## Using it every day
 
 - **No "now".** The time is required; a trip other than the commute needs the clock typed in.
-- **The rider's own record of a change** (✓ made it, ✗ missed it, after riding a find). The user
-  keeps one in their head (50+ times, missed once). On the phone, no Ist-Daten, no nightly job, no
-  matching trains: a candidate for "something simpler first" in open question 2.
 - **The saving in a year.** The app's pitch is that 5 minutes a day add up to hours a year; a
   line like "≈ 50 h a year" (14 minutes × about 220 workdays) in the card says it. Small.
 
@@ -32,10 +29,10 @@ station suggestions, open questions) isn't repeated here. Nothing was tried live
 
 - **The requests run one after another** (5 for Horw → Sursee). In parallel they'd be faster, but
   the API throttles, so carefully.
-- **Changed platforms aren't read.** Luzern's track varies (12–15); the card shows the planned one.
-  `prognosis.platform` is already in the answer, so it fits with "Show delays in the card".
+- ~~**Changed platforms aren't read.**~~ Done 2026-10-06 with the delays: the sign shows the
+  expected track, the planned one struck through (CLAUDE.md, "Delays and changed tracks").
 
 ## Suggested order (Claude, 2026-10-06)
 
 1. ~~Two tight changes in a row~~ (done 2026-10-06).
-2. Decide the ✓/✗ record before any work on the Ist-Daten risk.
+2. ~~The ✓/✗ record~~: not wanted (user, 2026-10-06).

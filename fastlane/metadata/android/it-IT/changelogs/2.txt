@@ -1,8 +1,8 @@
-- Cambi più brevi in più di una stazione dello stesso viaggio.
-- Tre parti: Destinazione, Viaggio, Ottimizzazione. I suoi tempi con − e +.
-- Il biglietto su sbb.ch, e un avviso se un viaggio passa due volte dalla stessa stazione.
-- Frecce: ↓ sotto il tempo ufficiale, ↑ sopra, anche per gli screen reader.
-- I cambi più rapidi dell'orario stesso contano come ufficiali.
-- Annullare una ricerca in corso.
-- L'ultimo risultato resta, p. es. per leggere il binario offline.
-- L'aiuto per temi.
+- Cambi più brevi in più stazioni di un viaggio.
+- Ritardi e cambi di binario; un ! rosso se un cambio diventa troppo breve.
+- Tre parti: Destinazione, Viaggio, Ottimizzazione; tempi con − e +.
+- Biglietto su sbb.ch; un avviso se un viaggio passa due volte da una stazione.
+- Frecce ↓ ↑ rispetto al tempo ufficiale, anche per gli screen reader.
+- I cambi più rapidi dell'orario contano come ufficiali.
+- L'ultimo risultato resta, anche offline.
+- Annullare una ricerca. Aiuto per temi.

@@ -25,6 +25,7 @@
     <string name="no_connections">%1$s: no connections found. Check the station names.</string>
     <string name="nothing_faster">%1$s: nothing faster.</string>
     <string name="not_all_checked">Not every change could be checked: transport.opendata.ch did not answer. Try again in a minute.</string>
+    <string name="delays_as_of">Delays as of %1$s</string>
     <string name="optimization_text">Your track switch time at each station. Lower it and search again to find more.</string>
     <string name="less">One minute less</string>
     <string name="more">One minute more</string>
@@ -42,9 +43,13 @@
     <string name="track_switch_walk">track switch, %1$d min walk</string>
     <string name="walk">Walk, %1$d min</string>
     <string name="track">track</string>
+    <string name="track_changed">track %1$s instead of %2$s</string>
+    <string name="late">%1$d min late</string>
     <string name="box_below">%1$d min, below the official %2$d</string>
     <string name="box_same">%1$d min, the official time</string>
     <string name="box_above">%1$d min, above the official %2$d</string>
+    <string name="box_too_short">%1$d min with the delays, you need %2$d</string>
+    <string name="box_missed">Missed with the delays, by %1$d min</string>
 
     <string name="back">Back</string>
     <string name="settings">Settings</string>
@@ -58,13 +63,13 @@
     <string name="help_switch">Track switch time</string>
     <string name="help_switch_text">The minutes in a box: from one train to the next, walk included. Set your own per station under Optimization (− and +). Otherwise: the official time minus the offset in Settings (⚙), e.g. 5\u00A0−\u00A01\u00A0=\u00A04\u00A0min at Luzern.</string>
     <string name="help_colours">Colours and arrows</string>
-    <string name="help_colours_text">Green ↓: below the official time, orange: the same, red ↑: above. Official: the timetable\'s, or less where the planner itself changes faster.</string>
+    <string name="help_colours_text">Green ↓: below the official time, orange: the same, red ↑: above. Official: the timetable\'s, or less where the planner itself changes faster. Red !: a delay leaves less than your time, grey: the next train is gone.</string>
     <string name="help_efficient">More efficient</string>
     <string name="help_efficient_text" formatted="false">How much faster than the official trip, first departure to last arrival: 33 instead of 47 min is 42% (47 / 33 = 1.42).</string>
     <string name="help_tickets">Tickets</string>
     <string name="help_tickets_text">A normal ticket covers the faster trip too, a supersaver ticket only the official train. A trip passing a station twice may need another ticket.</string>
     <string name="help_careful">Careful</string>
-    <string name="help_careful_text">Planned times only: a late train can make a short track switch impossible. Whether you make it is up to you. The last result stays, also offline: check its day.</string>
+    <string name="help_careful_text">Delays (+3) and changed tracks as known at the search, only a few hours ahead; cancelled trains not. Whether you make it is up to you. The last result stays, also offline: check its day and how old its delays are.</string>
     <string name="help_data">Data</string>
     <string name="help_data_text">Connections: transport.opendata.ch. Official track switch times: opentransportdata.swiss, timetable 2026. Not affiliated with SBB.</string>
 </resources>
