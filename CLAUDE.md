@@ -14,7 +14,9 @@ gains count: 5 minutes a day add up to hours a year.
 Name **Gleiswechsel**, subtitle **Schneller umsteigen** (user, 2026-10-06). The name never
 includes the subtitle (app label, title, applicationId, repo: just Gleiswechsel); the subtitle
 goes where a store shows a line under the name: the F-Droid summary
-(`fastlane/.../short_description.txt`) and the README's first line. applicationId and namespace
+(`fastlane/.../short_description.txt`; the French and Italian ones add their own after a dash,
+"Schneller umsteigen – Changer plus vite", user 2026-10-06: respectful) and the README's first
+line. applicationId and namespace
 `io.github.buerlino.gleiswechsel`; Kotlin packages `io.github.buerlino.gleiswechsel` (app) and
 `io.github.buerlino.gleiswechsel.core`. Repo https://github.com/buerlino/gleiswechsel (GPLv3, as
 the user's other apps); local folder `gleiswechsel` (renamed from the working name `umsteiger`,
@@ -58,7 +60,13 @@ apps built this way; their CLAUDE.md files explain each choice.
   it's really needed. No background work unless a feature can't work without it.
 - Personal data (the commutes) stays on the phone. Real responses and API keys go in the
   gitignored `private/`; tests use made-up data.
-- English UI, short texts: one idea per line, explain each concept in one place only.
+- UI in English, German, French and Italian (user, 2026-10-06), every text in `strings.xml`
+  (`values`, `values-de`, `-fr`, `-it`), following the phone's language. Formal wherever the
+  language has it (user, 2026-10-06): German "Sie" (Swiss spelling: ss, no ß), French "vous",
+  Italian "lei". Short texts: one idea per line, explain each concept in one place only. No
+  per-app language picker (user, 2026-10-06: people keep the system language). The day of a
+  search is in the texts' language (`language`, `day_pattern`), so a Spanish phone gets English
+  throughout. The store listing in the same four (`fastlane/metadata/android/<locale>/`).
 - Migrations: remove migration code two releases after F-Droid has shipped past the version that
   needed it (gridload's rule).
 
@@ -122,10 +130,16 @@ transport.opendata.ch for Wed 7 Oct 2026:
 ## The app
 
 The search page: the commute (from, to, leaving at), a Search button, the finds as cards, and
-under them the rider's transfer time at each change station. A top bar: **?** (top left) opens
-Help, **⚙** (top right) Settings (user, 2026-10-06), text buttons as in gridload (which has them
-the other way round); each has ← and takes the back gesture. The page's state lives above the
+under them the rider's transfer time at each change station. A top bar: **⚙** (top left) opens
+Settings, **?** (top right) Help (user, 2026-10-06), text buttons as in gridload; each has ← and
+takes the back gesture. The page's state lives above the
 three, so Help and Settings don't lose the result.
+
+**Track switch time** (user, 2026-10-06) is the name, in every text, of the minutes from one
+train to the next, walk included: Gleiswechselzeit, temps de changement de voie, tempo di cambio
+binario; at a change in a card just "track switch" (Gleiswechsel, changement de voie, cambio
+binario). The planner's minimum is the official track switch time; the global offset shifts it
+at every station the rider hasn't set.
 
 - **The commute** (2026-10-06): three text fields, each saved in SharedPreferences (`commute`) as
   it is typed. Stations go to the API as typed: it matches loosely ("horw", "Luzern Bhf" and even
@@ -133,36 +147,41 @@ three, so Help and Settings don't lose the result.
   The time takes `8:50`, `08:50`, `850` or `0850` (the number keyboard has no colon). Search asks
   for the next such time, Swiss time (today or tomorrow), and shows the day. Editing a field
   clears the result, so it never shows another commute's finds; the fields are locked while it
-  searches.
-- **The transfer times** (user, 2026-10-06): under the result, one row "Your change at X [_ min]"
+  searches. A ⇅ button swaps from and to (user, 2026-10-06): on the right, centred over the gap
+  between the two fields, which keep their distance.
+- **The transfer times** (user, 2026-10-06): under the result, one row "Track switch time at X [_ min]"
   per change station of the official connections, each station once, in route order (Horw →
   Bern, Bundesplatz: Luzern, Olten, Bern). So a commute with nothing faster can be set too;
   tapping a find's change, the first idea, couldn't do that. Empty shows the default (official
   minimum − offset) in light grey (`outline`: the usual placeholder grey looked like a set
-  value); no "Your change: …" line. Saved in `commute` keyed by station id (`8505000` → `4`) as
+  value). Saved in `commute` keyed by station id (`8505000` → `4`) as
   typed: digits only, up to 2. Editing a time clears the finds but keeps the rows (Search again);
   editing the commute clears both. The rows come only with a search that has connections (user,
   2026-10-06: without one they don't help), so after a restart they're back with the next one.
-- **The change time is the number the app is about** (user, 2026-10-06): always in the same box,
-  in the cards, the rows and Settings (`MinutesBox`, `MinutesField`), coloured
-  (`primaryContainer`) where it's the rider's: their fields, and the change a find relies on.
+- **The track switch time is the number the app is about** (user, 2026-10-06): always in the
+  same box, in the cards, the rows and Settings (`MinutesBox`, `MinutesField`), coloured against
+  the official one at that station (user, 2026-10-06): green below, orange the same, red above.
+  A row's colour follows its value or, empty, its default; the offset in Settings is coloured
+  against 0 (−1 green, 0 orange). A find's own change is so green, the official ones in its card
+  orange or red.
 - **The finds** (user, 2026-10-06: before, "a wall of text"): a card each, "14 min earlier",
-  "Sursee 09:26 instead of 09:40", the efficiency, then the trip as a timetable: a row per stop
+  "Sursee 09:26 instead of 09:40", how much more efficient, then the trip as a timetable: a row per stop
   (time, station, track), the train in between, and at each change its minutes in the box. A walk
-  between two trains is part of the change ("7 min change, 6 min walk"); one before the first
+  between two trains is part of the change ("7 min track switch, 6 min walk"); one before the first
   train or after the last is a row of its own.
-- **Settings** (user, 2026-10-06): the offset, "Your change: official minimum minus [_ min]", key
+- **Settings** (user, 2026-10-06): "Global offset of the track switch time [−_ min]" (the − in
+  the box: it's subtracted), key
   `offset` in `commute`, 1 until set (`DEFAULT_OFFSET`, proposed, see open question 4). Changing
   it clears the finds and keeps the rows; locked while a search runs.
-- **Help:** what the app does, the change time, efficiency, that times are planned only, and the
+- **Help:** what the app does, the track switch time and its colours, how much more efficient, that times are planned only, and the
   data sources (opentransportdata.swiss wants to be named). Each concept is explained there once.
-- **Efficiency** of each connection shown (user, 2026-10-06): the fastest trip's time / this
-  one's, each from the first departure to the last arrival (the wait before the first train
-  doesn't count). The fastest is the shortest of the official connections and the finds of the
-  search. Same from and to, so it's also the share of the fastest trip's speed.
-  `Connection.efficiency` in `:core`; each find shows its own and the official one's, e.g. 100% vs
-  70% for the test case (33 and 47 minutes). Replaced the share of time on board (same day): it favoured slow trains
-  with short changes.
+- **How much more efficient** each find is than its official connection (user, 2026-10-06): the
+  official time / the find's − 1, each from the first departure to the last arrival (the wait
+  before the first train doesn't count). Efficiency is the fastest trip's time / a trip's, so the
+  fastest cancels out; same from and to, so it's also how much faster the find goes.
+  `Find.moreEfficient` in `:core`; 42% for the test case (47 and 33 minutes). Replaced, same day,
+  each one's own efficiency (a find at 100% said nothing), which had replaced the share of time on
+  board (it favoured slow trains with short changes).
 - **The client:** `connections(from, to, time, version)` asks transport.opendata.ch
   `/v1/connections` (4 connections leaving at or after `time`), parses only trains, stations,
   planned times and platforms. User-Agent `Gleiswechsel/<version> (+https://github.com/buerlino/gleiswechsel)`.

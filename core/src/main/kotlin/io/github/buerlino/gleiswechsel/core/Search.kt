@@ -11,6 +11,13 @@ import java.time.OffsetDateTime
  */
 data class Find(val official: Connection, val faster: Connection, val arrival: Stop, val departure: Stop) {
     val saved: Duration get() = Duration.between(faster.arrival.time, official.arrival.time)
+
+    /**
+     * How much more efficient than [official] (user, 2026-10-06): its time / this one's − 1, each
+     * from the first departure to the last arrival. 33 minutes instead of 47: 0.42, 42% more. Same
+     * from and to, so it's also how much faster [faster] goes.
+     */
+    val moreEfficient: Double get() = official.duration.toSeconds().toDouble() / faster.duration.toSeconds() - 1
 }
 
 /** The request: connections from, to, leaving at or after a time (Swiss local time). */

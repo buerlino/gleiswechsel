@@ -38,6 +38,7 @@ class SearchTest {
         assertEquals(stop("Xberg", "08:10", "1"), find.arrival)
         assertEquals(stop("Xberg", "08:14", "9"), find.departure)
         assertEquals(minutes(10), find.saved)
+        assertEquals(40.0 / 30 - 1, find.moreEfficient)
         assertEquals(listOf("Xberg 08:14"), asked)
     }
 

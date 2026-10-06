@@ -17,38 +17,36 @@ import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 
-/** The offset below the official minimum, at every station the rider hasn't set (user, 2026-10-06). */
+/**
+ * The global offset of the track switch time, from the official one at every station the rider
+ * hasn't set, shown with a − (user, 2026-10-06). Coloured against 0, the official time.
+ */
 @Composable
 internal fun Settings(offset: String, enabled: Boolean, onOffset: (String) -> Unit, onBack: () -> Unit) =
-    SubPage("Settings", onBack) {
-        MinutesField("Your change: official minimum minus", offset, DEFAULT_OFFSET, enabled, onOffset)
+    SubPage(stringResource(R.string.settings), onBack) {
+        MinutesField(stringResource(R.string.global_offset), offset, DEFAULT_OFFSET, 0, enabled, minus = true, onValueChange = onOffset)
     }
 
 @Composable
-internal fun Help(onBack: () -> Unit) = SubPage("Help", onBack) {
+internal fun Help(onBack: () -> Unit) = SubPage(stringResource(R.string.help), onBack) {
     help.forEach { (heading, text) ->
         Column {
-            Text(heading, style = MaterialTheme.typography.titleMedium)
-            Text(text)
+            Text(stringResource(heading), style = MaterialTheme.typography.titleMedium)
+            Text(stringResource(text))
         }
     }
 }
 
 private val help = listOf(
-    "What it does" to "Gleiswechsel looks for a faster trip than the official planner shows. " +
-        "The planner offers a change only if it takes at least the station's official minimum, " +
-        "e.g. 5 minutes at Luzern. If you change faster, an earlier train may still be yours.",
-    "Your change" to "The minutes in a box: how long you need from one train to the next, walk included. " +
-        "Everywhere it's the official minimum minus the minutes in Settings (⚙). " +
-        "Under a result you can set your own at each station.",
-    "Efficiency" to "The fastest trip's time divided by this one's: 100% is the fastest.",
-    "Careful" to "Planned times only: a late train can make a short change impossible. " +
-        "Whether you make it is up to you.",
-    "Data" to "Connections: transport.opendata.ch. Official minimums: opentransportdata.swiss, " +
-        "timetable 2026. Not affiliated with SBB.",
+    R.string.help_what to R.string.help_what_text,
+    R.string.help_switch to R.string.help_switch_text,
+    R.string.help_efficient to R.string.help_efficient_text,
+    R.string.help_careful to R.string.help_careful_text,
+    R.string.help_data to R.string.help_data_text,
 )
 
 /** A page with a back arrow and its [title]; the [content] scrolls. */

@@ -1,0 +1,7 @@
+Gleiswechsel prüft, ob es für Ihre tägliche Zugfahrt in der Schweiz eine schnellere Verbindung gibt, als der offizielle Fahrplan zeigt.
+
+Die offiziellen Fahrpläne zeigen einen Umstieg nur, wenn er mindestens die offizielle Gleiswechselzeit des Bahnhofs dauert, und die ist an grossen Bahnhöfen grosszügig. Gleiswechsel nimmt stattdessen Ihre eigene Gleiswechselzeit und sucht die Verbindungen, die dabei wegfallen.
+
+Kein Konto, keine Werbung, kein Tracking. Ihre Pendelstrecken bleiben auf Ihrem Handy.
+
+Daten: Open Data des öffentlichen Verkehrs der Schweiz (opentransportdata.swiss, transport.opendata.ch). Unabhängig von der SBB und allen anderen Transportunternehmen.

@@ -1,0 +1,7 @@
+Gleiswechsel verifica se per il suo viaggio quotidiano in treno in Svizzera esiste un collegamento più veloce di quello che mostra l'orario ufficiale.
+
+Gli orari ufficiali propongono un cambio solo se dura almeno il tempo di cambio binario ufficiale della stazione, che nelle grandi stazioni è generoso. Gleiswechsel usa invece il suo tempo di cambio binario e cerca i collegamenti tralasciati.
+
+Nessun account, nessuna pubblicità, nessun tracciamento. I suoi tragitti restano sul suo telefono.
+
+Dati: open data dei trasporti pubblici svizzeri (opentransportdata.swiss, transport.opendata.ch). Indipendente dalle FFS e da tutte le altre imprese di trasporto.

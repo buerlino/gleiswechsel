@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- English; German, French and Italian in values-de, -fr and -it. Station names come from the API as they are.
+     The minutes from one train to the next are the "track switch time" in every text (user, 2026-10-06). -->
+<resources>
+    <!-- The language of these texts (a locale tag) and the day of a search in it: Wed 7 Oct. -->
+    <string name="language">en</string>
+    <string name="day_pattern">EEE d MMM</string>
+
+    <string name="from">From</string>
+    <string name="to">To</string>
+    <string name="leaving_at">Leaving at</string>
+    <string name="search">Search</string>
+    <string name="searching">Searching…</string>
+    <string name="search_failed">Search failed: %1$s</string>
+    <string name="no_connections">%1$s: no connections found. Check the station names.</string>
+    <string name="nothing_faster">%1$s: nothing faster.</string>
+    <string name="switch_time_at">Track switch time at %1$s</string>
+
+    <string name="earlier">%1$d min earlier</string>
+    <string name="instead_of">%1$s %2$s instead of %3$s</string>
+    <string name="more_efficient">%1$d%% more efficient</string>
+    <string name="track_switch">track switch</string>
+    <string name="track_switch_walk">track switch, %1$d min walk</string>
+    <string name="walk">Walk, %1$d min</string>
+    <string name="track">track %1$s</string>
+
+    <string name="settings">Settings</string>
+    <string name="global_offset">Global offset of the track switch time</string>
+
+    <string name="help">Help</string>
+    <string name="help_what">What it does</string>
+    <string name="help_what_text">Gleiswechsel looks for a faster trip than the official planner shows. The planner offers a change only if it takes at least the station\'s official track switch time, e.g. 5 minutes at Luzern. If you switch faster, an earlier train may still be yours.</string>
+    <string name="help_switch">Track switch time</string>
+    <string name="help_switch_text">The minutes in a box: how long you need from one train to the next, walk included. Under a result you can set your own at each station; elsewhere it\'s the official one plus the global offset in Settings (⚙), e.g. 5\u00A0−\u00A01\u00A0=\u00A04\u00A0minutes at Luzern. Green: below the official one, orange: the same, red: above.</string>
+    <string name="help_efficient">More efficient</string>
+    <string name="help_efficient_text" formatted="false">How much faster than the official trip, from the first departure to the last arrival: 33 minutes instead of 47 is 42% more efficient (47 / 33 = 1.42).</string>
+    <string name="help_careful">Careful</string>
+    <string name="help_careful_text">Planned times only: a late train can make a short track switch impossible. Whether you make it is up to you.</string>
+    <string name="help_data">Data</string>
+    <string name="help_data_text">Connections: transport.opendata.ch. Official track switch times: opentransportdata.swiss, timetable 2026. Not affiliated with SBB.</string>
+</resources>

@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- French; "vous"; a no-break space before a colon and a percent sign. -->
+<resources>
+    <string name="language">fr</string>
+    <string name="day_pattern">EEE d MMM</string>
+
+    <string name="from">De</string>
+    <string name="to">À</string>
+    <string name="leaving_at">Départ</string>
+    <string name="search">Rechercher</string>
+    <string name="searching">Recherche…</string>
+    <string name="search_failed">Échec de la recherche : %1$s</string>
+    <string name="no_connections">%1$s : aucun trajet trouvé. Vérifiez les noms des gares.</string>
+    <string name="nothing_faster">%1$s : rien de plus rapide.</string>
+    <string name="switch_time_at">Temps de changement de voie à %1$s</string>
+
+    <string name="earlier">%1$d min plus tôt</string>
+    <string name="instead_of">%1$s %2$s au lieu de %3$s</string>
+    <string name="more_efficient">%1$d %% plus efficace</string>
+    <string name="track_switch">changement de voie</string>
+    <string name="track_switch_walk">changement de voie, %1$d min à pied</string>
+    <string name="walk">À pied, %1$d min</string>
+    <string name="track">voie %1$s</string>
+
+    <string name="settings">Paramètres</string>
+    <string name="global_offset">Décalage global du temps de changement de voie</string>
+
+    <string name="help">Aide</string>
+    <string name="help_what">À quoi sert l\'app</string>
+    <string name="help_what_text">Gleiswechsel cherche un trajet plus rapide que celui de l\'horaire officiel. L\'horaire ne propose une correspondance que si elle dure au moins le temps de changement de voie officiel de la gare, p. ex. 5 minutes à Lucerne. Si vous changez plus vite, un train plus tôt est peut-être encore à votre portée.</string>
+    <string name="help_switch">Temps de changement de voie</string>
+    <string name="help_switch_text">Les minutes dans une case : le temps qu\'il vous faut d\'un train au suivant, à pied compris. Sous un résultat, vous pouvez fixer le vôtre dans chaque gare ; ailleurs, c\'est le temps officiel plus le décalage global des paramètres (⚙), p. ex. 5\u00A0−\u00A01\u00A0=\u00A04\u00A0minutes à Lucerne. Vert : sous le temps officiel, orange : égal, rouge : au-dessus.</string>
+    <string name="help_efficient">Plus efficace</string>
+    <string name="help_efficient_text" formatted="false">De combien plus rapide que le trajet officiel, du premier départ à la dernière arrivée : 33 minutes au lieu de 47, c\'est 42 % plus efficace (47 / 33 = 1,42).</string>
+    <string name="help_careful">Attention</string>
+    <string name="help_careful_text">Horaires prévus uniquement : un train en retard peut rendre impossible un changement de voie court. À vous de juger si vous y arrivez.</string>
+    <string name="help_data">Données</string>
+    <string name="help_data_text">Trajets : transport.opendata.ch. Temps de changement de voie officiels : opentransportdata.swiss, horaire 2026. Sans lien avec les CFF.</string>
+</resources>

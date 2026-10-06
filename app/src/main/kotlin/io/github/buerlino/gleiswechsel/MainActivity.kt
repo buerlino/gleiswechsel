@@ -9,6 +9,7 @@ import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.RowScope
@@ -17,6 +18,7 @@ import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.safeDrawing
 import androidx.compose.foundation.layout.width
@@ -26,6 +28,7 @@ import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.Button
 import androidx.compose.material3.Card
+import androidx.compose.material3.FilledTonalIconButton
 import androidx.compose.material3.LocalTextStyle
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
@@ -44,6 +47,8 @@ import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.style.TextAlign
@@ -75,16 +80,10 @@ private sealed interface Result {
     data object Searching : Result
     /**
      * [connections]: how many official connections the search started from; [changes]: where they
-     * change trains, each station once; [fastest]: the shortest trip among them and the finds.
+     * change trains, each station once.
      */
-    class Found(
-        val day: LocalDateTime,
-        val connections: Int,
-        val changes: List<Stop>,
-        val finds: List<Find>,
-        val fastest: Duration,
-    ) : Result
-    class Failed(val message: String) : Result
+    class Found(val day: LocalDateTime, val connections: Int, val changes: List<Stop>, val finds: List<Find>) : Result
+    class Failed(val reason: String) : Result
 }
 
 private enum class Screen { SEARCH, SETTINGS, HELP }
@@ -136,14 +135,26 @@ private fun App(prefs: SharedPreferences, minimums: Minimums) {
         Screen.HELP -> Help(onBack = { screen = Screen.SEARCH })
         Screen.SETTINGS -> Settings(offset, !searching, { offset = it; save("offset", it) }, onBack = { screen = Screen.SEARCH })
         Screen.SEARCH -> Column(Modifier.windowInsetsPadding(WindowInsets.safeDrawing)) {
-            TopBar(onHelp = { screen = Screen.HELP }, onSettings = { screen = Screen.SETTINGS })
+            TopBar(onSettings = { screen = Screen.SETTINGS }, onHelp = { screen = Screen.HELP })
             Column(
                 Modifier.verticalScroll(scroll).padding(horizontal = 16.dp).padding(bottom = 16.dp),
                 verticalArrangement = Arrangement.spacedBy(8.dp),
             ) {
-                Field("From", from, !searching) { from = it; saveCommute("from", it) }
-                Field("To", to, !searching) { to = it; saveCommute("to", it) }
-                Field("Leaving at", leaving, !searching, "08:50", isError = leaving.isNotEmpty() && time == null, number = true) {
+                // The swap button hovers on the right, centred between From and To, without moving
+                // them apart (user, 2026-10-06). Each field has its label's 8 dp above its border,
+                // so the gap between the borders is 4 dp below the middle.
+                Box(Modifier.fillMaxWidth()) {
+                    Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
+                        Field(stringResource(R.string.from), from, !searching) { from = it; saveCommute("from", it) }
+                        Field(stringResource(R.string.to), to, !searching) { to = it; saveCommute("to", it) }
+                    }
+                    FilledTonalIconButton(
+                        onClick = { val f = from; from = to; to = f; saveCommute("from", from); saveCommute("to", to) },
+                        Modifier.align(Alignment.CenterEnd).offset(y = 4.dp).padding(end = 12.dp),
+                        enabled = !searching,
+                    ) { Text("⇅", fontSize = 20.sp) }
+                }
+                Field(stringResource(R.string.leaving_at), leaving, !searching, "08:50", isError = leaving.isNotEmpty() && time == null, number = true) {
                     leaving = it; saveCommute("leaving", it)
                 }
                 Button(
@@ -157,24 +168,30 @@ private fun App(prefs: SharedPreferences, minimums: Minimums) {
                             changes = (r as? Result.Found)?.changes.orEmpty()
                         }
                     },
-                ) { Text("Search") }
+                ) { Text(stringResource(R.string.search)) }
                 when (val r = result) {
                     null -> {}
-                    Result.Searching -> Text("Searching…")
-                    is Result.Failed -> Text(r.message, color = MaterialTheme.colorScheme.error)
+                    Result.Searching -> Text(stringResource(R.string.searching))
+                    is Result.Failed -> Text(stringResource(R.string.search_failed, r.reason), color = MaterialTheme.colorScheme.error)
                     is Result.Found -> {
-                        Text(r.day.format(dayFormat) + when {
-                            r.connections == 0 -> ": no connections found. Check the station names."
-                            r.finds.isEmpty() -> ": nothing faster."
-                            else -> ":"
+                        // The day in the language of the texts, not the phone's: a Spanish phone gets English.
+                        val locale = Locale.forLanguageTag(stringResource(R.string.language))
+                        val day = r.day.format(DateTimeFormatter.ofPattern(stringResource(R.string.day_pattern), locale))
+                        Text(when {
+                            r.connections == 0 -> stringResource(R.string.no_connections, day)
+                            r.finds.isEmpty() -> stringResource(R.string.nothing_faster, day)
+                            else -> "$day:"
                         })
-                        r.finds.forEach { FindCard(it, r.fastest) }
+                        r.finds.forEach { FindCard(it, minimums) }
                     }
                 }
                 changes.forEach { stop ->
                     key(stop.id) {
                         var minutes by remember { mutableStateOf(prefs.getString(stop.id, "")!!) }
-                        MinutesField("Your change at ${stop.station}", minutes, defaultAt(stop), !searching) {
+                        MinutesField(
+                            stringResource(R.string.switch_time_at, stop.station),
+                            minutes, defaultAt(stop), minimums.at(stop).toMinutes(), !searching,
+                        ) {
                             minutes = it; save(stop.id, it)
                         }
                     }
@@ -184,12 +201,12 @@ private fun App(prefs: SharedPreferences, minimums: Minimums) {
     }
 }
 
-/** Help (?) on the left, Settings (⚙) on the right (user, 2026-10-06). */
+/** Settings (⚙) on the left, Help (?) on the right, as in gridload (user, 2026-10-06). */
 @Composable
-private fun TopBar(onHelp: () -> Unit, onSettings: () -> Unit) = Row(verticalAlignment = Alignment.CenterVertically) {
-    TextButton(onClick = onHelp) { Text("?", fontSize = 22.sp, fontWeight = FontWeight.Bold) }
-    Text("Gleiswechsel", Modifier.weight(1f), textAlign = TextAlign.Center, style = MaterialTheme.typography.titleLarge)
+private fun TopBar(onSettings: () -> Unit, onHelp: () -> Unit) = Row(verticalAlignment = Alignment.CenterVertically) {
     TextButton(onClick = onSettings) { Text("⚙", fontSize = 22.sp) }
+    Text("Gleiswechsel", Modifier.weight(1f), textAlign = TextAlign.Center, style = MaterialTheme.typography.titleLarge)
+    TextButton(onClick = onHelp) { Text("?", fontSize = 22.sp, fontWeight = FontWeight.Bold) }
 }
 
 @Composable
@@ -211,18 +228,28 @@ private fun Field(
 )
 
 /**
- * [label] and its minutes in a box, as typed (digits, up to 2). Empty shows [default] in light grey:
- * the usual placeholder grey looks like a set value. The box is the one of [MinutesBox].
+ * [label] and its minutes in a box, as typed (digits, up to 2), with a − in front if they're
+ * [minus]. Empty shows [default] in light grey: the usual placeholder grey looks like a set value.
+ * The box is the one of [MinutesBox], coloured against [official].
  */
 @Composable
-internal fun MinutesField(label: String, minutes: String, default: Long, enabled: Boolean, onValueChange: (String) -> Unit) =
+internal fun MinutesField(
+    label: String,
+    minutes: String,
+    default: Long,
+    official: Long,
+    enabled: Boolean,
+    minus: Boolean = false,
+    onValueChange: (String) -> Unit,
+) =
     Row(verticalAlignment = Alignment.CenterVertically) {
         Text(label, Modifier.weight(1f))
-        val box = MaterialTheme.colorScheme.primaryContainer
+        val box = boxColor((minutes.toLongOrNull() ?: default) * if (minus) -1 else 1, official)
         OutlinedTextField(
             minutes, { onValueChange(it.filter(Char::isDigit).take(2)) }, Modifier.width(104.dp), enabled,
             textStyle = LocalTextStyle.current.copy(fontWeight = FontWeight.Bold),
             placeholder = { Text("$default", color = MaterialTheme.colorScheme.outline) },
+            prefix = if (minus) { { Text("−") } } else null,
             suffix = { Text("min") },
             keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
             singleLine = true,
@@ -233,16 +260,23 @@ internal fun MinutesField(label: String, minutes: String, default: Long, enabled
     }
 
 /**
- * A change time in a box, the number the app is about (user, 2026-10-06), shaped as in
- * [MinutesField]. Coloured where it's [yours], the change a find relies on.
+ * A track switch time in a box, the number the app is about (user, 2026-10-06), shaped as in
+ * [MinutesField] and coloured against the [official] one.
  */
 @Composable
-private fun MinutesBox(minutes: Long, yours: Boolean) = Surface(
+private fun MinutesBox(minutes: Long, official: Long) = Surface(
     shape = MaterialTheme.shapes.extraSmall,
-    color = if (yours) MaterialTheme.colorScheme.primaryContainer else MaterialTheme.colorScheme.surface,
+    color = boxColor(minutes, official),
     border = BorderStroke(1.dp, MaterialTheme.colorScheme.outline),
 ) {
     Text("$minutes min", Modifier.padding(horizontal = 8.dp, vertical = 2.dp), fontWeight = FontWeight.Bold)
+}
+
+/** Green below the official track switch time, orange at it, red above (user, 2026-10-06). */
+private fun boxColor(minutes: Long, official: Long) = when {
+    minutes < official -> Color(0xFFA5D6A7)
+    minutes == official -> Color(0xFFFFCC80)
+    else -> Color(0xFFEF9A9A)
 }
 
 /** `8:50`, `08:50`, `850` or `0850`; null if it isn't a time. */
@@ -258,42 +292,48 @@ private fun find(from: String, to: String, leaving: LocalTime, transfer: (Stop) 
     return try {
         val ask = { a: String, b: String, at: LocalDateTime -> connections(a, b, at, BuildConfig.VERSION_NAME) }
         val officials = ask(from, to, time)
-        val finds = search(officials, transfer, ask)
-        val fastest = (officials + finds.map { it.faster }).minOfOrNull { it.duration } ?: Duration.ZERO
-        Result.Found(time, officials.size, officials.flatMap { it.changes }.distinctBy { it.id }, finds, fastest)
+        Result.Found(time, officials.size, officials.flatMap { it.changes }.distinctBy { it.id }, search(officials, transfer, ask))
     } catch (e: Exception) {
         Log.w("Gleiswechsel", "Search failed", e)
-        Result.Failed("Search failed: ${e.message ?: e::class.simpleName}")
+        Result.Failed("${e.message ?: e::class.simpleName}")
     }
 }
 
 @Composable
-private fun FindCard(find: Find, fastest: Duration) {
+private fun FindCard(find: Find, minimums: Minimums) {
     Card(Modifier.fillMaxWidth()) {
         Column(Modifier.padding(12.dp), verticalArrangement = Arrangement.spacedBy(4.dp)) {
-            Text("${find.saved.toMinutes()} min earlier", style = MaterialTheme.typography.titleLarge, fontWeight = FontWeight.Bold)
             Text(
-                "${find.faster.arrival.station} ${find.faster.arrival.time.format(hourMinute)} " +
-                    "instead of ${find.official.arrival.time.format(hourMinute)}",
+                stringResource(R.string.earlier, find.saved.toMinutes()),
+                style = MaterialTheme.typography.titleLarge,
+                fontWeight = FontWeight.Bold,
             )
             Text(
-                "Efficiency ${find.faster.percent(fastest)}, official ${find.official.percent(fastest)}",
+                stringResource(
+                    R.string.instead_of,
+                    find.faster.arrival.station,
+                    find.faster.arrival.time.format(hourMinute),
+                    find.official.arrival.time.format(hourMinute),
+                ),
+            )
+            Text(
+                stringResource(R.string.more_efficient, (find.moreEfficient * 100).roundToInt()),
                 color = MaterialTheme.colorScheme.onSurfaceVariant,
                 style = MaterialTheme.typography.bodySmall,
             )
             Spacer(Modifier.height(4.dp))
-            Trip(find.faster, find.arrival)
+            Trip(find.faster, minimums)
         }
     }
 }
 
 /**
  * [trip] as a timetable: a row per stop, the train in between, and at each change its minutes in a
- * box, coloured at [yours]. A walk between two trains is part of the change; one before the first
- * train or after the last is shown on its own.
+ * box, coloured against the station's [minimums]. A walk between two trains is part of the change;
+ * one before the first train or after the last is shown on its own.
  */
 @Composable
-private fun Trip(trip: Connection, yours: Stop) {
+private fun Trip(trip: Connection, minimums: Minimums) {
     val legs = trip.legs
     val rides = legs.indices.filter { legs[it].train != null }
     legs.forEachIndexed { i, leg ->
@@ -305,13 +345,19 @@ private fun Trip(trip: Connection, yours: Stop) {
                 Indented { Text(train, fontWeight = FontWeight.Bold) }
                 StopRow(leg.arrival)
                 if (next != null) Indented {
-                    MinutesBox(Duration.between(leg.arrival.time, legs[next].departure.time).toMinutes(), leg.arrival == yours)
+                    MinutesBox(
+                        Duration.between(leg.arrival.time, legs[next].departure.time).toMinutes(),
+                        minimums.at(leg.arrival).toMinutes(),
+                    )
                     val walk = legs.subList(i + 1, next).sumOf { it.minutes }
-                    Text(" change" + if (walk > 0) ", $walk min walk" else "")
+                    Text(
+                        if (walk > 0) stringResource(R.string.track_switch_walk, walk) else stringResource(R.string.track_switch),
+                        Modifier.padding(start = 4.dp),
+                    )
                 }
             }
-            i < (rides.firstOrNull() ?: 0) -> { StopRow(leg.departure); Indented { Text("Walk, ${leg.minutes} min") } }
-            next == null -> { Indented { Text("Walk, ${leg.minutes} min") }; StopRow(leg.arrival) }
+            i < (rides.firstOrNull() ?: 0) -> { StopRow(leg.departure); Indented { Text(stringResource(R.string.walk, leg.minutes)) } }
+            next == null -> { Indented { Text(stringResource(R.string.walk, leg.minutes)) }; StopRow(leg.arrival) }
         }
     }
 }
@@ -320,7 +366,7 @@ private fun Trip(trip: Connection, yours: Stop) {
 private fun StopRow(stop: Stop) = Row {
     Text(stop.time.format(hourMinute), Modifier.width(TIME_COLUMN))
     Text(stop.station, Modifier.weight(1f))
-    stop.platform?.let { Text("track $it", color = MaterialTheme.colorScheme.onSurfaceVariant) }
+    stop.platform?.let { Text(stringResource(R.string.track, it), color = MaterialTheme.colorScheme.onSurfaceVariant) }
 }
 
 /** Under a stop's name, past the times: the train, a walk, a change. */
@@ -332,8 +378,4 @@ private val TIME_COLUMN = 56.dp
 
 private val Leg.minutes get() = Duration.between(departure.time, arrival.time).toMinutes()
 
-private fun Connection.percent(fastest: Duration) = "${(efficiency(fastest) * 100).roundToInt()}%"
-
 private val hourMinute = DateTimeFormatter.ofPattern("HH:mm")
-
-private val dayFormat = DateTimeFormatter.ofPattern("EEE d MMM", Locale.ENGLISH)

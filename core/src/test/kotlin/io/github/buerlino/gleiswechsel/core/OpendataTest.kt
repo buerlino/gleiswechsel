@@ -57,12 +57,9 @@ class OpendataTest {
     }
 
     @Test
-    fun efficiencyIsTheFastestTimeOverThisOne() {
+    fun theDurationIsFirstDepartureToLastArrival() {
         // 08:00 to 08:40, the walk and the wait included.
-        val c = parseConnections(body).single()
-        assertEquals(Duration.ofMinutes(40), c.duration)
-        assertEquals(1.0, c.efficiency(Duration.ofMinutes(40)))
-        assertEquals(0.75, c.efficiency(Duration.ofMinutes(30)))
+        assertEquals(Duration.ofMinutes(40), parseConnections(body).single().duration)
     }
 
     @Test

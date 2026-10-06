@@ -27,13 +27,6 @@ data class Connection(val legs: List<Leg>) {
 
     /** Where it changes trains: the end of each ride but the last. A walk is part of a change, not one of its own. */
     val changes: List<Stop> get() = legs.filter { it.train != null }.dropLast(1).map { it.arrival }
-
-    /**
-     * [fastest] / [duration]: 1 for the fastest trip, less the longer this one takes (user,
-     * 2026-10-06). Same from and to, so it's also the share of the fastest trip's speed.
-     */
-    fun efficiency(fastest: Duration): Double =
-        if (duration.isZero) 1.0 else fastest.toSeconds().toDouble() / duration.toSeconds()
 }
 
 /**

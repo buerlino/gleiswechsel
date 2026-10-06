@@ -12,13 +12,13 @@ is in `research/`.
 
 ## Where things are
 
-- `core/.../Opendata.kt`: `Stop`, `Leg`, `Connection` (with `duration`, `efficiency` and
+- `core/.../Opendata.kt`: `Stop`, `Leg`, `Connection` (with `duration` and
   `changes`, the change stations: the search and the page both use it), the client
   `connections()` and its parser. Tests in `OpendataTest` with made-up JSON shaped like a real response.
 - `core/.../Minimums.kt`: `Minimums`, the official minimum transfer time per station from the
   HRDF `UMSTEIGB` text (`MinimumsTest`, made-up lines). The real file is the app's
   `res/raw/umsteigb.txt`, see [Official minimums](#official-minimums-each-timetable-change).
-- `core/.../Search.kt`: `Find`, the local search `search()`. It takes the official connections,
+- `core/.../Search.kt`: `Find` (with `saved` and `moreEfficient`), the local search `search()`. It takes the official connections,
   the transfer time per station and the request as a function, so `SearchTest` runs it on a fake
   API with made-up connections.
 - `core/.../LiveTest.kt`: the Horw → Sursee test case, live. Excluded from `:core:test` (and so
@@ -28,16 +28,20 @@ is in `research/`.
   (`Screen`); the search page and the cards (`FindCard`, `Trip`, `MinutesBox`, `MinutesField`).
   SharedPreferences `commute`: `from`, `to`, `leaving`, `offset` and the transfer times keyed by
   station id, all as typed. The rows come from `Result.Found.changes` and stay in `changes` while
-  a time or the offset is edited. `app/.../Pages.kt`: Settings, Help (its text) and `SubPage`
-  (← and the back gesture). The search runs on `Dispatchers.IO`; a failure shows its message and logs under
+  a time or the offset is edited. `app/.../Pages.kt`: Settings, Help and `SubPage`
+  (← and the back gesture). Every text is in `res/values*/strings.xml` (en, de, fr, it); a new
+  one goes in all four, or lint fails on the missing translation. The search runs on `Dispatchers.IO`; a failure shows its message and logs under
   the tag `Gleiswechsel`. `buildConfig` is on for the version name in the User-Agent.
 - Driving the page over adb: `uiautomator dump` lists the texts and bounds; `input tap` a field,
   `input text` (`%s` for a space), `input keyevent 123` moves to the end and `67` deletes,
   `input keyevent 4` closes the keyboard (a second one goes back from Help or Settings). On the
-  test phone (1116×2484): ? at (87, 182), ⚙ at (1029, 182), fields at y 350, 566, 782, Search at
-  (186, 974); the first "Your change" field at x 1000, y 1250 under "nothing faster", y 2198
+  test phone (1116×2484): ⚙ at (87, 182), ? at (1029, 182), fields at y 350, 566, 782, ⇅ at
+  (960, 470), Search at (186, 974); the first "Track switch time" field at x 1000, y 1250 under "nothing faster", y 2198
   under the test case's card. In Settings: ← at (87, 182), the offset at (912, 338). Rows below
   the screen aren't in the dump: `input swipe 558 2000 558 400` first.
+- Another language without changing the phone's (Android 13+; the app has no language picker,
+  but this works anyway): `adb shell cmd locale set-app-locales io.github.buerlino.gleiswechsel
+  --locales de-CH` (`fr-CH`, `it-CH`); `""` goes back to the phone's. It restarts the page, so the result is gone: Search again.
 
 ## Working on the phone
 
@@ -61,7 +65,7 @@ is in `research/`.
 
 `app/src/main/res/raw/umsteigb.txt` is HRDF `UMSTEIGB` of one timetable year (now 2026, valid
 to 12 Dec 2026). Refresh it for each new one (next: 2027, from 13 Dec 2026), then update the
-year in Help (`Pages.kt`) and CLAUDE.md:
+year in Help (`help_data_text` in each `strings.xml`) and CLAUDE.md:
 
 1. On data.opentransportdata.swiss, dataset `timetable-54-<year>-hrdf`: the newest
    `oev_sammlung_ch_hrdf_*.zip` (about 555 MB). The portal's API refuses curl; its pages and
@@ -88,6 +92,17 @@ Wed 7 Oct 2026.
 
 ## Still untested
 
+- Track switch time, colours, languages, swap, top bar, "more efficient" on the phone
+  (2026-10-06, R8 release build signed with the debug key, phone in en-US): ⚙ left, ? right; ⇅
+  centred over the gap, swaps From and To (and back), saved over a force-stop; the test case's
+  card: 42% more efficient, the Luzern change green (4 against 5); the Luzern row green at 4,
+  orange at 5, red at 6; Settings green at −1. With the app set to de-CH (`set-app-locales`
+  works without a locale config): the card, the row, Help and Settings in German, formal. French
+  and Italian looked at before the rename and the formal texts only. Lint: no issues. Not tried:
+  an orange or red box in a card (no such find at hand), the offset at 0 (orange), a phone set
+  to German itself, the French row's long label, TalkBack on ⇅.
+- A search right after many others got HTTP 429 from transport.opendata.ch (2026-10-06); the
+  next one a minute later worked. The page shows "Search failed: HTTP 429".
 - Settings, Help and the new cards on the phone (2026-10-06, R8 release build signed with the
   debug key): ? and ⚙ open Help and Settings, ← and the back gesture return with the result
   kept. With nothing set, Luzern shows a grey 4 (5 − 1) and Horw → Sursee finds the test case.
@@ -111,9 +126,8 @@ Wed 7 Oct 2026.
   label Gleiswechsel, same find.
   Not tried: the debug build on the phone, the error text (no network), rotating while
   searching (probably cancels the search and loses the result).
-- Efficiency (2026-10-06): a unit test (40 minutes against 40 and 30: 100%, 75%) and on the
-  phone (release build), 100% vs 70% for the test case, as worked out by hand. Not tried: a search
-  where an official connection or another find is the fastest.
+- How much more efficient (2026-10-06): a unit test (40 minutes against 30: 33%) and on the
+  phone, 42% for the test case (47 / 33), as worked out by hand.
 - The search: `:core:test` 13 tests green, `-Plive` 3 green on 2026-10-06 (rerun after the
   false-find filter);
   the walk rule once by hand at Zürich HB (CLAUDE.md). On the phone, Horw → Bern, Bundesplatz
@@ -144,5 +158,6 @@ decide with the user. Reviewer comments: Claude drafts, the user posts.
 ## Store listing
 
 `fastlane/metadata/android/en-US/`: title, short (max 80 characters) and full description, drafted
-2026-10-06. Still missing: `images/icon.png` (512 px, from the logo), `featureGraphic.png`,
+2026-10-06; `de-DE`, `fr-FR`, `it-IT`: short and full description (the title falls back to
+en-US), same day. Still missing: `images/icon.png` (512 px, from the logo), `featureGraphic.png`,
 `phoneScreenshots/`. Screenshots with SystemUI demo mode, as in APODroid's skill.

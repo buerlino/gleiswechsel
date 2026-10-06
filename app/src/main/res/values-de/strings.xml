@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- German, Swiss spelling (ss, no ß); "Sie". -->
+<resources>
+    <string name="language">de</string>
+    <string name="day_pattern">EEE d. MMM</string>
+
+    <string name="from">Von</string>
+    <string name="to">Nach</string>
+    <string name="leaving_at">Abfahrt</string>
+    <string name="search">Suchen</string>
+    <string name="searching">Suche läuft…</string>
+    <string name="search_failed">Suche fehlgeschlagen: %1$s</string>
+    <string name="no_connections">%1$s: keine Verbindungen gefunden. Prüfen Sie die Stationsnamen.</string>
+    <string name="nothing_faster">%1$s: nichts Schnelleres.</string>
+    <string name="switch_time_at">Gleiswechselzeit in %1$s</string>
+
+    <string name="earlier">%1$d min früher</string>
+    <string name="instead_of">%1$s %2$s statt %3$s</string>
+    <string name="more_efficient">%1$d %% effizienter</string>
+    <string name="track_switch">Gleiswechsel</string>
+    <string name="track_switch_walk">Gleiswechsel, %1$d min Fussweg</string>
+    <string name="walk">Fussweg, %1$d min</string>
+    <string name="track">Gleis %1$s</string>
+
+    <string name="settings">Einstellungen</string>
+    <string name="global_offset">Globaler Offset der Gleiswechselzeit</string>
+
+    <string name="help">Hilfe</string>
+    <string name="help_what">Was die App macht</string>
+    <string name="help_what_text">Gleiswechsel sucht eine schnellere Verbindung, als der offizielle Fahrplan zeigt. Er bietet einen Umstieg nur an, wenn er mindestens die offizielle Gleiswechselzeit des Bahnhofs dauert, z. B. 5 Minuten in Luzern. Wechseln Sie schneller, erreichen Sie vielleicht einen früheren Zug.</string>
+    <string name="help_switch">Gleiswechselzeit</string>
+    <string name="help_switch_text">Die Minuten im Kästchen: wie lange Sie von einem Zug zum nächsten brauchen, Fussweg inbegriffen. Unter einem Ergebnis können Sie an jedem Bahnhof Ihre eigene setzen; sonst gilt die offizielle plus der globale Offset in den Einstellungen (⚙), z. B. 5\u00A0−\u00A01\u00A0=\u00A04\u00A0Minuten in Luzern. Grün: unter der offiziellen, orange: gleich, rot: darüber.</string>
+    <string name="help_efficient">Effizienter</string>
+    <string name="help_efficient_text" formatted="false">Wie viel schneller als die offizielle Verbindung, von der ersten Abfahrt bis zur letzten Ankunft: 33 statt 47 Minuten sind 42 % effizienter (47 / 33 = 1,42).</string>
+    <string name="help_careful">Vorsicht</string>
+    <string name="help_careful_text">Nur Fahrplanzeiten: Ein verspäteter Zug kann einen kurzen Gleiswechsel unmöglich machen. Ob Sie ihn schaffen, liegt bei Ihnen.</string>
+    <string name="help_data">Daten</string>
+    <string name="help_data_text">Verbindungen: transport.opendata.ch. Offizielle Gleiswechselzeiten: opentransportdata.swiss, Fahrplan 2026. Unabhängig von der SBB.</string>
+</resources>
