@@ -45,10 +45,9 @@ is in `research/`.
 - `app/.../MainActivity.kt`: `App` holds all state and shows the search page, Help or Settings
   (`Screen`); the search page (`Heading` for each panel's title, foldable with `open`, also
   Help's topics; `Folded` for the folded Destination, ▴ on the Search row to fold it again, ✕
-  on Journey's title to close the result), the cards (`FindCard`, `Trip`, `StopRow` with the
-  delay and a changed track, `MinutesBox`, `LateBox` for a change the delays make too short) and `MinutesStepper` (− and +, the
-  rows and the offset in Settings; `arrows = false` for the offset), `folding` and `FoldMark`
-  (a fold's state for a screen reader, the ▾ or ▸ hidden from it). SharedPreferences
+  on Journey's title to close the result), `MinutesStepper` (− and +, the rows and the offset in
+  Settings; `arrows = false` for the offset), `folding` and `FoldMark` (a fold's state for a
+  screen reader, the ▾ or ▸ hidden from it), `parseTime` and `find`. SharedPreferences
   `commute`: `from`, `to`, `leaving` as typed, `offset` and the transfer times keyed by station id as numbers in strings (empty:
   unset), `optimize`. The rows come from `Found.changes` (the stations the search asked
   the transfer time at, recorded in `find`) and stay in `changes`, with the lowered minimums in
@@ -56,10 +55,12 @@ is in `research/`.
   writes `files/result.json` (a result with connections) or deletes it; `onCreate` reads it
   back (`last`). `fade` (a time, the offset or Optimization changed) deletes the file but keeps
   the result on the page at 60% (`stale`) until the next Search. While a search runs, the Search
-  button is Cancel (`job`). `app/.../Pages.kt`: Settings, Help (`help`: emoji, title, text; folded
+  button is Cancel (`job`). `app/.../Cards.kt`: the cards (`FindCard`, `Trip`, `StopRow` with the
+  delay and a changed track, `TrackSign`), `MinutesBox`, `LateBox` (a change the delays make too
+  short) and the colours. `app/.../Pages.kt`: Settings, Help (`help`: emoji, title, text; folded
   until tapped) and `SubPage` (← and the back gesture). A symbol on a button gets
-  `Modifier.spokenAs(…)`, the word a screen
-  reader says instead (`uiautomator dump` shows it as the child's `content-desc`). Every text is
+  `Modifier.spokenAs(…)`, the word a screen reader says instead (`uiautomator dump` shows it as the
+  child's `content-desc`). Every text is
   in `res/values*/strings.xml` (en, de, fr, it); a new one goes in all four, or lint fails on
   the missing translation. The search runs on `Dispatchers.IO`; a failure of the first request
   shows one text (`search_failed`), of an onward one `not_all_checked` under the day; each

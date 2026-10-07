@@ -234,8 +234,10 @@ Release v0.2.0 green, both releases have their APK. AGP 9.4.1, Kotlin 2.4.20, Co
 - [x] 3.3 "official" names three things: `Minimums` in `App`, the fold in `FindCard`, the
   `Connection` in `Find`. Rename the fold (`officialOpen`).
   Done (2026-10-07).
-- [ ] 3.4 MainActivity.kt has 725 lines; the cards (`FindCard`, `Trip`, `StopRow`, `TrackSign`,
+- [x] 3.4 MainActivity.kt has 725 lines; the cards (`FindCard`, `Trip`, `StopRow`, `TrackSign`,
   `Indented`, `MinutesBox`, `LateBox`, the colours) could go to `Cards.kt`. User: split or not?
+  User (2026-10-07): split. Done, a move only (`folding` and `FoldMark` became internal):
+  MainActivity.kt 501 lines, Cards.kt 283.
 
 ### Docs
 - [x] 4.1 The risk indicator left the plan in 0.2.0 (its commit message), but README still
@@ -267,5 +269,6 @@ Release v0.2.0 green, both releases have their APK. AGP 9.4.1, Kotlin 2.4.20, Co
   Done (2026-10-07).
 
 ### Repo, build and CI
-- [ ] 5.1 `git gc`: 365 loose objects (1.9 MB).
+- [x] 5.1 `git gc`: 365 loose objects (1.9 MB).
+  Done (2026-10-07): 438 loose objects (2.3 MB) packed, none left.
 - Nothing else: the latest versions, reproducible, CI green.
