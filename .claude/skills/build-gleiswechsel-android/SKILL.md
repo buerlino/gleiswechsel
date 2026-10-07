@@ -23,8 +23,9 @@ is in `research/`.
   API's answers of a search, where the planner changes faster than the table. The real file is the app's
   `res/raw/umsteigb.txt`, see [Official minimums](#official-minimums-each-timetable-change).
 - `core/.../Search.kt`: `Find` (with `saved` and `moreEfficient`), `ticketUrl` (the sbb.ch
-  link), the local search `search()` (each question once), `shortened` (the onward
-  connections' changes too, recursively) and `best`, the rules between the finds and the
+  link), the local search `search()` (each question once; it runs again where a time fell, and
+  returns the stations it changed at, `Searched.changes`), `shortened` (the onward
+  connections' changes too, recursively), `onward` (rides from the change station itself) and `best`, the rules between the finds and the
   official connections, for both searches.
   It takes the official connections, the transfer time per station and the request as a
   function, so `SearchTest` runs it on a fake API with made-up connections.
@@ -57,13 +58,14 @@ is in `research/`.
   Settings; `arrows = false` for the offset), `folding` and `FoldMark` (a fold's state for a
   screen reader, the ▾ or ▸ hidden from it), `parseTime` and `find`. SharedPreferences
   `commute`: `from`, `to`, `leaving` as typed, `offset` and the transfer times keyed by station id as numbers in strings (empty:
-  unset), `optimize`. The rows come from `Found.changes` (the stations the search asked
-  the transfer time at, recorded in `find`) and stay in `changes`, with the lowered minimums in
+  unset), `optimize`. The rows come from `Found.changes` (`Searched.changes`: the stations the
+  search asked the transfer time at) and stay in `changes`, with the lowered minimums in
   `official`, while a time or the offset is edited. The result is set only through `show`, which
   writes `files/result.json` (a result with connections) or deletes it; `onCreate` reads it
   back (`last`). `fade` (a time, the offset or Optimization changed) deletes the file but keeps
   the result on the page at 60% (`stale`) until the next Search. While a search runs, the Search
-  button is Cancel (`job`). `app/.../Cards.kt`: the cards (`FindCard`, `Trip`, `StopRow` with the
+  button is Cancel (`job`). The keyboard's key goes to the next field, in the time field it
+  searches (`Field`'s `onSearch`, `startSearch`). `app/.../Cards.kt`: the cards (`FindCard`, `Trip`, `StopRow` with the
   delay and a changed track, `TrackSign`), `MinutesBox`, `LateBox` (a change the delays make too
   short) and the colours. `app/.../Pages.kt`: Settings, Help (`help`: emoji, title, text; folded
   until tapped) and `SubPage` (← and the back gesture). A symbol on a button gets
@@ -157,10 +159,9 @@ dataset's `/permalink` with a browser User-Agent, 5 s) and `timetable.bin.gz` ma
 
 Everything else was tried on the phone with the R8 release build signed with the debug key.
 
-- On the page: an orange or red box in a card (no such find at hand);
-  a find with a walk, or at a second change, drawn as a timetable (only the test case's); a set
-  time at a second change finding something; a long station name in a row or a card; a
-  non-digit typed (the filter drops it).
+- On the page: a walk before the first train in a card (inside a change, after the last train,
+  a second change and the orange and red boxes seen 2026-10-07); a set time at a second change
+  finding something; a long station name in a row or a card.
 - The ticket link (2026-10-06): tapped from the app only in German and only in Brave; the
   English, French and Italian URLs were opened in Brave directly. Another browser, and a phone
   without one (the `no_browser` message: not seen, the test phone has a browser).
@@ -174,9 +175,8 @@ Everything else was tried on the phone with the R8 release build signed with the
   platform 37.
 - The rule between the finds (2026-10-06): only the unit tests; no real search has shown two
   finds yet.
-- Languages: a phone set to German itself (only `set-app-locales`); French and Italian since the
-  formal texts (only the error text seen); the long offset label in Settings next to − and +
-  (French, Italian).
+- Languages: a phone set to German itself (only `set-app-locales` and the title's menu; the
+  page, Settings and Help seen in all four on 2026-10-07).
 - HTTP 429 with the plain error text (got once before it, after many searches).
 - A failed onward request on the phone (2026-10-06): `not_all_checked` and the kept finds, only
   `SearchTest`; a normal search on the phone shows no such line.
@@ -184,15 +184,14 @@ Everything else was tried on the phone with the R8 release build signed with the
   over adb and off again) frames ← as one element, but nothing was heard (neither it nor eSpeak
   logs the text).
 - The dark bar icons with three-button navigation.
-- Help's topics, Destination's ▴ and Journey's ✕ (2026-10-06): seen on the phone in German only;
-  the English, French and Italian texts only built (lint checks they exist), not read on the
-  phone. Not heard in TalkBack (it reads the emoji's name before each title).
+- Help's topics, Destination's ▴ and Journey's ✕: not heard in TalkBack (it reads the emoji's
+  name before each title).
 - The saved result (2026-10-06, R8 release build): kept after a force-stop and the language
   switch, gone after a step in Optimization; the rest only `FoundTest`. Not seen: a file in an
   older format (none exists yet), a failed write, the system killing the app in the background,
   a phone-to-phone transfer, a result with a walk or a second change read back on the phone.
   `run-as` doesn't work on the release build, so the file itself wasn't looked at.
-- Turning the phone in Help or Settings, split screen.
+- Split screen.
 - Delays (2026-10-06, R8 release build, German only): real "+1"s and the "as of" line seen live
   (Horw → Sursee at 23:22 and 23:30), kept after a force-stop, absent for tomorrow's 08:50. The
   red "! 1 min", the grey "−2 min" and a changed track (14 instead of 12) only from a made-up
@@ -201,13 +200,17 @@ Everything else was tried on the phone with the R8 release build signed with the
   seen: English, French, Italian; a delay of 10 or more next to the time; a negative delay;
   a cancelled train; the new Help texts on the phone; TalkBack reading the delay words.
 - The debug build on the phone.
-- Declutter pass 3's fixes (2026-10-07), only built, linted and unit-tested, not seen on the
-  phone: Destination in the middle from the first frame, without sliding up (app start, back
-  from Help or Settings, the language switch); with Optimization off, the page after a change in
-  Settings or Cancel; ✕ as plain text and Journey's title as high as Optimization's; the faded
-  finds after a step; the buttons, the switch and the links in the logo's blue (the ⇅ button's
-  pale background is still Material's `secondaryContainer`); the titles as headings in TalkBack;
-  the French no-break spaces.
+- Declutter pass 3's fixes (2026-10-07): seen on the phone the same day, except Destination's
+  first frame back from Help or Settings and after the language switch (only a cold start
+  recorded), the page after a change in Settings with Optimization off (only Cancel), and the
+  titles as headings in TalkBack.
+- The fixes after that test pass (2026-10-07), seen on the phone the same day (R8 release): the
+  search asking again where a time fell (Sursee → oerlikon 07:45, offset 2: the IR13 Zürich HB
+  09:08, 3 minutes earlier); one station per change (Luzern → Zürich, Central 08:00: nothing
+  faster, the tram from Bahnhofstrasse/HB gone); the keyboard's next keys (From → To → the time,
+  past ⇅) and the number keyboard's search key (searches, closes the keyboard); the plain blue
+  ⇅ between the borders; the no-break spaces in Help (German, English, French) and the cards; the
+  French day line ("jeu. 8 oct. :"). Not seen: Italian.
 - The themed icon in a launcher that shows themed icons (Niagara doesn't); only checked as a
   render.
 

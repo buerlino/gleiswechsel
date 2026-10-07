@@ -110,20 +110,30 @@ class SearchTest {
     }
 
     @Test
-    fun theRidersTimeReplacesTheApisWalk() {
-        // From Xberg the API walks 5 minutes to the tram stop first, so its tram leaves 08:19.
-        // Asked from the stop itself, the 08:15 tram is there: the rider's 4 minutes cover the walk.
+    fun onlyARideFromTheStationItself() {
+        // From Xberg the API offers a walk to the tram stop and, as at Zürich HB, a tram from the
+        // stop itself: the rider's time at Xberg is for a change within it (user, 2026-10-07).
         val walkThenTram = Connection(listOf(
-            ride(null, stop("Xberg", "08:14"), stop("Xberg, Platz", "08:19")),
-            ride("T8", stop("Xberg, Platz", "08:19"), stop("Bstadt", "08:35")),
+            ride(null, stop("Xberg", "08:14"), stop("Xberg, Platz", "08:16")),
+            ride("T8", stop("Xberg, Platz", "08:16"), stop("Bstadt", "08:32")),
         ))
         val tram = Connection(listOf(ride("T8", stop("Xberg, Platz", "08:15", "B"), stop("Bstadt", "08:31"))))
-        val find = search(
-            { minutes(4) },
-            onward = mapOf("Xberg" to listOf(walkThenTram, Connection(listOf(ir2))), "Xberg, Platz" to listOf(tram)),
-        ).single()
-        assertEquals(listOf(s1) + tram.legs, find.faster.legs)
-        assertEquals(listOf("Xberg 08:14", "Xberg, Platz 08:14"), asked)
+        val onward = mapOf("Xberg" to listOf(walkThenTram, tram, Connection(listOf(ir2))))
+        assertEquals(emptyList(), search({ minutes(4) }, onward = onward))
+        assertEquals(listOf("Xberg 08:14"), asked)
+    }
+
+    @Test
+    fun aTimeThatFallsDuringTheSearchIsAskedAgain() {
+        // Xberg's time is 5 until the API's first answer lowers it to 4 (the planner changes faster
+        // there): asked with 5 first, nothing; asked again with 4, the RE3.
+        val searched = search(listOf(official), { minutes(if (asked.isEmpty()) 5 else 4) }) { from, _, time ->
+            asked += "$from ${time.toLocalTime()}"
+            listOf(re3, Connection(listOf(ir2)))
+        }
+        assertEquals(listOf(s1) + re3.legs, searched.finds.single().faster.legs)
+        assertEquals(listOf("Xberg 08:15", "Xberg 08:14"), asked)
+        assertEquals(listOf(s1.arrival), searched.changes)
     }
 
     @Test
@@ -135,16 +145,18 @@ class SearchTest {
         val re5 = ride("RE5", stop("Yfeld", "08:40"), stop("Bstadt", "08:55"))
         val re3 = ride("RE3", stop("Xberg", "08:14"), stop("Yfeld", "08:24"))
         val r7 = ride("R7", stop("Yfeld", "08:28"), stop("Bstadt", "08:43"))
-        val find = search(listOf(Connection(listOf(s1, ir2, re5))), { minutes(4) }) { from, _, time ->
+        val searched = search(listOf(Connection(listOf(s1, ir2, re5))), { minutes(4) }) { from, _, time ->
             asked += "$from ${time.toLocalTime()}"
             when ("$from ${time.toLocalTime()}") {
                 "Xberg 08:14" -> listOf(Connection(listOf(re3, re5)))
                 "Yfeld 08:28" -> listOf(Connection(listOf(r7)))
                 else -> listOf(Connection(listOf(re5)))
             }
-        }.finds.single()
-        assertEquals(listOf(s1, re3, r7), find.faster.legs)
+        }
+        assertEquals(listOf(s1, re3, r7), searched.finds.single().faster.legs)
         assertEquals(listOf("Xberg 08:14", "Yfeld 08:28", "Yfeld 08:34"), asked)
+        // Yfeld once, as reached first.
+        assertEquals(listOf(s1.arrival, re3.arrival), searched.changes)
     }
 
     @Test

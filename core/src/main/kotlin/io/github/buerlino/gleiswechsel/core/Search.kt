@@ -43,22 +43,35 @@ typealias Connections = (from: String, to: String, time: LocalDateTime) -> List<
  * the trips that change faster at one or more of its changes ([shortened]); a find if it reaches B
  * earlier. Then [best].
  *
- * [connections] is asked each question once: two official connections on the same train to the
- * same change would ask it twice, and the API answers too many questions with HTTP 429. A change
- * whose question fails is skipped, the others go on; its error is in [Searched.failures].
+ * [transfer] may fall as the answers come in, never rise (the app lowers a station's official
+ * minimum where the planner changes faster there). A change asked before it fell would have been
+ * asked with more time than the rider's row shows, so the search runs again until every change was
+ * asked with the time [transfer] gives at the end (2026-10-07: Zürich HB asked with 3, its row 2).
+ *
+ * [connections] is asked each question once, in every run: two official connections on the same
+ * train to the same change would ask it twice, and the API answers too many questions with HTTP 429.
+ * A change whose question fails is skipped, the others go on; its error is in [Searched.failures].
  */
 fun search(
     officials: List<Connection>,
     transfer: (station: Stop) -> Duration,
     connections: Connections,
 ): Searched {
-    val answers = HashMap<Triple<String, String, LocalDateTime>, List<Connection>>()
-    val ask: Connections = { from, to, time -> answers.getOrPut(Triple(from, to, time)) { connections(from, to, time) } }
-    val failures = mutableListOf<Exception>()
-    val finds = officials.flatMap { official ->
-        shortened(official, transfer, ask, failures).filter { it.arrival.time.isBefore(official.arrival.time) }.map { Find(official, it) }
+    val answers = HashMap<Triple<String, String, LocalDateTime>, Result<List<Connection>>>()
+    val ask: Connections = { from, to, time ->
+        answers.getOrPut(Triple(from, to, time)) { runCatching { connections(from, to, time) } }.getOrThrow()
     }
-    return Searched(best(finds, officials), failures)
+    while (true) {
+        val asked = mutableListOf<Pair<Stop, Duration>>()
+        val failures = mutableListOf<Exception>()
+        val finds = officials.flatMap { official ->
+            shortened(official, { stop -> transfer(stop).also { asked += stop to it } }, ask, failures)
+                .filter { it.arrival.time.isBefore(official.arrival.time) }.map { Find(official, it) }
+        }
+        if (asked.all { (stop, time) -> transfer(stop) == time }) {
+            return Searched(best(finds, officials), failures, asked.map { it.first }.distinctBy { it.id })
+        }
+    }
 }
 
 /**
@@ -73,15 +86,18 @@ fun best(finds: List<Find>, officials: List<Connection>): List<Find> =
         .sortedWith(compareBy<Find> { it.faster.arrival.time }.thenByDescending { it.faster.departure.time }.thenBy { it.official.arrival.time })
         .fold(emptyList()) { kept, find -> if (kept.any { it.faster.noWorseThan(find.faster) }) kept else kept + find }
 
-/** What [search] found, and the errors of the changes it couldn't check (e.g. HTTP 429). */
-class Searched(val finds: List<Find>, val failures: List<Exception>)
+/**
+ * What [search] found, the errors of the changes it couldn't check (e.g. HTTP 429), and the
+ * stations it changed at (Optimization's rows), each once, in the order it asked.
+ */
+class Searched(val finds: List<Find>, val failures: List<Exception>, val changes: List<Stop>)
 
 /**
  * [trip] changing faster: at each of its changes, with the rider's [transfer] time there, the
  * connection on to B that arrives first ([onward]); and the same again at that connection's own
  * changes, where the API keeps the official minimum (user, 2026-10-06: two short changes on one
- * trip, e.g. Luzern and Olten). One request per change searched, and one more per stop the API
- * walks to. A change whose request fails gives nothing; the error goes to [failures].
+ * trip, e.g. Luzern and Olten). One request per change searched. A change whose request fails gives
+ * nothing; the error goes to [failures].
  */
 private fun shortened(
     trip: Connection,
@@ -108,15 +124,11 @@ private fun Connection.noWorseThan(other: Connection) =
  * The connection from [from] to [to] leaving at or after [ready] that arrives first; of two
  * arriving together, the later one (more time to change).
  *
- * The rider's transfer time covers the whole change, walks included. Where the API starts a
- * connection with a walk to another stop (Zürich HB → Bahnhofplatz/HB, 5 minutes), it would add
- * the walk on top, so the rides from that stop are asked for again from [ready].
+ * Only a ride from [from] itself (user, 2026-10-07): the rider's time there is for a change within
+ * the station, as in [fullSearch]. Not one that starts with a walk, nor one from a stop nearby that
+ * the API offers too (Zürich HB → a tram at Bahnhofstrasse/HB).
  */
-private fun onward(from: String, to: String, ready: OffsetDateTime, connections: Connections): Connection? {
-    val at = ready.toLocalDateTime()
-    val (walkFirst, others) = connections(from, to, at).partition { it.legs.size > 1 && it.legs.first().train == null }
-    val fromStops = walkFirst.map { it.legs.first().arrival.id }.distinct().flatMap { connections(it, to, at) }
-    return (others + fromStops)
-        .filter { !it.departure.time.isBefore(ready) }
+private fun onward(from: String, to: String, ready: OffsetDateTime, connections: Connections): Connection? =
+    connections(from, to, ready.toLocalDateTime())
+        .filter { it.legs.first().train != null && it.departure.id == from && !it.departure.time.isBefore(ready) }
         .minWithOrNull(compareBy<Connection> { it.arrival.time }.thenByDescending { it.departure.time })
-}

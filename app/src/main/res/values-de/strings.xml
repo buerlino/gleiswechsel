@@ -21,6 +21,7 @@
     <string name="cancel">Abbrechen</string>
     <string name="search_failed">Keine Antwort von transport.opendata.ch. Prüfen Sie die Internetverbindung oder versuchen Sie es in einer Minute nochmals.</string>
     <string name="no_connections">%1$s: keine Verbindungen gefunden. Prüfen Sie die Stationsnamen.</string>
+    <string name="day_line">%1$s:</string>
     <string name="nothing_faster">%1$s: nichts Schnelleres.</string>
     <string name="not_all_checked">Nicht jeder Umstieg konnte geprüft werden: transport.opendata.ch hat nicht geantwortet. Versuchen Sie es in einer Minute nochmals.</string>
     <string name="delays_as_of">Verspätungen: Stand %1$s</string>
@@ -34,12 +35,12 @@
     <string name="state_folded">Zugeklappt</string>
     <string name="state_open">Aufgeklappt</string>
 
-    <string name="earlier">%1$d min früher</string>
+    <string name="earlier">%1$d\u00A0min früher</string>
     <string name="instead_of">%1$s %2$s statt %3$s</string>
     <string name="more_efficient">%1$d %% effizienter</string>
     <string name="track_switch">Gleiswechsel</string>
-    <string name="track_switch_walk">Gleiswechsel, %1$d min Fussweg</string>
-    <string name="walk">Fussweg, %1$d min</string>
+    <string name="track_switch_walk">Gleiswechsel, %1$d\u00A0min Fussweg</string>
+    <string name="walk">Fussweg, %1$d\u00A0min</string>
     <string name="track">Gleis</string>
     <string name="track_changed">Gleis %1$s statt %2$s</string>
     <string name="late">%1$d min Verspätung</string>
@@ -57,13 +58,13 @@
     <string name="help">Hilfe</string>
     <string name="phone_language">Sprache des Telefons</string>
     <string name="help_what">Was die App macht</string>
-    <string name="help_what_text">Sie findet schnellere Verbindungen, als der offizielle Fahrplan zeigt. Der Fahrplan bietet nur Umstiege an, die mindestens die offizielle Gleiswechselzeit dauern, z. B. 5 Min. in Luzern. Sind Sie schneller, erreichen Sie vielleicht einen früheren Zug.</string>
+    <string name="help_what_text">Sie findet schnellere Verbindungen, als der offizielle Fahrplan zeigt. Der Fahrplan bietet nur Umstiege an, die mindestens die offizielle Gleiswechselzeit dauern, z.\u00A0B. 5\u00A0Min. in Luzern. Sind Sie schneller, erreichen Sie vielleicht einen früheren Zug.</string>
     <string name="help_switch">Gleiswechselzeit</string>
-    <string name="help_switch_text">Die Minuten im Kästchen: von einem Zug zum nächsten, Fussweg inbegriffen. Ihre eigene pro Bahnhof setzen Sie unter Optimierung (− und +). Sonst gilt die offizielle minus den Offset in den Einstellungen (⚙), z. B. 5\u00A0−\u00A01\u00A0=\u00A04\u00A0Min. in Luzern.</string>
+    <string name="help_switch_text">Die Minuten im Kästchen: von einem Zug zum nächsten, Fussweg inbegriffen. Ihre eigene pro Bahnhof setzen Sie unter Optimierung (− und +). Sonst gilt die offizielle minus den Offset in den Einstellungen (⚙), z.\u00A0B. 5\u00A0−\u00A01\u00A0=\u00A04\u00A0Min. in Luzern.</string>
     <string name="help_colours">Farben und Pfeile</string>
     <string name="help_colours_text">Grün ↓: unter der offiziellen Zeit, orange: gleich, rot ↑: darüber. Offiziell: die des Fahrplans, oder weniger, wo er selbst schneller umsteigt. Rot !: Eine Verspätung lässt weniger als Ihre Zeit, grau: Der nächste Zug ist weg.</string>
     <string name="help_efficient">Effizienter</string>
-    <string name="help_efficient_text" formatted="false">Wie viel schneller als die offizielle Verbindung, erste Abfahrt bis letzte Ankunft: 33 statt 47 Min. sind 42 % (47 / 33 = 1,42).</string>
+    <string name="help_efficient_text" formatted="false">Wie viel schneller als die offizielle Verbindung, erste Abfahrt bis letzte Ankunft: 33 statt 47\u00A0Min. sind 42\u00A0% (47\u00A0/\u00A033\u00A0=\u00A01,42).</string>
     <string name="help_tickets">Billette</string>
     <string name="help_tickets_text">Ein normales Billett gilt auch für die schnellere Reise, ein Sparbillett nur für den offiziellen Zug. Eine Reise, die zweimal durch denselben Bahnhof fährt, braucht vielleicht ein anderes Billett.</string>
     <string name="help_careful">Vorsicht</string>

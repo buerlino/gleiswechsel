@@ -195,7 +195,9 @@ at every station the rider hasn't set.
   for the next such time, Swiss time (today or tomorrow), and shows the day. Editing a field
   clears the result, so it never shows another commute's finds; the fields are locked while it
   searches. A ⇅ button swaps from and to (user, 2026-10-06): on the right, centred over the gap
-  between the two fields, which keep their distance.
+  between the two fields, which keep their distance; a plain blue symbol, as ⚙ and ? (user,
+  2026-10-07: its pale background was Material's). The keyboard's key goes From → To → the time,
+  and there searches (user, 2026-10-07: it only closed the keyboard).
 - **Optimization** (user, 2026-10-06), under Journey: a line saying to lower the time and search
   again to find more, then a row per station the search changed at (the official connections'
   changes and those of the onward connections, see the local search), each station once, in
@@ -296,8 +298,8 @@ at every station the rider hasn't set.
 - **The local search** (`search`): given the official connections A → B (the page asks for them
   first, so it can tell "no connections" from "nothing faster"); for each change station X on
   them (where a ride ends and the next begins; a walk belongs to the change), the connections
-  X → B from the arrival at X plus the rider's transfer time at X; of those leaving no earlier,
-  the one arriving first (a tie goes to the later one: more time to change); then the same at
+  X → B from the arrival at X plus the rider's transfer time at X; of the rides leaving X itself
+  no earlier, the one arriving first (a tie goes to the later one: more time to change); then the same at
   that onward connection's own changes, and so on (`shortened`; user, 2026-10-06: the API keeps
   the official minimum at every later change, so two short changes on one trip, e.g. Luzern and
   Olten, were never combined). Each question goes to the API once per search (two official
@@ -307,8 +309,19 @@ at every station the rider hasn't set.
   Horw → Bern, Bundesplatz showed the same trains as a bus instead of a walk, 4 minutes
   "earlier"). The same rule between the finds (2026-10-06): a card another find beats goes, an
   identical trip shows once, against the official connection arriving first (the smaller saving).
-  A change whose request fails (also the one to a stop the API walks to) gives nothing and the
-  others go on; `search` returns the finds and the errors (`Searched`).
+  A change whose request fails gives nothing and the others go on; `search` returns the finds,
+  the errors and the stations it changed at (`Searched`).
+  **Changes within one station only** (user, 2026-10-07, as the full search): an onward
+  connection that starts with a walk or at another stop isn't one. Before, the search asked again
+  from the stop the API walked to, and the API also offered stops nearby: Zürich HB → a tram at
+  Bahnhofstrasse/HB counted as a 5-minute track switch at Zürich HB, no walk shown (open question
+  1 until then).
+  **Asked again where a time fell** (2026-10-07): a rider's default follows the answers, so a
+  change asked before an answer lowered its station's minimum ran with more time than its row
+  then shows (Sursee → Oerlikon 07:45, offset 2: Zürich HB asked with 3, its row 2, the IR13
+  09:08 → Oerlikon 09:14 never found). `search` runs again until every change was asked with the
+  time it ends with; what it asked before is answered from memory. Checked live for 8 Oct: 3 more
+  requests, 12 in all, and the IR13 found (3 minutes saved).
 - **Transfer time per station, covering the whole change, walks included** (user, 2026-10-06:
   "a fixed estimated time we need for a specific trainstation"). `search` takes it as a function
   of the station. **At a station the rider hasn't set: the official minimum there minus the
@@ -329,17 +342,14 @@ at every station the rider hasn't set.
   aren't published. So in each search a station's official minimum is the table's or the
   shortest change any of the API's answers makes there, whichever is less
   (`shortestChanges`, `Minimums.lowered`): the official card shows Olten's 4 orange, its row starts at 3. A rider's
-  default at a station follows the answers so far.
-  Where the API starts an onward connection with a walk to another stop (Zürich HB →
-  Bahnhofplatz/HB, 5 minutes on top), the search asks again from that stop, so the rider's time
-  replaces the API's walk.
+  default at a station follows the answers, and the search asks again where it fell.
 - **Requests:** 1 + one per change searched (those of the onward connections too, each question
-  once), + one per stop the API walks to (5 for Horw → Sursee).
+  once), + one per change asked again where its time fell (5 for Horw → Sursee).
 - **Proven live** 2026-10-06 for Wed 7 Oct (`LiveTest`): 08:50 with 4 minutes finds the
   [test case](#test-case-horw--sursee-user-2026-10-06) (14 minutes saved, RE24 track 9), with 6
   minutes nothing; 14:50 finds the same change from the 14:53 (it repeats every hour).
 - **Limits, known:** the search uses planned times only (delays are shown, not searched with); only stations the official
-  connections or the onward ones touch; the live check doesn't skip public holidays; the official
+  connections or the onward ones touch; changes only within a station; the live check doesn't skip public holidays; the official
   minimums are a copy of one timetable year's, lowered only where an answer shows the planner's
   finer time; `doublesBack` sees only stations by id (a train station and its bus stop differ).
 
@@ -372,8 +382,8 @@ Decided (user, 2026-10-06, after a research session):
 - **The app** downloads the file during a search when its copy is missing or older than 7 days
   (keeping the old copy if that fails) and runs a connection scan (CSA) over it on the phone.
 - **Both searches run:** today's stays; the finds of both go through the same filters.
-- **Changes within one station only** (same station id), no walks between stations (open
-  question 1 stays open).
+- **Changes within one station only** (same station id), no walks between stations, as today's
+  search (user, 2026-10-07).
 - **Only when A and B** (the official connections' first departure and last arrival) are both in
   the file; otherwise today's search alone.
 - **Later, not now:** checking each find with the API leg by leg (delays, changed tracks, trains
@@ -428,15 +438,17 @@ Steps (user, 2026-10-06), one at a time, each shown working:
      between them.
    - **Train names** (`route_short_name`): Swiss lines as the API's (S, SN, R, RE, IR, IC,
      IRLEX); foreign ones not: ICE `651A` (API `ICE651A`), TER `K23` (`TERK23`), Jungfraubahn
-     `65` (`CC65`), EC and TGV without a number (API `EC000015`, `TGV009210`): open question 3.
+     `65` (`CC65`), EC and TGV without a number (API `EC000015`, `TGV009210`): open question 2.
 3. `.github/workflows/timetable.yml`: download, step 1's task, `upload-pages-artifact` +
    `deploy-pages`; the two GTFS datasets around the timetable change.
 4. The app: the download, both searches, Optimization rows (today's plus the finds' change
    stations), Help and README in all four languages, F-Droid's `NonFreeNet`, which version; on
    the phone, and how long loading the file takes there. `best(today's finds + the full
    search's, officials)`, today's first: of two the same, the first stays, and it has the API's
-   names and delays. The full search's `transfer` must not add to `changes` (it asks at every
-   station it changes at), and its `error` (should the two scans disagree) is caught and logged.
+   names and delays. The full search runs after today's, with the minimums its answers lowered;
+   its `transfer` is asked at every station it scans, so its rows are only its finds' change
+   stations (today's are `Searched.changes`). Its `error` (should the two scans disagree) is
+   caught and logged.
    `find()` and `parseTime()` move to `:core` with tests (declutter pass 3, 3.1).
 
 ## After the first release
@@ -452,7 +464,6 @@ Ideas, not decided (Claude, 2026-10-06; ask the user first):
   but a commuter wants a weekday).
 - More than one commute (now one, and ⇅ for the way back).
 - Station suggestions from `/v1/locations`, only if typing the names is annoying.
-- A change to a different stop: open question 1.
 - From [missing_features.md](research/missing_features.md) (2026-10-06): changes at stops the
   train only passes through,
   "arrive by", more than four official connections, "now", the saving in a year, parallel
@@ -464,19 +475,11 @@ instead.
 
 ## Open questions (for the user)
 
-1. **A change to a different stop** (train → tram stop, as in Zürich). The planner sometimes
-   offers a change to a stop a few hundred metres away (Zürich HB → Bahnhofstrasse/HB, 3
-   minutes), and the app shows it as any other change. Tried live once (2026-10-06): Luzern →
-   Zürich, Central at 08:00 with 3 minutes at Zürich HB; asked from Bahnhofplatz/HB, the API also
-   offered the neighbouring Bahnhofstrasse/HB, so the search found the IR70 (track 9, 08:51) →
-   T10 Bahnhofstrasse/HB 08:54 (3 minutes saved), probably too short a walk. Undecided: give such a
-   change its own time, mark it in the result, or leave it out. Deferred until a commute needs it
-   (user, 2026-10-06).
-2. **The timetable job weekly or twice a week** (2026-10-06): the GTFS is updated twice a week
+1. **The timetable job weekly or twice a week** (2026-10-06): the GTFS is updated twice a week
    (the dataset page; files mostly from Wednesdays and Saturdays), and the terms (§5.2) ask that
    data be updated "at the same frequency as the underlying raw data". That section's heading
    says raw data, and the file is processed data, so weekly may be enough.
-3. **Foreign train names in the full search** (2026-10-07): GTFS `route_desc` is the category
+2. **Foreign train names in the full search** (2026-10-07): GTFS `route_desc` is the category
    (ICE, TER, CC, TGV). Putting it before a `route_short_name` that doesn't start with it would
    match the API for ICE, TGV, TER and the Jungfraubahn (`ICE651A`, `TERK23`, `CC65`), but make
    `PEGEX`, `REN1`, `IRVAE`, `SEV` of the Glacier Express, the Nachtnetz, the Voralpen-Express and

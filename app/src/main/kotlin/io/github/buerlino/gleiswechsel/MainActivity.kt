@@ -29,14 +29,15 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.safeDrawing
 import androidx.compose.foundation.layout.windowInsetsPadding
 import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.Button
 import androidx.compose.material3.Card
 import androidx.compose.material3.DropdownMenu
 import androidx.compose.material3.DropdownMenuItem
-import androidx.compose.material3.FilledTonalIconButton
 import androidx.compose.material3.IconButton
+import androidx.compose.material3.IconButtonDefaults
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Surface
@@ -56,6 +57,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.layout.layout
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.semantics.clearAndSetSemantics
 import androidx.compose.ui.semantics.contentDescription
@@ -64,6 +66,7 @@ import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.semantics.stateDescription
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextDecoration
+import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -186,6 +189,19 @@ private fun App(prefs: SharedPreferences, minimums: Minimums, saved: File, last:
     // With Optimization off, the times set at stations are kept but not used.
     fun riderAt(stop: Stop, official: Minimums) =
         prefs.getString(stop.id, null)?.toLongOrNull()?.takeIf { optimize } ?: defaultAt(stop, official)
+    val ready = from.isNotBlank() && to.isNotBlank() && time != null
+    fun startSearch() {
+        open = false
+        show(Result.Searching)
+        val transfer = { stop: Stop, official: Minimums -> Duration.ofMinutes(riderAt(stop, official)) }
+        job = scope.launch {
+            val r = withContext(Dispatchers.IO) { find(from.trim(), to.trim(), time!!, minimums, transfer) }
+            show(r)
+            val found = (r as? Result.Done)?.found
+            found?.let { official = minimums.lowered(it.shortest) }
+            changes = found?.changes.orEmpty()
+        }
+    }
     when (screen) {
         Screen.HELP -> Help(onBack = { screen = Screen.SEARCH })
         Screen.SETTINGS -> Settings(
@@ -221,19 +237,27 @@ private fun App(prefs: SharedPreferences, minimums: Minimums, saved: File, last:
                                 // The swap button hovers on the right, centred between From and To,
                                 // without moving them apart (user, 2026-10-06). Each field has its
                                 // label's 8 dp above its border, so the gap between the borders is
-                                // 4 dp below the middle.
+                                // 4 dp below the middle; the ⇅ sits 3 dp low in its line (seen on
+                                // the phone, 2026-10-07), so 1 dp.
                                 Box(Modifier.fillMaxWidth()) {
                                     Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
                                         Field(stringResource(R.string.from), from, !searching) { from = it; saveCommute("from", it) }
                                         Field(stringResource(R.string.to), to, !searching) { to = it; saveCommute("to", it) }
                                     }
-                                    FilledTonalIconButton(
+                                    // A plain blue ⇅, as ⚙ and ? (user, 2026-10-07: the pale background was Material's).
+                                    IconButton(
                                         onClick = { val f = from; from = to; to = f; saveCommute("from", from); saveCommute("to", to) },
-                                        Modifier.align(Alignment.CenterEnd).offset(y = 4.dp).padding(end = 12.dp),
+                                        Modifier.align(Alignment.CenterEnd).offset(y = 1.dp).padding(end = 12.dp),
                                         enabled = !searching,
+                                        colors = IconButtonDefaults.iconButtonColors(contentColor = MaterialTheme.colorScheme.primary),
                                     ) { Text("⇅", Modifier.spokenAs(stringResource(R.string.swap)), fontSize = 20.sp) }
                                 }
-                                Field(stringResource(R.string.leaving_at), leaving, !searching, "08:50", isError = leaving.isNotEmpty() && time == null, number = true) {
+                                val focus = LocalFocusManager.current
+                                Field(
+                                    stringResource(R.string.leaving_at), leaving, !searching, "08:50",
+                                    isError = leaving.isNotEmpty() && time == null, number = true,
+                                    onSearch = { focus.clearFocus(); if (ready) startSearch() },
+                                ) {
                                     leaving = it; saveCommute("leaving", it)
                                 }
                             }
@@ -246,23 +270,12 @@ private fun App(prefs: SharedPreferences, minimums: Minimums, saved: File, last:
                         // again with ▴ on its right (user, 2026-10-06; one mark each way, none on the title).
                         Row(verticalAlignment = Alignment.CenterVertically) {
                             Button(
-                                enabled = searching || from.isNotBlank() && to.isNotBlank() && time != null,
+                                enabled = searching || ready,
                                 onClick = {
                                     if (searching) {
                                         job?.cancel()
                                         show(null)
-                                        return@Button
-                                    }
-                                    open = false
-                                    show(Result.Searching)
-                                    val transfer = { stop: Stop, official: Minimums -> Duration.ofMinutes(riderAt(stop, official)) }
-                                    job = scope.launch {
-                                        val r = withContext(Dispatchers.IO) { find(from.trim(), to.trim(), time!!, minimums, transfer) }
-                                        show(r)
-                                        val found = (r as? Result.Done)?.found
-                                        found?.let { official = minimums.lowered(it.shortest) }
-                                        changes = found?.changes.orEmpty()
-                                    }
+                                    } else startSearch()
                                 },
                             ) { Text(stringResource(if (searching) R.string.cancel else R.string.search)) }
                             Spacer(Modifier.weight(1f))
@@ -296,7 +309,7 @@ private fun App(prefs: SharedPreferences, minimums: Minimums, saved: File, last:
                             Text(when {
                                 first == null -> stringResource(R.string.no_connections, day)
                                 f.finds.isEmpty() -> stringResource(R.string.nothing_faster, day)
-                                else -> "$day:"
+                                else -> stringResource(R.string.day_line, day)
                             })
                             // Delays go stale: when they were read (user, 2026-10-06).
                             if (f.delaysKnown) Text(
@@ -412,6 +425,7 @@ private val languages = listOf(
 /** A screen reader says [words] instead of the symbol (it would read out "⇅"). */
 internal fun Modifier.spokenAs(words: String) = clearAndSetSemantics { contentDescription = words }
 
+/** The keyboard's key goes to the next field, or with [onSearch] given, searches (user, 2026-10-07). */
 @Composable
 private fun Field(
     label: String,
@@ -420,13 +434,18 @@ private fun Field(
     placeholder: String? = null,
     isError: Boolean = false,
     number: Boolean = false,
+    onSearch: (() -> Unit)? = null,
     onValueChange: (String) -> Unit,
 ) = OutlinedTextField(
     value, onValueChange, Modifier.fillMaxWidth(), enabled,
     label = { Text(label) },
     placeholder = placeholder?.let { { Text(it) } },
     isError = isError,
-    keyboardOptions = if (number) KeyboardOptions(keyboardType = KeyboardType.Number) else KeyboardOptions.Default,
+    keyboardOptions = KeyboardOptions(
+        keyboardType = if (number) KeyboardType.Number else KeyboardType.Unspecified,
+        imeAction = if (onSearch != null) ImeAction.Search else ImeAction.Next,
+    ),
+    keyboardActions = KeyboardActions(onSearch = { onSearch?.invoke() }),
     singleLine = true,
 )
 
@@ -467,9 +486,9 @@ private fun parseTime(text: String): LocalTime? {
 
 /**
  * [from] → [to] at the next [leaving], Swiss time, searched live with the rider's [transfer] times,
- * given the official [minimums] lowered by the planner's answers so far. The changes are the
- * stations the search changed at, in the order it did. Only the official connections' request
- * failing fails the search; a failed onward request skips its change. Blocking.
+ * given the official [minimums] lowered by the planner's answers so far (the search asks again
+ * where they fell). Only the official connections' request failing fails the search; a failed
+ * onward request skips its change. Blocking.
  */
 private fun find(
     from: String,
@@ -484,11 +503,10 @@ private fun find(
         val answers = mutableListOf<Connection>()
         val ask = { a: String, b: String, at: LocalDateTime -> connections(a, b, at, BuildConfig.VERSION_NAME).also { answers += it } }
         val officials = ask(from, to, time)
-        val changes = mutableListOf<Stop>()
-        val searched = search(officials, { stop -> changes += stop; transfer(stop, minimums.lowered(shortestChanges(answers))) }, ask)
+        val searched = search(officials, { stop -> transfer(stop, minimums.lowered(shortestChanges(answers))) }, ask)
         searched.failures.forEach { Log.w("Gleiswechsel", "Change not checked: $it", it) }
         Result.Done(
-            Found(time, officials.firstOrNull(), changes.distinctBy { it.id }, searched.finds, shortestChanges(answers), searched.failures.isNotEmpty(), now),
+            Found(time, officials.firstOrNull(), searched.changes, searched.finds, shortestChanges(answers), searched.failures.isNotEmpty(), now),
         )
     } catch (e: Exception) {
         // In the message too: Log drops the stack trace of an UnknownHostException (no network).

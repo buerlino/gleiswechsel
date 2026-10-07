@@ -207,8 +207,8 @@ Release v0.2.0 green, both releases have their APK. AGP 9.4.1, Kotlin 2.4.20, Co
 - [x] 2.3 Buttons, ⚙, ?, ✕, the ticket link, ⇅ and the switch are Material's default purple
   (`lightColorScheme()` unchanged); the app's own blue `00179B` is only on the track signs.
   User: purple, or the logo's blue as `primary`?
-  User (2026-10-07): the logo's blue. Done (`BLUE`); ⇅'s pale background is still Material's
-  `secondaryContainer`.
+  User (2026-10-07): the logo's blue. Done (`BLUE`); ⇅'s pale background was still Material's
+  `secondaryContainer`: a plain blue ⇅ since (user, 2026-10-07).
 - [x] 2.4 Fold marks in three sizes and places: a title's ▾/▸ at the far right, the folded
   line's ▾ at the far right, the official line's ▸ right after its small text; ▴ at 22 sp.
   User: leave, or one size?
