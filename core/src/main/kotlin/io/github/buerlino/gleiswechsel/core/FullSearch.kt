@@ -9,8 +9,9 @@ import java.time.temporal.ChronoUnit
  * The full search (CLAUDE.md): for each of the [officials] whose first departure A and last arrival
  * B are stations in the [timetable], the trains from A, leaving no earlier, that reach B first,
  * through any stations; of the trips arriving together, the one leaving A last. A find if it reaches
- * B before that official connection; then [best], as for [search]. A connection scan over planned
- * times.
+ * B before that official connection, in real time: the scan's order on the clock isn't, in the hour
+ * the clocks skip (28 Mar 2027, a train at 02:50 is 03:50). Then [best], as for [search]. A
+ * connection scan over planned times.
  *
  * The rider changes trains only within a station (same id; no walks), with their [transfer] time
  * there. Staying on through an in-seat continuation isn't a change. [transfer] is asked once per
@@ -29,6 +30,7 @@ fun fullSearch(timetable: Timetable, officials: List<Connection>, transfer: (sta
         val b = index.getValue(official.arrival.id)
         val leaving = minutes(official.departure.time)
         scan.earliest(a, leaving, b, before = minutes(official.arrival.time))?.let { Find(official, scan.latest(a, leaving, b, it)) }
+            ?.takeIf { it.faster.arrival.time.isBefore(official.arrival.time) }
     }
     return best(finds, officials)
 }
@@ -41,8 +43,8 @@ private val zurich = ZoneId.of("Europe/Zurich")
  * connection), in the order they leave. Times in minutes from the midnight that starts the file's
  * first day, on the clock: the Swiss GTFS counts so, not from noon minus 12 hours as GTFS says
  * (checked 2026-10-07: on 25 Oct 2026, when the clocks go back, it has the night trains of any
- * Sunday, and the API reads them on the clock). A trip on one of the days is an instance: trip × the
- * number of days + the day.
+ * Sunday, and the API's departure boards read them on the clock; its connections don't, CLAUDE.md).
+ * A trip on one of the days is an instance: trip × the number of days + the day.
  */
 private class Scan(private val timetable: Timetable, from: Int, until: Int, private val transfer: (Stop) -> Duration) {
     // From the day before (its trips past 24:00) to the last, those in the file.

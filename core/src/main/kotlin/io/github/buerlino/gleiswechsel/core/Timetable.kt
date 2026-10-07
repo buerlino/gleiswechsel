@@ -100,7 +100,9 @@ private const val NO_DROP_OFF = 2
 
 /**
  * The [Timetable] in [input], from [Timetable.write]. Throws on a file of another format (a newer
- * app's) or a broken one, so the app can ignore it and log why. Doesn't close [input].
+ * app's) or a broken one, so the app can ignore it and log why. Read to the end, so the gzip
+ * trailer's CRC and length are checked: a file missing it read without an error (2026-10-07).
+ * Doesn't close [input].
  */
 fun timetable(input: InputStream): Timetable =
     DataInputStream(BufferedInputStream(GZIPInputStream(input), 1 shl 16)).run {
@@ -127,6 +129,7 @@ fun timetable(input: InputStream): Timetable =
             trip
         }
         val continuations = List(readInt()) { Timetable.Continuation(readInt(), readInt(), readInt()) }
+        if (read() != -1) throw IOException("Timetable longer than its contents")
         Timetable(source, first, days, stations, platforms, trips, continuations)
     }
 
@@ -135,10 +138,11 @@ const val TIMETABLE_URL = "https://buerlino.github.io/gleiswechsel/timetable.bin
 
 /**
  * The timetable for the full search: the phone's [copy], downloaded anew ([download]) when it's
- * missing, older than 7 days or can't be read, e.g. after an update to a new format (CLAUDE.md, The
- * full search). A download replaces it only once it reads, so a failed one keeps the old copy: no
- * network, a Wi-Fi login page, a newer app's format. Null if there's none that reads; each error
- * goes to [failed]. Blocking. One at a time: a search started while a cancelled one still downloads
+ * missing, older than 7 days, dated in the future (the clock was ahead at the download) or can't be
+ * read, e.g. after an update to a new format (CLAUDE.md, The full search). A download replaces it
+ * only once it reads, so a failed one keeps the old copy: no network, a Wi-Fi login page, a newer
+ * app's format. One that reads but can't be saved (storage full) is still used. Null if there's none
+ * that reads; each error goes to [failed]. Blocking. One at a time: a search started while a cancelled one still downloads
  * waits for it, so two don't write the copy together (user, 2026-10-07: Cancel leaves it running).
  */
 @Synchronized
@@ -149,14 +153,18 @@ fun localTimetable(copy: File, download: () -> ByteArray, failed: (Exception) ->
         failed(e)
         null
     }
-    val recent = copy.exists() && System.currentTimeMillis() - copy.lastModified() < WEEK
+    val recent = copy.exists() && System.currentTimeMillis() - copy.lastModified() in 0 until WEEK
     if (recent) read()?.let { return it }
     try {
         val bytes = download()
         return timetable(bytes.inputStream()).also {
-            val part = File("${copy.path}.part")
-            part.writeBytes(bytes)
-            if (!part.renameTo(copy)) throw IOException("$part not renamed")
+            try {
+                val part = File("${copy.path}.part")
+                part.writeBytes(bytes)
+                if (!part.renameTo(copy)) throw IOException("$part not renamed")
+            } catch (e: Exception) {
+                failed(e)
+            }
         }
     } catch (e: Exception) {
         failed(e)

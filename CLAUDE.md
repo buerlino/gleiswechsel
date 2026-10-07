@@ -313,7 +313,10 @@ at every station the rider hasn't set.
   no earlier, the one arriving first (a tie goes to the later one: more time to change); then the
   same at that onward connection's own changes, and so on (`shortened`; user, 2026-10-06: the API
   keeps the official minimum at every later change, so two short changes on one trip, e.g. Luzern
-  and Olten, were never combined). Each question goes to the API once per search (two official
+  and Olten, were never combined); only changes reached before the official connection's arrival
+  (2026-10-07: nothing from a later one arrives earlier; Bern, Bundesplatz → Horw 08:00 went back
+  and forth between two tram stops at Bern, Bahnhof, an hour a step until the next day, 68
+  questions and a stray Zürich HB row, now 11). Each question goes to the API once per search (two official
   connections on the same train to the same change asked it twice; the API answers too many with
   429). A find if it reaches B earlier than the official one, unless the planner already offers it:
   an official connection leaves no earlier and arrives no later (user, 2026-10-06; Horw → Bern,
@@ -358,7 +361,13 @@ at every station the rider hasn't set.
   trains only and only when the file has the day and A and B; changes only within a station; the
   live check doesn't skip public holidays; the official minimums are a copy of one timetable year's,
   the planner's finer times only for its own changes; `doublesBack` sees only stations by id (a
-  train station and its bus stop differ).
+  train station and its bus stop differ). Left so (user, 2026-10-07, after a test pass): the night
+  the clocks go back (the last Sunday of October) the API's connections and the full search read
+  the night trains an hour apart, so a card can be wrong that night (the full search, step 2); a
+  recent copy of the timetable without the search's day (Pages stale while the job was off) is
+  downloaded again only once it's 7 days old, so the full search can stay off for up to a week
+  after the job runs again; with the offset at 2 the default at a 2-minute station (the standard)
+  is 0, so 0-minute changes are offered (D2: at least 0).
 
 ## The first version (user, 2026-10-06)
 
@@ -426,14 +435,22 @@ Steps (user, 2026-10-06), one at a time, each shown working:
    trips and overnight windows, on a desktop JVM, warm; the first search about 200 ms (JIT).
    Checked on the way (2026-10-07):
    - **The Swiss GTFS counts on the clock**, not from noon minus 12 hours as GTFS says: on
-     25 Oct 2026 (clocks back) it has the same night trains as on 1 Nov, and the API reads them on
-     the clock (SN1 Winterthur 02:35 +02:00, 03:35 +01:00). The scan does the same; Java takes an
-     hour that comes twice as the first, as the API does. **28 Mar 2027** (an hour skipped,
+     25 Oct 2026 (clocks back) it has the same night trains as on 1 Nov, and the API's departure
+     boards read them on the clock (SN1 Winterthur 02:35 +02:00, 03:35 +01:00). The scan does the
+     same; Java takes an hour that comes twice as the first, as the boards do. **The API's
+     connections read it by the GTFS rule** (test pass, 2026-10-07): that night Sunday's trains
+     before 03:00 come an hour later (SN3 Winterthur 02:32 +02:00 → Schaffhausen 02:01 +01:00),
+     so the officials and the full search disagree: one confusing card, REN7 Zürich HB 01:35
+     (track 7) → Zug 01:56 "4 minutes earlier" than an "official" REN7 01:35 (track 6), the 00:35
+     shifted. Left so, in Limits (user, 2026-10-07; skipping the full search across a clock change
+     was the other option). **28 Mar 2027** (an hour skipped,
      checked in the 2027 GTFS 2026-10-07): 72 train trips of that day and 21 of the 27th stop
      between 02:00 and 03:00, an hour that doesn't exist (SN1 Winterthur 02:35, S3 Basel SBB
      02:45; 574 stop events that hour, about 795 on the Sundays around it). The scan reads them as
-     an hour later (Java). How the API shows them: not known, it can't be asked before its window
-     reaches 28 Mar (about 7 Nov 2026).
+     an hour later (Java), after trains it scanned before them, so a find must also arrive before
+     its official connection in real time, as in today's search (2026-10-07; `FullSearchTest`).
+     How the API shows them: not known, it can't be asked before its window reaches 28 Mar (about
+     7 Nov 2026).
    - **In-seat continuations in the API:** one section each (6 tried: IR70 → IR13 at Zürich HB,
      RE6 → R20, S7 → RE7, RE3 → RE13, RhB RE24 → RE4, S17 → S4), so they're never one of the
      planner's changes (`offered`).
@@ -460,10 +477,14 @@ Steps (user, 2026-10-06), one at a time, each shown working:
 4. The app, in five steps (user, 2026-10-07), one at a time:
    1. **The local copy** (done 2026-10-07, `:core`): `localTimetable` reads the phone's copy and
       downloads `TIMETABLE_URL` (`download`, the API's User-Agent) when it's missing, older than
-      7 days (its modification time: with the job off, still only once a week) or doesn't read
-      (after an update to a new format). A download replaces it only once it reads, so no
-      network, a Wi-Fi login page or a newer app's format keep the old copy; null if none reads;
-      each error to `failed`. `TimetableTest` (a fake download); `LiveTest` from Pages on the
+      7 days (its modification time: with the job off, still only once a week), dated in the
+      future (the clock was ahead at the download; 2026-10-07: it counted as recent until then)
+      or doesn't read (after an update to a new format; read to the end, so gzip's CRC and
+      length are checked: 2026-10-07, a file missing its trailer was read and saved). A download
+      replaces it only once it reads, so no network, a Wi-Fi login page or a newer app's format
+      keep the old copy; one that reads but can't be saved (storage full) is still used
+      (2026-10-07: it was thrown away, so every search downloaded and the full search never
+      ran); null if none reads; each error to `failed`. `TimetableTest` (a fake download); `LiveTest` from Pages on the
       desktop: 453,334 bytes downloaded and read in 682 ms, then 83 ms from the copy. Not in the
       app yet.
    2. **Train names as the API's** (done 2026-10-07; user, the same day: now, not later; was
@@ -529,6 +550,18 @@ Steps (user, 2026-10-06), one at a time, each shown working:
       Cancel 1.5 s after Search: the page free at once, the download finished and kept (the
       next search 13 KB). Measuring a download without logs: the uid's received bytes from
       `dumpsys netstats` (the skill).
+      **A test pass** (2026-10-07, on the desktop: 40 commutes through `find()` with an
+      independent Dijkstra on the same file as a reference, offsets 0, 1 and 2, and the legs
+      against the API's boards) found nothing wrong in the full search's results; its fixes:
+      the local search's deadline (the local search, above), the copy's three (step 1) and the
+      full search's real-time check (step 2). Then on the phone (R8 release, the same day): an
+      update from 0.2.0 kept the commute, the offset, the set times and Optimization off, ignored
+      the old `result.json` (logged) and downloaded at the first search; a cleared app the
+      defaults; the download (slowed to 12 s through a proxy, the skill) through a turn, Home and
+      back, `am kill` in the background (no stale result; the next search downloaded it whole)
+      and Search–Cancel–Search (one download), the copy each time equal to Pages'; 23:50 and
+      00:20 the right day and the full search on; Bern, Bundesplatz → Horw 08:00 in 10 s and
+      33 KB without the stray row; the Java heap 4.8 MB in use (29 MB) after a full search.
 
 ### One model for the track switch times (decided 2026-10-07, being built)
 

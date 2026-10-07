@@ -159,6 +159,23 @@ class SearchTest {
     }
 
     @Test
+    fun noQuestionAtOrAfterTheOfficialArrival() {
+        // As Bern, Bundesplatz → Horw (2026-10-07): from Xberg the API rides to Yfeld and changes
+        // there, from Yfeld back to Xberg, an hour later each time, until the day ends. The change
+        // at Yfeld 09:10 comes after the official arrival, 08:40: nothing from there is earlier.
+        search(listOf(official), { minutes(4) }) { from, _, time ->
+            asked += "$from ${time.toLocalTime()}"
+            val other = if (from == "Xberg") "Yfeld" else "Xberg"
+            val t = time.atOffset(at("00:00").offset)
+            if (time.hour >= 23) emptyList() else listOf(Connection(listOf(
+                ride("T3", Stop(from, from, t), Stop(other, other, t.plusMinutes(56))),
+                ride("T9", Stop(other, other, t.plusMinutes(60)), Stop("Bstadt", "Bstadt", t.plusMinutes(80))),
+            )))
+        }
+        assertEquals(listOf("Xberg 08:14"), asked)
+    }
+
+    @Test
     fun aFailedRequestSkipsOnlyItsChange() {
         // Two changes: the question at Xberg fails (HTTP 429); Yfeld's R7 still arrives 08:50, not 08:55.
         val ir2 = ride("IR2", stop("Xberg", "08:20"), stop("Yfeld", "08:30"))

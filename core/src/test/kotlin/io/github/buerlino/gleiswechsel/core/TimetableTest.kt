@@ -4,6 +4,7 @@ import java.io.ByteArrayOutputStream
 import java.io.DataOutputStream
 import java.io.File
 import java.io.IOException
+import java.nio.file.Files
 import java.time.Duration
 import java.time.LocalDate
 import java.util.zip.GZIPOutputStream
@@ -229,6 +230,14 @@ class TimetableTest {
         assertFailsWith<IOException> { timetable(bytes.copyOf(bytes.size / 2).inputStream()) }
     }
 
+    @Test
+    fun aFileWithoutItsTrailerOrWithAWrongCrcIsRefused() {
+        // The gzip trailer: the CRC, then the length, 4 bytes each.
+        assertFailsWith<IOException> { timetable(published.copyOf(published.size - 8).inputStream()) }
+        val wrongCrc = published.copyOf().also { it[it.size - 8] = (it[it.size - 8] + 1).toByte() }
+        assertFailsWith<IOException> { timetable(wrongCrc.inputStream()) }
+    }
+
     // The phone's copy, at first missing; the download sends [published], from 2 March.
     private val copy = File.createTempFile("timetable", ".bin.gz").apply { delete(); deleteOnExit() }
     private val published = ByteArrayOutputStream().also { timetable.write(it) }.toByteArray()
@@ -275,6 +284,29 @@ class TimetableTest {
         copy.delete()
         assertEquals(null, local { throw IOException("No network") })
         assertFalse(copy.exists())
+    }
+
+    @Test
+    fun aCopyDatedInTheFutureIsReplaced() {
+        // The phone's clock was a day ahead at the download.
+        old(-1)
+        assertEquals(LocalDate.of(2026, 3, 2), local())
+        assertEquals(1, downloads)
+    }
+
+    @Test
+    fun aDownloadThatCantBeSavedIsStillUsed() {
+        // Storage full, here a directory the app can't write.
+        val dir = Files.createTempDirectory("timetable").toFile().apply { setWritable(false) }
+        try {
+            val copy = File(dir, "timetable.bin.gz")
+            assertEquals(LocalDate.of(2026, 3, 2), localTimetable(copy, { published }) { errors += it.javaClass.simpleName }?.first)
+            assertFalse(copy.exists())
+            assertEquals(listOf("FileNotFoundException"), errors)
+        } finally {
+            dir.setWritable(true)
+            dir.deleteRecursively()
+        }
     }
 
     @Test

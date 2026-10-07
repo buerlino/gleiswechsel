@@ -59,7 +59,7 @@ fun search(
     val asked = mutableListOf<Stop>()
     val failures = mutableListOf<Exception>()
     val finds = officials.flatMap { official ->
-        shortened(official, { stop -> asked += stop; transfer(stop) }, ask, failures)
+        shortened(official, official.arrival.time, { stop -> asked += stop; transfer(stop) }, ask, failures)
             .filter { it.arrival.time.isBefore(official.arrival.time) }.map { Find(official, it) }
     }
     val offered = (officials + answers.values.flatMap { it.getOrDefault(emptyList()) }).flatMap { it.transfers }.toSet()
@@ -89,16 +89,20 @@ class Searched(val finds: List<Find>, val failures: List<Exception>, val changes
  * [trip] changing faster: at each of its changes, with the rider's [transfer] time there, the
  * connection on to B that arrives first ([onward]); and the same again at that connection's own
  * changes, where the API keeps the official minimum (user, 2026-10-06: two short changes on one
- * trip, e.g. Luzern and Olten). One request per change searched. A change whose request fails gives
- * nothing; the error goes to [failures].
+ * trip, e.g. Luzern and Olten). One request per change searched. A change reached at or after
+ * [deadline], the official connection's arrival, isn't searched: nothing from there arrives earlier
+ * (an onward connection back and forth between two stops, an hour later each time, went on until
+ * the next day: Bern, Bundesplatz → Horw, 2026-10-07). A change whose request fails gives nothing;
+ * the error goes to [failures].
  */
 private fun shortened(
     trip: Connection,
+    deadline: OffsetDateTime,
     transfer: (Stop) -> Duration,
     connections: Connections,
     failures: MutableList<Exception>,
 ): List<Connection> =
-    trip.changes.flatMap { change ->
+    trip.changes.filter { it.time.isBefore(deadline) }.flatMap { change ->
         val rest = try {
             onward(change.id, trip.arrival.id, change.time + transfer(change), connections)
         } catch (e: Exception) {
@@ -106,7 +110,7 @@ private fun shortened(
             null
         } ?: return@flatMap emptyList()
         val upToChange = trip.legs.take(trip.legs.indexOfFirst { it.arrival == change } + 1)
-        (listOf(rest) + shortened(rest, transfer, connections, failures)).map { Connection(upToChange + it.legs) }
+        (listOf(rest) + shortened(rest, deadline, transfer, connections, failures)).map { Connection(upToChange + it.legs) }
     }
 
 /** Leaves no earlier and arrives no later than [other], so [other] says nothing new. */

@@ -28,7 +28,7 @@ is in `research/`.
 - `core/.../Search.kt`: `Find` (with `saved` and `moreEfficient`), `ticketUrl` (the sbb.ch link),
   the local search `search()` (each question once; it returns the stations it changed at,
   `Searched.changes`, and the planner's changes in its answers, `Searched.offered`), `shortened`
-  (the onward connections' changes too, recursively), `onward` (rides from the change station
+  (the onward connections' changes too, recursively, those before the official arrival), `onward` (rides from the change station
   itself) and `best`, the rules between the finds and the official connections, for both searches.
   It takes the official connections, the transfer time per station and the request as a function, so
   `SearchTest` runs it on a fake API with made-up connections.
@@ -45,9 +45,11 @@ is in `research/`.
 - `core/.../Timetable.kt`: `Timetable`, the trains of 14 days for the full search (stations by
   didok, platforms, trips with a bit per day, in-seat `Continuation`s), its gzipped binary
   (`write`; times as steps from the previous departure plus a dwell byte) and the reader
-  `timetable()`, which throws on another `FORMAT` or a broken file; `localTimetable()`, the
-  phone's copy, downloaded from `TIMETABLE_URL` when it's missing, older than 7 days or doesn't
-  read, replaced only by a download that reads (CLAUDE.md, The full search, step 4.1).
+  `timetable()`, which throws on another `FORMAT` or a broken file (read to the end: the gzip
+  trailer); `localTimetable()`, the phone's copy, downloaded from `TIMETABLE_URL` when it's
+  missing, older than 7 days, dated in the future or doesn't read, replaced only by a download
+  that reads, and a download that can't be saved used anyway (CLAUDE.md, The full search, step
+  4.1).
   `core/.../Gtfs.kt`: `trains()`,
   the GTFS zips → `Timetable` (JDK only; its own CSV reader for the BOM and the quotes; each zip
   for the days from its `feed_start_date` to its `feed_end_date`, a zip without any skipped, a
@@ -166,6 +168,23 @@ is in `research/`.
   are in shadow DOM: read them with `Runtime.evaluate` over the tab's WebSocket (Node 22 has
   `WebSocket` built in), walking `shadowRoot`s.
 - Logs: `adb logcat -d -s Gleiswechsel`; crashes: `adb logcat -d | grep AndroidRuntime`.
+- Something during the download, which takes under a second on a good network: slow it down
+  (2026-10-07). A CONNECT proxy on the desktop (Python asyncio, about 30 lines) that relays
+  buerlino.github.io at 40 KB/s (the file then takes 12 s) and the rest at full speed, on
+  127.0.0.1:8899; `adb reverse tcp:8899 tcp:8899` and `adb shell settings put global http_proxy
+  127.0.0.1:8899` (Android's `HttpURLConnection` follows it; it's for the whole phone). After:
+  `settings delete global http_proxy` (it was unset) and `adb reverse --remove tcp:8899`. The
+  proxy's log shows when the download starts; wait for that, then turn, background, kill or
+  Cancel. Turning: `settings put system accelerometer_rotation 0` and `user_rotation 1`, back
+  with `user_rotation 0` and `accelerometer_rotation 1` (both as they were).
+- An update from an older version: build its tag in a worktree in the scratchpad (`git worktree
+  add --detach <dir> vX.Y.Z`, `local.properties` copied in), sign it with the debug key as above,
+  `adb uninstall` (an older version can't go over a newer one), install it, set it up, then the
+  new R8 build over it with `install -r` (2026-10-07, from 0.2.0). Back up the user's data first
+  through the debug build: `adb exec-out run-as … tar cf - shared_prefs files`, and back the same
+  way with `exec-in … sh -c 'cat > shared_prefs/commute.xml'`.
+- `input keyevent 66` is a hardware Enter, not the keyboard's action key: from To it moves to ⇅,
+  and the next Enter swaps the fields (2026-10-07). Tap each field instead.
 - If the phone is locked, ask the user; don't try to unlock it.
 
 ## Official minimums: each timetable change
@@ -214,7 +233,9 @@ Everything else was tried on the phone with the R8 release build signed with the
   English, French and Italian URLs were opened in Brave directly. Another browser, and a phone
   without one (the `no_browser` message: not seen, the test phone has a browser).
 - Two short changes on one trip (2026-10-06): only `SearchTest`; no live commute at hand that
-  has one. The request cache: only the unit test.
+  has one. The request cache: only the unit test. The deadline on the onward search
+  (2026-10-07): `SearchTest`, the test pass's 46 commutes replayed (the same finds and rows,
+  195 → 138 questions) and Bern, Bundesplatz → Horw on the phone.
 - The doubling-back line in a card (2026-10-06): only the unit tests and the parser; no real find
   has shown it.
 - The fold states (2026-10-06): `uiautomator dump` doesn't show `stateDescription`; not heard
@@ -237,14 +258,16 @@ Everything else was tried on the phone with the R8 release build signed with the
   switch, gone after a step in Optimization; the rest only `FoundTest`. Not seen: a file in an
   older format (none exists yet), a failed write, the system killing the app in the background,
   a phone-to-phone transfer, a result with a walk read back on the phone (one with two finds
-  and second changes came back after the language switch, 2026-10-07).
+  and second changes came back after the language switch, 2026-10-07). Seen since (2026-10-07):
+  0.2.0's file ignored after the update to 0.3.0 (logged, no crash); `am kill` in the background
+  during a search: the page opens without a result.
   `run-as` doesn't work on the release build, so the file itself wasn't looked at.
 - Split screen.
 - One model (2026-10-07): `:core` by `MinimumsTest`, `SearchTest`, `FoundTest` (the two
   surprises on a fake API) and `find()` live for Thu 8 Oct in a one-off test (CLAUDE.md, One
   model, step 1). The page on the phone the same day (CLAUDE.md, One model, step 2), in
-  English; Help's new 🎨 and ⏱️ texts in all four. Not seen: an older `result.json` ignored
-  after the update (only `FoundTest`), whether the faded − and + read as disabled (TalkBack).
+  English; Help's new 🎨 and ⏱️ texts in all four; an older `result.json` ignored after the
+  update. Not seen: whether the faded − and + read as disabled (TalkBack).
 - Delays (2026-10-06, R8 release build, German only): real "+1"s and the "as of" line seen live
   (Horw → Sursee at 23:22 and 23:30), kept after a force-stop, absent for tomorrow's 08:50. The
   red "! 1 min", the grey "−2 min" and a changed track (14 instead of 12) only from a made-up
@@ -270,14 +293,18 @@ Everything else was tried on the phone with the R8 release build signed with the
 - The full search (2026-10-07): `FullSearchTest`, `FoundTest` and on the phone (CLAUDE.md,
   steps 4.3 and 4.5: the download, the test case, Uster → Horw's find only it has, the read
   time, the line with a 404 URL, ICE000273 in a card, Help's 🚆, ⚠️ and 📡 in all four, Cancel
-  1.5 s after Search with the download finished and kept). Not checked: an hour skipped (28 Mar
-  2027), a find through an in-seat continuation, a find from it identical to today's on real
-  data (only `FoundTest`; the test case's comes from both, shown once), a newly named train in
-  a find only it has (none in 15 commutes tried; ICE000273's change is an official one's), the
-  line from a copy without the day, whether that Cancel hit the download itself or the API's
-  requests before it, a search started while a cancelled one still downloads (waits,
-  `@Synchronized`), a download on Wi-Fi without the VPN (user, 2026-10-07: later, at home; on
-  LTE through Tailscale 3.5 s for a whole search with it, the 16 s of step 4.3 not seen again).
+  1.5 s after Search with the download finished and kept). The test pass (2026-10-07,
+  CLAUDE.md step 4.5): 40 commutes on the desktop against an independent Dijkstra at offsets
+  0, 1 and 2, the legs against the API's boards, nothing wrong; on the phone the download
+  slowed down and interrupted (a turn, Home, `am kill`, Search–Cancel–Search: one download, a
+  search started meanwhile waits), 23:50 and 00:20. Not checked: an hour skipped (28 Mar 2027:
+  only `FullSearchTest`, made up; the API can't be asked before about 7 Nov 2026), a find
+  through an in-seat continuation, a find from it identical to today's on real data (only
+  `FoundTest`; the test case's comes from both, shown once), a newly named train in a find only
+  it has (none in 15 commutes tried; ICE000273's change is an official one's), the line from a
+  copy without the day (unreachable from the page: a search is today or tomorrow), a download
+  on Wi-Fi without the VPN (user, 2026-10-07: later, at home; on LTE through Tailscale 3.5 s for
+  a whole search with it, the 16 s of step 4.3 not seen again).
   `pm clear --cache-only` hangs on the test phone (Android 16): empty the cache in App info →
   Storage & cache → Clear cache, or with the debug build `run-as io.github.buerlino.gleiswechsel
   rm cache/timetable.bin.gz` and then the R8 build over it (`install -r`; 2026-10-07).
@@ -287,8 +314,12 @@ Everything else was tried on the phone with the R8 release build signed with the
 - The local copy (2026-10-07, `localTimetable`): `TimetableTest` and the live download from
   Pages on the desktop (once, then from the copy); on the phone (step 4.3) Android's
   `HttpURLConnection` on Pages, once and then from the copy, and a copy cleared in App info.
-  A copy older than 7 days downloaded again (step 4.5, the debug build). Not checked: a real
-  Wi-Fi login page, a copy the system cleared itself.
+  A copy older than 7 days downloaded again (step 4.5, the debug build). The test pass's fixes
+  (2026-10-07): `TimetableTest` (a read-only directory for a full storage, a copy dated a day
+  ahead, a file without its trailer or with a wrong CRC) and the same cases on the published file
+  on the desktop; on the phone the copy equal to Pages' (md5) after each interrupted download, no
+  `.part` left. Not checked: a real full storage, a phone clock set ahead, a real Wi-Fi login
+  page, a copy the system cleared itself.
 
 ## Releasing (as in gridload and APODroid)
 

@@ -142,8 +142,9 @@ class FullSearchTest {
 
     @Test
     fun onTheClockAlsoWhenTheClocksGoBack() {
-        // 25 October 2026 (from Monday the 19th, day 6): 02:00 to 03:00 comes twice; the API reads
-        // the GTFS times on the clock and an hour that comes twice as the first (checked 2026-10-07).
+        // 25 October 2026 (from Monday the 19th, day 6): 02:00 to 03:00 comes twice; the API's
+        // departure boards read the GTFS times on the clock and an hour that comes twice as the
+        // first (checked 2026-10-07).
         val night = trip("SN1", at(aach, "02:35"), at(bstadt, "02:50"), days = 1 shl 6)
         val later = trip("SN1", at(aach, "03:35"), at(bstadt, "03:50"), days = 1 shl 6)
         val timetable = timetable(night, later, first = LocalDate.of(2026, 10, 19))
@@ -152,5 +153,15 @@ class FullSearchTest {
         ).single().faster.legs.single().departure.time.toString()
         assertEquals("2026-10-25T02:35+02:00", first("02:00:00+02:00"))
         assertEquals("2026-10-25T03:35+01:00", first("03:00:00+01:00"))
+    }
+
+    @Test
+    fun aFindArrivesEarlierInRealTimeAlsoWhenTheClocksGoForward() {
+        // 28 March 2027 (from Monday the 22nd, day 6): 02:00 to 03:00 doesn't exist, yet the GTFS has
+        // trains then (checked 2026-10-07). The SN1's 02:50 is before the official 03:10 on the clock,
+        // but it reads as 03:50: no find.
+        val sn1 = trip("SN1", at(aach, "01:50"), at(bstadt, "02:50"), days = 1 shl 6)
+        val official = Connection(listOf(Leg("IR2", stops(0, "2027-03-28T01:45:00+01:00"), stops(2, "2027-03-28T03:10:00+02:00"))))
+        assertEquals(emptyList(), fullSearch(timetable(sn1, first = LocalDate.of(2027, 3, 22)), listOf(official), minutes(4)))
     }
 }
