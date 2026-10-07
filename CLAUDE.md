@@ -378,12 +378,13 @@ at every station the rider hasn't set.
 The scope: one saved commute, the rider's transfer time per station, the local search, one result
 list (user, 2026-10-06: "focus on the core utility").
 
-Released: 0.3.0 (tag `v0.3.0`, versionCode 3: the full search), after 0.1.0 and 0.2.0. The F-Droid
-merge request is open (user, 2026-10-06), from the branch `io.github.buerlino.gleiswechsel` in
-`../fdroiddata`, with 0.2.0 (`6cad67402`, pushed); its `NonFreeNet` text names sbb.ch too (user,
-2026-10-06: the ticket link) and buerlino.github.io (user, 2026-10-07: the timetable file; edited in
-the fork, checked, not yet committed there). Before every push to the fork: the skill's checks
-(user, 2026-10-06: the pipeline failed twice without them). README's "Soon on F-Droid" stays until
+Released: 0.3.0 (tag `v0.3.0`, versionCode 3: the full search), after 0.1.0 and 0.2.0. Its GitHub
+APK equals an unsigned build of the tag from a fresh clone (`apksigcopier compare`, 2026-10-07). The
+F-Droid merge request is open (user, 2026-10-06), from the branch `io.github.buerlino.gleiswechsel`
+in `../fdroiddata`, with 0.3.0 (`c099eb3d5`, pushed; the pipeline green, `fdroid build` included,
+2026-10-07); its `NonFreeNet` text names sbb.ch too (user, 2026-10-06: the ticket link) and
+buerlino.github.io (user, 2026-10-07: the timetable file). Before every push to the fork: the
+skill's checks (user, 2026-10-06: the pipeline failed twice without them). README's "Soon on F-Droid" stays until
 F-Droid has it.
 
 ## The full search (decided 2026-10-06, being built)
@@ -616,6 +617,70 @@ Steps, one at a time:
    then IR13 at Zürich HB in 2: 09:14 instead of 09:17), only Brugg AG faded.
 3. Then step 4 of the full search.
 
+## The fastest of the day (decided 2026-10-07, being built)
+
+The commuter mode (the user's working name): for A → B, ignoring the time, the fastest connection
+of a day with the rider's track switch times (`TrackSwitchTimes`, as both searches), the one a
+commuter builds their day around. It shows the trip as a card like a find's, how much more efficient
+it is than the fastest official connection of the day (`Find.moreEfficient`'s formula) and how
+often it runs. On the full search's file and scan; the API only for a few checks (4 connections a
+request and HTTP 429 make a whole day through it too many requests).
+
+Decided (user, 2026-10-07, each from Claude's options; "Claude" marks Claude's reasons):
+
+- **The name** says what it shows: Fastest of the day, Die schnellste des Tages, La plus rapide du
+  jour, La più veloce del giorno. Defined once, in Help's 🚆, next to the full search it builds on.
+- **An empty time means now** (user: the default they wanted; the time was required). **The fastest
+  of the day is a text button "all day"** (ganzer Tag, toute la journée, tutto il giorno) at the
+  right of the time field, blue when on, saved in `commute`. On, the time field is greyed and
+  ignored (its text kept), and the folded line reads "from → to, all day". Not chosen: an empty
+  field meaning all day (then no "now"; the user's fallback), always shown under the result (the
+  day scan and 2 more requests every search), a symbol (Help would have to explain it).
+- **The day: the first weekday (Mon–Fri) in the file from today, the whole service day** (user: any
+  weekday will do, the schedule stays the same on weekdays). Public holidays aren't skipped (the
+  GTFS doesn't mark them): Limits, once built.
+- **A and B must be stations in the file** (trains only), else a line says so (e.g. Bern,
+  Bundesplatz).
+- **Up to 3 API requests:** one before the scan, at 08:00 of the day, turns the typed names into
+  station ids (Claude: the API matches loosely, the file doesn't); one at the fastest's departure
+  (whether the planner offers it, and its `offered` for the D4 colours); one at the departure of the
+  file's fastest official connection.
+- **The official connection to compare against:** the fastest of the file's scan at the official
+  times (offset 0, nothing set) and every connection the API returned. Claude: the file alone
+  overstates the efficiency where the planner changes faster (D4) or takes a bus. It's the card's
+  folded official connection.
+- **Cards: the fastest; if it isn't regular, a second card with the fastest regular one** (at most
+  two). Equally fast: the one running more often. One the planner offers is shown anyway, with a line
+  saying so instead of the percentage (it's still the train to build the day around).
+- **The same connection:** the same lines, the same change stations and the same trip time to the
+  minute. Trains named by their number (IC000484, ICE000273: step 4.2 of the full search) are grouped
+  by their category (IC, ICE), else each run is a group of its own; the card keeps the full name.
+- **How often:** the most common gap between the group's departures if it's 15, 30, 60 or 120
+  minutes (Claude: regional lines often run every 2 hours), and so regular; else irregular. With the
+  first and last departure and the number of runs, which shows a gap: "every 30 minutes,
+  06:12–20:12, 25 times" (29 without one).
+- **Optimization's rows and `result.json` as now:** the rows from the change stations of the cards
+  shown (the official one's too), so a time can be lowered and searched again; the result kept, in a
+  new shape (an older file ignored and logged).
+
+Steps (user, 2026-10-07), one at a time, each shown working:
+
+0. These notes (done).
+1. `:core`, the day scan: for each departure from A on the day, the earliest arrival at B with the
+   rider's times; the existing scan once per departure (Claude: started at it by binary search, its
+   arrays reused), measured on the desktop, then the phone; a profile scan only if that's too slow.
+   The journeys no other beats (leaves no earlier, arrives no later), then the fastest by duration.
+   Tests on a made-up timetable, as `FullSearchTest`.
+2. `:core`, how often: the journeys grouped (lines, change stations, trip time), the interval, the
+   first and last departure, the runs. Tests: every 30 minutes, a gap, irregular.
+3. `:core`, the official connection (the scan at the official times, the API's checks) and the
+   result in `Found`.
+4. The page: "now", the "all day" button, the cards, the efficiency and frequency lines; every
+   text in all four languages.
+5. Help's 🚆, the store texts (if worth a sentence), the changelogs, the phone (R8 release): Horw →
+   Sursee (the S4 :53 → RE24 :05, every 60 minutes), Uster → Horw with Zürich HB and Luzern at 2,
+   a route with a 30-minute pattern.
+
 ## After the first release
 
 Each timetable change (next: 13 Dec 2026, timetable 2027): refresh the official minimums (the
@@ -631,8 +696,8 @@ Ideas, not decided (Claude, 2026-10-06; ask the user first):
 - Station suggestions from `/v1/locations`, only if typing the names is annoying.
 - From [missing_features.md](research/missing_features.md) (2026-10-06): changes at stops the
   train only passes through,
-  "arrive by", more than four official connections, "now", the saving in a year, parallel
-  requests.
+  "arrive by", more than four official connections, the saving in a year, parallel requests
+  ("now": decided, The fastest of the day).
 
 Dropped (0.2.0; user, 2026-10-07): the risk of each change, how often it worked, from the
 published actual times (research/architecture.md). The cards show the delays known at the search

@@ -4,6 +4,7 @@
 trip has a faster connection than the official timetable shows.
 
 <img src="fastlane/metadata/android/en-US/images/phoneScreenshots/1.png" width="300" alt="Gleiswechsel: Horw to Sursee 14 minutes earlier, through a 4-minute change at Luzern">
+<img src="fastlane/metadata/android/en-US/images/phoneScreenshots/2.png" width="300" alt="Gleiswechsel: Uster to Horw 15 minutes earlier, through changes of 3 minutes at Zürich HB and 2 at Luzern">
 
 ## Install
 

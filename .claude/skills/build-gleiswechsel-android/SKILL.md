@@ -288,6 +288,10 @@ Everything else was tried on the phone with the R8 release build signed with the
   oct. :"). Not seen: Italian. The day of the first trip shown (2026-10-07): `FoundTest`, and
   Zürich HB → Bern 23:50 on the phone ("Thu 8 Oct" over the 00:02); not seen with finds on both
   sides of midnight.
+- The released APK itself (`gleiswechsel-v0.3.0.apk`, the release key) on a phone: the test
+  phone has the R8 build with the debug key. The GitHub APK equals an unsigned build of the tag
+  (`apksigcopier compare`, 2026-10-07), and that build, signed with the debug key, took the
+  screenshots the same day.
 - The themed icon in a launcher that shows themed icons (Niagara doesn't); only checked as a
   render.
 - The timetable job (2026-10-07): run once by hand on GitHub (2 min 4 s; the file and page
@@ -337,11 +341,12 @@ Everything else was tried on the phone with the R8 release build signed with the
    recipe too: [Before every push to the fork](#before-every-push-to-the-fork).
 6. After the workflow: its APK against an unsigned build of the tag from a fresh clone, e.g.
    `apksigcopier compare gleiswechsel-vX.Y.Z.apk --unsigned app-release-unsigned.apk` (pip, in a
-   venv; it needs build-tools' `apksigner` on PATH). Done for 0.1.0.
+   venv; it needs build-tools' `apksigner` on PATH). Done for 0.1.0 and 0.3.0 (identical).
 
 ## F-Droid
 
-The merge request is open (user, 2026-10-06), now with 0.1.0 and 0.2.0: the recipe
+The merge request is open (user, 2026-10-06), now with 0.1.0, 0.2.0 and 0.3.0 (`c099eb3d5`,
+the pipeline green with `fdroid build`, 2026-10-07): the recipe
 `metadata/io.github.buerlino.gleiswechsel.yml`, made like APODroid's and gridload's (`Binaries` +
 `AllowedAPKSigningKeys`, `UpdateCheckMode: Tags`, `AutoUpdateMode: Version`), on the branch
 `io.github.buerlino.gleiswechsel` off upstream `master`. `../fdroiddata` is the user's fork clone
@@ -396,13 +401,18 @@ en-US), same day. `images/icon.png`: both logo SVGs at 512 px (`rsvg-convert -w 
 `magick back.png front.png -composite -strip`). `images/featureGraphic.png` (1024×500): source
 `logo/featureGraphic.svg` (the signs, cropped, on the back's grey, "Gleiswechsel" in Inter Bold
 and the subtitle in Inter Medium, dark text: white on this grey is too faint), render command in
-its header comment. `images/phoneScreenshots/1.png` (user, 2026-10-06: one is enough): the test
-case's find and the green Luzern row (unset, the faded default), in English; since 0.2.0 the page
-is longer than the screen, so it's scrolled to the end, Destination's folded line half under the
-top bar (user, 2026-10-06). `README.md` embeds it. Taken
+its header comment. `images/phoneScreenshots/`, in English, both
+embedded in `README.md`, retaken for 0.3.0 (user, 2026-10-07; the R8 build of the tag, offset 1):
+`1.png` the test case's find and the green Luzern row (unset, the faded default), the page
+scrolled to the end (since 0.2.0 it's longer than the screen; user, 2026-10-06); `2.png` (user,
+2026-10-07: one for the full search) Uster → Horw 06:30 with Zürich HB and Luzern set to 2, the
+top of the page: S9 → IR75 → S4, 15 minutes earlier (with the defaults nothing faster). Commute
+and times typed on the page, after backing up `commute.xml` with the debug build's `run-as` (put
+back the same way afterwards, `result.json` deleted). Taken
 with SystemUI demo mode: `settings put global sysui_demo_allowed 1`, then broadcasts
 (`am broadcast -a com.android.systemui.demo -e command …`) `enter`, `clock -e hhmm 1200`,
-`notifications -e visible false`, `network -e wifi show -e level 4 -e fully true -e mobile hide`,
+`notifications -e visible false`, `network -e mobile hide` and `network -e wifi show -e level 4
+-e fully true` as two broadcasts (in one, Android 16 showed two Wi-Fi icons; 2026-10-07),
 `battery -e level 100 -e plugged false`, `status -e volume hide -e bluetooth hide -e location
 hide -e alarm hide -e sync hide -e mute hide -e speakerphone hide` (the VPN key goes with
 them); after the shot `exit` and the setting back to 0. `magick … -strip` for the PNG.

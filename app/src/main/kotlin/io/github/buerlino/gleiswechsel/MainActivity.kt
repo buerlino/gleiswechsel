@@ -58,7 +58,9 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.alpha
+import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.focus.focusProperties
+import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.layout.layout
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalFocusManager
@@ -158,6 +160,7 @@ private fun App(prefs: SharedPreferences, minimums: Minimums, saved: File, last:
     var open by remember { mutableStateOf(last == null) }
     var optimizationOpen by remember { mutableStateOf(true) }
     val scroll = rememberScrollState()
+    val searchButton = remember { FocusRequester() }
     val scope = rememberCoroutineScope()
     val time = parseTime(leaving)
     val searching = result == Result.Searching
@@ -257,10 +260,13 @@ private fun App(prefs: SharedPreferences, minimums: Minimums, saved: File, last:
                                     ) { Text("⇅", Modifier.spokenAs(stringResource(R.string.swap)), fontSize = 20.sp) }
                                 }
                                 val focus = LocalFocusManager.current
+                                // Focus then goes to Search, Cancel while it runs: on a hardware keyboard,
+                                // clearing it alone gave it to ⚙ (2026-10-07). In touch mode a button
+                                // takes no focus, so nothing changes there.
                                 Field(
                                     stringResource(R.string.leaving_at), leaving, !searching, "08:50",
                                     isError = leaving.isNotEmpty() && time == null, number = true,
-                                    onSearch = { focus.clearFocus(); if (ready) startSearch() },
+                                    onSearch = { focus.clearFocus(); if (ready) { startSearch(); searchButton.requestFocus() } },
                                 ) {
                                     leaving = it; saveCommute("leaving", it)
                                 }
@@ -274,6 +280,7 @@ private fun App(prefs: SharedPreferences, minimums: Minimums, saved: File, last:
                         // again with ▴ on its right (user, 2026-10-06; one mark each way, none on the title).
                         Row(verticalAlignment = Alignment.CenterVertically) {
                             Button(
+                                modifier = Modifier.focusRequester(searchButton),
                                 enabled = searching || ready,
                                 onClick = {
                                     if (searching) {
