@@ -2,13 +2,11 @@
 
 What the app (0.1.0 and the commits after it) can't do yet, found by reading the code, the other
 research files and the skill's "Still untested". Ideas from Claude, none decided: ask the user
-before building any. What CLAUDE.md already lists (risk, delays, next weekday, more commutes,
-station suggestions, open questions) isn't repeated here. Nothing was tried live for this.
+before building any. What CLAUDE.md already lists (next weekday, more commutes, station
+suggestions, open questions) isn't repeated here. Nothing was tried live for this.
 
 ## What the search can't find
 
-- ~~**Only one tight change per find.**~~ Done 2026-10-06 (`shortened` in `Search.kt`): the
-  onward connection's changes are searched too, each question asked once.
 - **Only stations where the official trip changes.** The intermediate stops of each ride (the
   API's `passList`, not parsed) aren't tried: getting off where the train only stops, to catch a
   faster one there (an IR overtaking the S-Bahn). A cheap step towards phase 2
@@ -29,10 +27,3 @@ station suggestions, open questions) isn't repeated here. Nothing was tried live
 
 - **The requests run one after another** (5 for Horw → Sursee). In parallel they'd be faster, but
   the API throttles, so carefully.
-- ~~**Changed platforms aren't read.**~~ Done 2026-10-06 with the delays: the sign shows the
-  expected track, the planned one struck through (CLAUDE.md, "Delays and changed tracks").
-
-## Suggested order (Claude, 2026-10-06)
-
-1. ~~Two tight changes in a row~~ (done 2026-10-06).
-2. ~~The ✓/✗ record~~: not wanted (user, 2026-10-06).

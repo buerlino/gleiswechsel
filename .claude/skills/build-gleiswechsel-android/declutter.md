@@ -139,7 +139,8 @@ kotlinx.serialization 1.11.0, Gradle 9.8.0, `checkout@v7`, `setup-java@v6`: the 
 - [x] 4.4 The screenshot (listing and README) is 0.1.0's page; since 69a13bd it has three
   panels, steppers, track signs and the title in the texts' language. A line in the skill's
   Releasing.
-- [ ] 4.4b The new screenshot: user, after the next features (they change the page again).
+- [x] 4.4b The new screenshot: user, after the next features (they change the page again).
+  Done in 47b2ced.
 - [x] 4.5 Lines over 100 characters: `CLAUDE.md` 171, 178, 195; skill 50, 51, 53, 90.
 
 ### Repo, build and CI
@@ -175,70 +176,95 @@ Release v0.2.0 green, both releases have their APK. AGP 9.4.1, Kotlin 2.4.20, Co
 - **Migrations:** none in the code, none needed.
 
 ### Bugs
-- [ ] 1.1 Destination slides into the middle each time the page shows without a result (app
+- [x] 1.1 Destination slides into the middle each time the page shows without a result (app
   start, back from Help or Settings, the language switch): `formHeight` starts at 0, so the
   first frame puts the form's top at the middle, then `animateDpAsState` moves it up by half
   its height. From the code, not seen. Fix: animate a fraction (½ or 0) and place the form in a
   `layout` modifier with its measured height, in the same frame; `formHeight`,
   `onSizeChanged` and `LocalDensity` go.
-- [ ] 1.2 With Optimization off, a change in Settings (or Cancel) leaves only the folded line
+  Done (2026-10-07): a fraction animated, the form placed in `layout`. Not seen on the phone.
+- [x] 1.2 With Optimization off, a change in Settings (or Cancel) leaves only the folded line
   at the top of an empty page: the rows are hidden, but `centred` counts them. Fix:
   `centred = result == null && (changes.isEmpty() || !optimize)`. From the code.
-- [ ] 1.3 To check: a train that only changes its number at a station could come as two rides
+  Done (2026-10-07). Not seen on the phone.
+- [x] 1.3 To check: a train that only changes its number at a station could come as two rides
   with a 0–1-minute "change"; `shortestChanges` would then lower that station's official
   minimum for the search (defaults near 0, false finds, colours off). Not in the 8 saved
   answers; a live check with such a train decides.
+  Moved to the full search's step 2 (CLAUDE.md), which handles in-seat continuations anyway.
 
 ### UI and movements
-- [ ] 2.1 Journey's title row is taller than Optimization's: ✕ is a TextButton with 8 dp on
+- [x] 2.1 Journey's title row is taller than Optimization's: ✕ is a TextButton with 8 dp on
   top, so "Journey" has more space above and below (the store screenshot). Fix: ✕ as plain
   clickable text in the title's row, like the fold marks; Compose still gives it ~48 dp to tap.
-- [ ] 2.2 A step in Optimization removes the cards at once, so the rows jump (to just under
+  Done (2026-10-07).
+- [x] 2.2 A step in Optimization removes the cards at once, so the rows jump (to just under
   Search when the rest fits): a second tap on − or + lands where the row was. User: keep, keep
   the cards faded until Search, or something else?
-- [ ] 2.3 Buttons, ⚙, ?, ✕, the ticket link, ⇅ and the switch are Material's default purple
+  User (2026-10-07): faded until Search. Done (`fade`, `stale`), also for a change in Settings;
+  the saved file still goes.
+- [x] 2.3 Buttons, ⚙, ?, ✕, the ticket link, ⇅ and the switch are Material's default purple
   (`lightColorScheme()` unchanged); the app's own blue `00179B` is only on the track signs.
   User: purple, or the logo's blue as `primary`?
-- [ ] 2.4 Fold marks in three sizes and places: a title's ▾/▸ at the far right, the folded
+  User (2026-10-07): the logo's blue. Done (`BLUE`); ⇅'s pale background is still Material's
+  `secondaryContainer`.
+- [x] 2.4 Fold marks in three sizes and places: a title's ▾/▸ at the far right, the folded
   line's ▾ at the far right, the official line's ▸ right after its small text; ▴ at 22 sp.
   User: leave, or one size?
-- [ ] 2.5 The titles (the panels', Help's topics) aren't headings for a screen reader
+  User (2026-10-07): leave.
+- [x] 2.5 The titles (the panels', Help's topics) aren't headings for a screen reader
   (`semantics { heading() }`), so TalkBack can't jump between them. One modifier in `Heading`.
-- [ ] 2.6 French: 15 plain spaces before ":" or ";" in the newer texts (Help,
+  Done (2026-10-07), on the title's text, so it merges into a foldable row.
+- [x] 2.6 French: 15 plain spaces before ":" or ";" in the newer texts (Help,
   `not_all_checked`), against the file's rule (no-break, as in the 5 older ones): a line can
   start with the colon.
-- [ ] 2.7 German: "Min." in Help, "min" in the boxes and cards. User: leave, or one?
+  Done (2026-10-07), with "42 %" and "Rouge !": 15 in all.
+- [x] 2.7 German: "Min." in Help, "min" in the boxes and cards. User: leave, or one?
+  User (2026-10-07): leave ("Min." in sentences, "min" in a box).
 - Noted, settled: a faded default is 2.9:1 against green and red (4.5:1 on orange); the
   official connection at 60% has grey text at 2.9:1.
 
 ### Code
-- [ ] 3.1 `find()` and `parseTime()` are logic in `:app` without tests: the next such time
+- [x] 3.1 `find()` and `parseTime()` are logic in `:app` without tests: the next such time
   (today or tomorrow), the rows, the lowered minimums, `Found`; `8:50`, `850`, `24:00`. Move to
   `:core` with tests, `connections` passed in as for `search`?
-- [ ] 3.2 Unused import `width` in MainActivity.kt (Kotlin doesn't warn).
-- [ ] 3.3 "official" names three things: `Minimums` in `App`, the fold in `FindCard`, the
+  User (2026-10-07): with the full search's step 4, which rewrites `find()` anyway (CLAUDE.md).
+- [x] 3.2 Unused import `width` in MainActivity.kt (Kotlin doesn't warn).
+  Done (2026-10-07).
+- [x] 3.3 "official" names three things: `Minimums` in `App`, the fold in `FindCard`, the
   `Connection` in `Find`. Rename the fold (`officialOpen`).
+  Done (2026-10-07).
 - [ ] 3.4 MainActivity.kt has 725 lines; the cards (`FindCard`, `Trip`, `StopRow`, `TrackSign`,
   `Indented`, `MinutesBox`, `LateBox`, the colours) could go to `Cards.kt`. User: split or not?
 
 ### Docs
-- [ ] 4.1 The risk indicator left the plan in 0.2.0 (its commit message), but README still
+- [x] 4.1 The risk indicator left the plan in 0.2.0 (its commit message), but README still
   promises it ("Later it will also tell you how often…", "later the actual arrival and
   departure times… for how reliable a change is"), as do the skill's description ("how risky
   they are comes later"), architecture.md (the risk part, the diagram) and missing_features.md
   ("What CLAUDE.md already lists (risk, …)"); CLAUDE.md doesn't record the decision. User:
   dropped for good? Then a line in CLAUDE.md and those fixed.
-- [ ] 4.2 CLAUDE.md, stale: the signing secrets "no release has used them yet" (0.1.0 and 0.2.0
+  User (2026-10-07): dropped for good. A line in CLAUDE.md; README, the skill's description,
+  architecture.md (step 5, the risk section, its job) and missing_features.md fixed.
+  hidden_connections.md, data_sources.md and existing_tools.md keep it as research.
+- [x] 4.2 CLAUDE.md, stale: the signing secrets "no release has used them yet" (0.1.0 and 0.2.0
   did); the fdroiddata commit "not pushed yet" (the fork's branch is at `afaac5d23`).
-- [ ] 4.3 CLAUDE.md quotes UI texts again (pass 2's 4.3): "Delays as of 23:07", "! 1 min",
+  Done (2026-10-07); the fdroiddata half was already current (the fork is at `6cad67402`, `git
+  ls-remote`).
+- [x] 4.3 CLAUDE.md quotes UI texts again (pass 2's 4.3): "Delays as of 23:07", "! 1 min",
   "−2 min", "3 min late", "track 14 instead of 12", "4 min, below the official 5".
-- [ ] 4.4 CLAUDE.md, finished work: the 0.1.0 and 0.2.0 release lines (apksigcopier, the
+  Done (2026-10-07): the string names instead.
+- [x] 4.4 CLAUDE.md, finished work: the 0.1.0 and 0.2.0 release lines (apksigcopier, the
   changelogs, the screenshot) → the current state only; "Tried live once" repeats open
   question 1 → into it.
-- [ ] 4.5 CLAUDE.md, small: `spokenAs` also covers − and +; the changelogs are in all four
+  Done (2026-10-07).
+- [x] 4.5 CLAUDE.md, small: `spokenAs` also covers − and +; the changelogs are in all four
   locales, not only `en-US/`.
-- [ ] 4.6 missing_features.md: the struck-through items and the all-done "Suggested order" go.
-- [ ] 4.7 This file, pass 2's 4.4b (the new screenshot): done in 47b2ced.
+  Done (2026-10-07).
+- [x] 4.6 missing_features.md: the struck-through items and the all-done "Suggested order" go.
+  Done (2026-10-07).
+- [x] 4.7 This file, pass 2's 4.4b (the new screenshot): done in 47b2ced.
+  Done (2026-10-07).
 
 ### Repo, build and CI
 - [ ] 5.1 `git gc`: 365 loose objects (1.9 MB).

@@ -21,7 +21,7 @@
     <string name="search_failed">Pas de réponse de transport.opendata.ch. Vérifiez la connexion Internet ou réessayez dans une minute.</string>
     <string name="no_connections">%1$s : aucun trajet trouvé. Vérifiez les noms des gares.</string>
     <string name="nothing_faster">%1$s : rien de plus rapide.</string>
-    <string name="not_all_checked">Certaines correspondances n\'ont pas pu être vérifiées : transport.opendata.ch n\'a pas répondu. Réessayez dans une minute.</string>
+    <string name="not_all_checked">Certaines correspondances n\'ont pas pu être vérifiées : transport.opendata.ch n\'a pas répondu. Réessayez dans une minute.</string>
     <string name="delays_as_of">Retards à %1$s</string>
     <string name="optimization_text">Votre temps de changement de voie dans chaque gare. Baissez-le et cherchez à nouveau pour trouver plus.</string>
     <string name="less">Une minute de moins</string>
@@ -58,15 +58,15 @@
     <string name="help_what">À quoi sert l\'app</string>
     <string name="help_what_text">Elle trouve des trajets plus rapides que ceux de l\'horaire officiel. L\'horaire ne propose que des correspondances d\'au moins le temps de changement de voie officiel, p. ex. 5 min à Lucerne. Si vous êtes plus rapide, un train plus tôt est peut-être à votre portée.</string>
     <string name="help_switch">Temps de changement de voie</string>
-    <string name="help_switch_text">Les minutes dans une case : d\'un train au suivant, à pied compris. Fixez le vôtre par gare sous Optimisation (− et +). Sinon : le temps officiel moins le décalage des paramètres (⚙), p. ex. 5\u00A0−\u00A01\u00A0=\u00A04\u00A0min à Lucerne.</string>
+    <string name="help_switch_text">Les minutes dans une case : d\'un train au suivant, à pied compris. Fixez le vôtre par gare sous Optimisation (− et +). Sinon : le temps officiel moins le décalage des paramètres (⚙), p. ex. 5\u00A0−\u00A01\u00A0=\u00A04\u00A0min à Lucerne.</string>
     <string name="help_colours">Couleurs et flèches</string>
-    <string name="help_colours_text">Vert ↓ : sous le temps officiel, orange : égal, rouge ↑ : au-dessus. Officiel : celui de l\'horaire, ou moins là où l\'horaire lui-même change plus vite. Rouge ! : un retard laisse moins que votre temps, gris : le train suivant est parti.</string>
+    <string name="help_colours_text">Vert ↓ : sous le temps officiel, orange : égal, rouge ↑ : au-dessus. Officiel : celui de l\'horaire, ou moins là où l\'horaire lui-même change plus vite. Rouge ! : un retard laisse moins que votre temps, gris : le train suivant est parti.</string>
     <string name="help_efficient">Plus efficace</string>
-    <string name="help_efficient_text" formatted="false">De combien plus rapide que le trajet officiel, du premier départ à la dernière arrivée : 33 min au lieu de 47, c\'est 42 % (47 / 33 = 1,42).</string>
+    <string name="help_efficient_text" formatted="false">De combien plus rapide que le trajet officiel, du premier départ à la dernière arrivée : 33 min au lieu de 47, c\'est 42 % (47 / 33 = 1,42).</string>
     <string name="help_tickets">Billets</string>
     <string name="help_tickets_text">Un billet normal vaut aussi pour le trajet plus rapide, un billet dégriffé seulement pour le train officiel. Un trajet qui passe deux fois par la même gare peut demander un autre billet.</string>
     <string name="help_careful">Attention</string>
-    <string name="help_careful_text">Retards (+3) et changements de voie tels que connus lors de la recherche, quelques heures à l\'avance seulement ; les trains supprimés non. À vous de juger si vous y arrivez. Le dernier résultat reste, même hors ligne : vérifiez son jour et l\'âge de ses retards.</string>
+    <string name="help_careful_text">Retards (+3) et changements de voie tels que connus lors de la recherche, quelques heures à l\'avance seulement ; les trains supprimés non. À vous de juger si vous y arrivez. Le dernier résultat reste, même hors ligne : vérifiez son jour et l\'âge de ses retards.</string>
     <string name="help_data">Données</string>
-    <string name="help_data_text">Trajets : transport.opendata.ch. Temps de changement de voie officiels : opentransportdata.swiss, horaire 2026. Sans lien avec les CFF.</string>
+    <string name="help_data_text">Trajets : transport.opendata.ch. Temps de changement de voie officiels : opentransportdata.swiss, horaire 2026. Sans lien avec les CFF.</string>
 </resources>

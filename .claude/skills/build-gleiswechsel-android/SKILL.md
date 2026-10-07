@@ -1,6 +1,6 @@
 ---
 name: build-gleiswechsel-android
-description: Execution brief for building Gleiswechsel (io.github.buerlino.gleiswechsel) — a native Kotlin/Jetpack Compose app for Swiss commuters that looks for faster connections than the official planner shows (changes shorter than the official minimum transfer time; how risky they are comes later), distributed via F-Droid and Obtainium. Use this skill whenever working in the gleiswechsel repo: the timetable API client and the local search in :core, the Compose page, building/installing on the phone, and releases. The stack (native Android, no Flutter/React Native/KMP) is already decided — do not re-open it; just execute.
+description: Execution brief for building Gleiswechsel (io.github.buerlino.gleiswechsel) — a native Kotlin/Jetpack Compose app for Swiss commuters that looks for faster connections than the official planner shows (changes shorter than the official minimum transfer time), distributed via F-Droid and Obtainium. Use this skill whenever working in the gleiswechsel repo: the timetable API client and the local search in :core, the Compose page, building/installing on the phone, and releases. The stack (native Android, no Flutter/React Native/KMP) is already decided — do not re-open it; just execute.
 ---
 
 # Build Gleiswechsel
@@ -54,9 +54,11 @@ is in `research/`.
   the transfer time at, recorded in `find`) and stay in `changes`, with the lowered minimums in
   `official`, while a time or the offset is edited. The result is set only through `show`, which
   writes `files/result.json` (a result with connections) or deletes it; `onCreate` reads it
-  back (`last`). While a search runs, the Search button is
-  Cancel (`job`). `app/.../Pages.kt`: Settings, Help (`help`: emoji, title, text; folded until tapped) and `SubPage` (← and the back
-  gesture). A symbol on a button gets `Modifier.spokenAs(…)`, the word a screen
+  back (`last`). `fade` (a time, the offset or Optimization changed) deletes the file but keeps
+  the result on the page at 60% (`stale`) until the next Search. While a search runs, the Search
+  button is Cancel (`job`). `app/.../Pages.kt`: Settings, Help (`help`: emoji, title, text; folded
+  until tapped) and `SubPage` (← and the back gesture). A symbol on a button gets
+  `Modifier.spokenAs(…)`, the word a screen
   reader says instead (`uiautomator dump` shows it as the child's `content-desc`). Every text is
   in `res/values*/strings.xml` (en, de, fr, it); a new one goes in all four, or lint fails on
   the missing translation. The search runs on `Dispatchers.IO`; a failure of the first request
@@ -66,16 +68,16 @@ is in `research/`.
 - Before input over adb, check the app is in front (`adb shell dumpsys activity activities | grep
   topResumedActivity`): the user uses the phone meanwhile, and a back key with no keyboard open
   leaves the app, so later taps and text go into whatever app is behind (2026-10-06: they went
-  into WhatsApp). Editing a time clears the card, so the rows move up: dump again before tapping.
+  into WhatsApp). Editing the commute clears the result and the rows: dump again before tapping.
 - Driving the page over adb: `uiautomator dump` lists the texts and bounds; `input tap` a field,
   `input text` (`%s` for a space), `input keyevent 123` moves to the end and `67` deletes,
   `input keyevent 4` closes the keyboard (a second one goes back from Help or Settings). On the
   test phone (1116×2484): ⚙ at (87, 182), ? at (1029, 182), the rest moves with the panels
   (Destination centred before a search, folded after; Journey; Optimization): dump and tap the
   centre of the bounds. A stepper's − and + show in the dump as their content-desc ("One minute
-  less", "One minute more"); a step clears the finds, so the rows move up. A tap on the title
-  (558, 182) opens the language menu (Android 13+). In Settings: ← at (87, 182), the offset's −
-  and + and the Optimization switch: dump. Rows below the screen aren't in the dump:
+  less", "One minute more"); a step fades the finds, so the rows stay where they are. A tap on the
+  title (558, 182) opens the language menu (Android 13+). In Settings: ← at (87, 182), the offset's
+  − and + and the Optimization switch: dump. Rows below the screen aren't in the dump:
   `input swipe 558 2000 558 400` first.
   TalkBack (FOSS build `app.talkbackfoss`) can be turned on with `settings put secure
   enabled_accessibility_services app.talkbackfoss/com.google.android.marvin.talkback.TalkBackService`
@@ -190,6 +192,13 @@ Everything else was tried on the phone with the R8 release build signed with the
   seen: English, French, Italian; a delay of 10 or more next to the time; a negative delay;
   a cancelled train; the new Help texts on the phone; TalkBack reading the delay words.
 - The debug build on the phone.
+- Declutter pass 3's fixes (2026-10-07), only built, linted and unit-tested, not seen on the
+  phone: Destination in the middle from the first frame, without sliding up (app start, back
+  from Help or Settings, the language switch); with Optimization off, the page after a change in
+  Settings or Cancel; ✕ as plain text and Journey's title as high as Optimization's; the faded
+  finds after a step; the buttons, the switch and the links in the logo's blue (the ⇅ button's
+  pale background is still Material's `secondaryContainer`); the titles as headings in TalkBack;
+  the French no-break spaces.
 - The themed icon in a launcher that shows themed icons (Niagara doesn't); only checked as a
   render.
 

@@ -19,9 +19,8 @@ that leaves less than about 7 minutes after you arrive, even if it's on the same
 commuters know they make such changes every day.
 
 Gleiswechsel takes your own track switch time instead and looks for connections the official
-planner left out. Later it will also tell you how often such a change worked in the past.
-5 minutes a day add up to hours a year. And if your connection is already the best one, it tells
-you that too.
+planner left out. 5 minutes a day add up to hours a year. And if your connection is already the
+best one, it tells you that too.
 
 Background and sources: [research/](research/).
 
@@ -29,8 +28,7 @@ Background and sources: [research/](research/).
 
 Swiss public transport open data: [transport.opendata.ch](https://transport.opendata.ch/) for
 the connections; from [opentransportdata.swiss](https://opentransportdata.swiss/) the official
-track switch time at each station (the national timetable), and later the actual arrival and
-departure times published daily, for how reliable a change is.
+track switch time at each station (the national timetable).
 
 ## Privacy
 

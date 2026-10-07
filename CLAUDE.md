@@ -86,7 +86,8 @@ apps built this way; their CLAUDE.md files explain each choice.
   `org.jetbrains.kotlin.plugin.compose`. `compileSdk 37`, `targetSdk 37`, `minSdk 26` (as
   gridload), Java 17.
 - Light theme (`Theme.Material.Light.NoActionBar` + Compose `lightColorScheme()`), as gridload;
-  not following the system (user, 2026-10-06).
+  not following the system (user, 2026-10-06). Its `primary` is the logo's blue `00179B` (user,
+  2026-10-07: the buttons, the switch and the links were Material's purple).
   The bars' icons are always dark (`SystemBarStyle.light`, 2026-10-06): `enableEdgeToEdge()`
   alone made them white on a phone in dark mode.
 - Backup: no cloud backup, phone-to-phone transfer allowed (`data_extraction_rules.xml`;
@@ -94,14 +95,14 @@ apps built this way; their CLAUDE.md files explain each choice.
 - Release signing from gitignored `keystore.properties` or env vars (`GLEISWECHSEL_KEYSTORE_FILE`,
   `_KEYSTORE_PASSWORD`, `_KEY_ALIAS`, `_KEY_PASSWORD`), unsigned without either (what F-Droid
   wants). Its own keystore (the user keeps it) and the CI secrets `KEYSTORE_BASE64`,
-  `KEYSTORE_PASSWORD`, `KEY_ALIAS`, `KEY_PASSWORD` are in place (user, 2026-10-06); no release
-  has used them yet.
+  `KEYSTORE_PASSWORD`, `KEY_ALIAS`, `KEY_PASSWORD` are in place (user, 2026-10-06); the releases
+  are signed with them.
 - `.github/workflows/release.yml` builds a signed APK on a `vX.Y.Z` tag and attaches it to a
   GitHub Release (Obtainium); `test.yml` runs the `:core` tests, lint and the debug build on branch
   pushes and pull requests (2026-10-06: a broken app build first showed on a tag); `release.yml`
   runs lint too.
-  `fastlane/metadata/android/en-US/` for F-Droid, with `changelogs/<versionCode>.txt` from the
-  first release on.
+  `fastlane/metadata/android/<locale>/` for F-Droid (en-US, de-DE, fr-FR, it-IT), each with
+  `changelogs/<versionCode>.txt`.
 - Release build uses R8 (minify + shrinkResources). The build must be reproducible: no
   timestamps, build paths or machine-specific values in the APK; `dependenciesInfo` off.
 - Icon: the user's logo (2026-10-06), `logo/gleiswechsel_back.svg` and `_front.svg` on the
@@ -145,7 +146,9 @@ The search page has three panels, each with its title (user, 2026-10-06): **Dest
 commute and Search), **Journey** (the result) and **Optimization** (the rider's track switch time
 at each change station). A top bar: **⚙** (top left) opens
 Settings, **?** (top right) Help (user, 2026-10-06), text buttons as in gridload; each has ← and
-takes the back gesture. A screen reader says a word for each symbol (⚙, ?, ⇅, ←, ▴, ✕: `spokenAs`).
+takes the back gesture. A screen reader says a word for each symbol (⚙, ?, ⇅, ←, ▴, ✕, −, +:
+`spokenAs`), and the titles (the panels', Help's topics) are headings it can jump between
+(`Heading`, 2026-10-07).
 The page's state lives above the three, so Help and Settings don't lose the result. Turning the
 phone doesn't recreate the activity (`configChanges`, 2026-10-06: one line, no ViewModel), so
 the result and a running search stay.
@@ -155,25 +158,27 @@ reception): a search with connections writes it to `result.json` in the app's ow
 in `:core`: the day, the first official connection, the change stations, the finds, the shortest
 change at each station the planner's answers made, `incomplete` and when it searched (`asOf`);
 times as ISO text), and
-whatever clears the result deletes it (editing the commute, a time, the offset or Optimization,
-Search, Cancel), so it never shows another commute's finds. The page opens with it, Destination
-folded, after a restart, the system killing the app or the language switch; the Optimization
-rows and the lowered minimums come back with it. Never dropped by time (user, 2026-10-06): the
-day line says which day it's for, and yesterday's tracks are usually today's. A file that can't
-be read (e.g. an older format after an update) is ignored quietly and logged (user, 2026-10-06);
-no migration. No cloud backup; a phone-to-phone transfer takes it.
+whatever clears or fades the result deletes it (editing the commute, a time, the offset or
+Optimization, Search, Cancel), so it never shows another commute's finds. The page opens with it,
+Destination folded, after a restart, the system killing the app or the language switch; the
+Optimization rows and the lowered minimums come back with it. Never dropped by time (user,
+2026-10-06): the day line says which day it's for, and yesterday's tracks are usually today's. A
+file that can't be read (e.g. an older format after an update) is ignored quietly and logged (user,
+2026-10-06); no migration. No cloud backup; a phone-to-phone transfer takes it.
 
 Destination (user, 2026-10-06): before a search it sits in the middle of the page (of the
 space above the keyboard while typing); Search moves it to the top and folds the three fields
 into one line (from → to, time ▾), a tap on which opens them again. Opened after a search, a ▴ on the Search button's row
 folds them again (user, 2026-10-06: once opened they couldn't be hidden; one mark each way,
-none on the title). A ✕ on the right of Journey's title closes the result and the Optimization
-rows (and deletes the saved file), so Destination is back in the middle, as on start (user,
+none on the title). A ✕ on the right of Journey's title (plain text, as the fold marks,
+2026-10-07: a button made the title taller) closes the result and the Optimization rows (and
+deletes the saved file), so Destination is back in the middle, as on start (user,
 2026-10-06); while a search runs it isn't there (Search is Cancel). The Search button stays in
 view, folded or not (to search again after editing a time); while a search runs it reads Cancel
 (user, 2026-10-06: a slow API meant a long, locked wait), which unlocks the fields at once and
 drops the late answer (the requests themselves can't be stopped). With no result and no rows
-(editing the commute clears both) it goes back to the middle. A screen reader says whether a
+shown (editing the commute clears both; Optimization off hides the rows) it goes back to the
+middle. A screen reader says whether a
 fold (this line, Optimization, a card's official connection) is open or folded, not the ▾ or ▸
 (`folding`, `FoldMark`).
 
@@ -199,9 +204,10 @@ at every station the rider hasn't set.
   find's change, the first idea, couldn't do that. Saved in `commute` keyed by station id
   (`8505000` → `4`). A tap on the title folds the panel (▸) or opens it (▾). A switch in Settings
   turns the panel off (key `optimize`, on until set); off, the times set there are kept but not
-  used. Editing a time clears the finds but keeps the rows (Search again); editing the commute
-  clears both. The rows come only with a search that has connections (user, 2026-10-06: without
-  one they don't help) and are kept with its result, so after a failed search, or a restart
+  used. Editing a time fades the finds to 60% until the next Search and keeps the rows (user,
+  2026-10-07: removing the finds moved the rows, so a second tap on − or + missed); editing the
+  commute clears both. The rows come only with a search that has connections (user, 2026-10-06:
+  without one they don't help) and are kept with its result, so after a failed search, or a restart
   once the result was cleared, they're back with the next one.
 - **− and +** (`MinutesStepper`, user, 2026-10-06) set every track switch time the rider sets, in
   Optimization and the offset in Settings: a box to type in didn't look changeable. Plain − and
@@ -216,7 +222,7 @@ at every station the rider hasn't set.
   offset in Settings is coloured against 0 (−1 green, 0 orange). A find's own change is so green,
   the official ones in its card orange or red. Not by colour alone (user, 2026-10-06, for
   colour-blind riders): ↓ before the minutes below the official one, ↑ above, none the same, and a
-  screen reader says it ("4 min, below the official 5"); the offset has its sign instead
+  screen reader says it (`box_below`, `box_same`, `box_above`); the offset has its sign instead
   (`arrows = false`).
 - **The finds** (user, 2026-10-06: before, "a wall of text"): a card each with the minutes saved,
   the arrival instead of the official one, how much more efficient, then the trip as a
@@ -235,12 +241,12 @@ at every station the rider hasn't set.
   (`Stop.delay`, `Stop.newPlatform`): in every card's timetable (the finds, the folded official
   connection, the official one alone), a delay of a minute or more as a red "+3" after the
   planned time (it pushes that row's station a little to the right), and a changed track on the
-  sign with the planned one struck through before it; a screen reader says "3 min late", "track
-  14 instead of 12". Where the delays make a change shorter than planned and than the rider's
-  time there (`tooShort` in `:core`), its box is a red "! 1 min", the minutes left, instead of
-  the usual one; below zero a grey "−2 min" without the "!", the next train gone (user,
-  2026-10-06). They go stale (user, 2026-10-06): kept in result.json, with a line under the day,
-  "Delays as of 23:07" (`Found.asOf`, the search's time), whenever a trip has a delay known
+  sign with the planned one struck through before it; a screen reader says both (`late`,
+  `track_changed`). Where the delays make a change shorter than planned and than the rider's
+  time there (`tooShort` in `:core`), its box is red with a "!" and the minutes left
+  (`LateBox`), instead of the usual one; below zero grey without the "!", the next train gone
+  (user, 2026-10-06). They go stale (user, 2026-10-06): kept in result.json, with a line under
+  the day giving the search's time (`delays_as_of`, `Found.asOf`) whenever a trip has a delay known
   (`delaysKnown`). The API knows them only a few hours ahead (checked 2026-10-06 at 23:07: 2
   hours ahead yes, 5 no, tomorrow morning not), `delay` null until then, 0 on time; the card
   shows nothing for either. The search itself still uses planned times. Cancellations: no field
@@ -260,7 +266,7 @@ at every station the rider hasn't set.
   (it's subtracted) and saved without it, key `offset` in `commute`, 1 until set
   (`DEFAULT_OFFSET`; user, 2026-10-06: 1, the careful one, and the test case needs it; 2 would
   find more, e.g. 5-minute changes at Zürich HB), and the Optimization switch. Changing either
-  clears the finds and keeps the rows; locked while a search runs.
+  fades the finds and keeps the rows, as a time does; locked while a search runs.
 - **Help** (user, 2026-10-06: by topic, foldable, an emoji each, short texts without fluff but
   nothing crucial left out): seven titles, all folded until tapped (`Heading`, as the panels'):
   🚆 what the app does, ⏱️ the track switch time (where it's set, the offset), 🎨 the colours and
@@ -332,10 +338,6 @@ at every station the rider hasn't set.
 - **Proven live** 2026-10-06 for Wed 7 Oct (`LiveTest`): 08:50 with 4 minutes finds the
   [test case](#test-case-horw--sursee-user-2026-10-06) (14 minutes saved, RE24 track 9), with 6
   minutes nothing; 14:50 finds the same change from the 14:53 (it repeats every hour).
-- **Tried live once** (2026-10-06, not kept as a test): Luzern → Zürich, Central at 08:00 with 3
-  minutes at Zürich HB. Asked from Bahnhofplatz/HB, the API also offers the neighbouring
-  Bahnhofstrasse/HB, so the search found the IR70 (track 9, 08:51) → T10 Bahnhofstrasse/HB 08:54
-  (3 minutes saved): probably too short a walk, see open question 1.
 - **Limits, known:** the search uses planned times only (delays are shown, not searched with); only stations the official
   connections or the onward ones touch; the live check doesn't skip public holidays; the official
   minimums are a copy of one timetable year's, lowered only where an answer shows the planner's
@@ -346,15 +348,11 @@ at every station the rider hasn't set.
 The scope: one saved commute, the rider's transfer time per station, the local search, one result
 list (user, 2026-10-06: "focus on the core utility").
 
-Released as 0.1.0 (tag `v0.1.0`, 2026-10-06): the workflow's APK is the tag's unsigned build plus
-the signature (`apksigcopier compare`). The F-Droid merge request is open (user, 2026-10-06),
-from the branch `io.github.buerlino.gleiswechsel` in `../fdroiddata`. Its `NonFreeNet` text names
-sbb.ch too (user, 2026-10-06: the ticket link); it has 0.2.0 too (`6cad67402`). Before every
-push to the fork: the skill's checks (user, 2026-10-06: the pipeline failed twice without them).
-
-0.2.0 pushed (tag `v0.2.0` on `47b2ced`, 2026-10-06): versionCode 2, `changelogs/2.txt` in all
-four, the new phone screenshot (the test case's find and Luzern's row, demo mode). README's "Soon
-on F-Droid" stays until F-Droid has it.
+Released: 0.2.0 (tag `v0.2.0`, versionCode 2), after 0.1.0. The F-Droid merge request is open
+(user, 2026-10-06), from the branch `io.github.buerlino.gleiswechsel` in `../fdroiddata`, with
+0.2.0 (`6cad67402`, pushed); its `NonFreeNet` text names sbb.ch too (user, 2026-10-06: the
+ticket link). Before every push to the fork: the skill's checks (user, 2026-10-06: the pipeline
+failed twice without them). README's "Soon on F-Droid" stays until F-Droid has it.
 
 ## The full search (decided 2026-10-06, being built)
 
@@ -410,12 +408,15 @@ Steps (user, 2026-10-06), one at a time, each shown working:
    staying); the pickup and drop-off flags; of two trips arriving together, the one leaving
    later. Its result as `Connection`/`Leg`/`Stop` (didok ids, Swiss time, `via`), through the
    same filters as `search`. The transfer function is called very often: compute the lowered
-   minimums once per search. Tests on made-up data; a live check behind `-Plive`.
+   minimums once per search. Tests on made-up data; a live check behind `-Plive`. Also check
+   live whether the API gives a train that only changes its number as two rides with a 0–1-minute
+   change: `shortestChanges` would then lower that station's minimum (declutter pass 3, 1.3).
 3. `.github/workflows/timetable.yml`: download, step 1's task, `upload-pages-artifact` +
    `deploy-pages`; the two GTFS datasets around the timetable change.
 4. The app: the download, both searches, Optimization rows (today's plus the finds' change
    stations), Help and README in all four languages, F-Droid's `NonFreeNet`, which version; on
-   the phone, and how long loading the file takes there.
+   the phone, and how long loading the file takes there. `find()` and `parseTime()` move to
+   `:core` with tests (declutter pass 3, 3.1).
 
 ## After the first release
 
@@ -436,13 +437,20 @@ Ideas, not decided (Claude, 2026-10-06; ask the user first):
   "arrive by", more than four official connections, "now", the saving in a year, parallel
   requests.
 
+Dropped (0.2.0; user, 2026-10-07): the risk of each change, how often it worked, from the
+published actual times (research/architecture.md). The cards show the delays known at the search
+instead.
+
 ## Open questions (for the user)
 
 1. **A change to a different stop** (train → tram stop, as in Zürich). The planner sometimes
    offers a change to a stop a few hundred metres away (Zürich HB → Bahnhofstrasse/HB, 3
-   minutes), and the app shows it as any other change. Undecided: give such a change its own
-   time, mark it in the result, or leave it out. Deferred until a commute needs it (user,
-   2026-10-06).
+   minutes), and the app shows it as any other change. Tried live once (2026-10-06): Luzern →
+   Zürich, Central at 08:00 with 3 minutes at Zürich HB; asked from Bahnhofplatz/HB, the API also
+   offered the neighbouring Bahnhofstrasse/HB, so the search found the IR70 (track 9, 08:51) →
+   T10 Bahnhofstrasse/HB 08:54 (3 minutes saved), probably too short a walk. Undecided: give such a
+   change its own time, mark it in the result, or leave it out. Deferred until a commute needs it
+   (user, 2026-10-06).
 2. **The timetable job weekly or twice a week** (2026-10-06): the GTFS is updated twice a week
    (the dataset page; files mostly from Wednesdays and Saturdays), and the terms (§5.2) ask that
    data be updated "at the same frequency as the underlying raw data". That section's heading

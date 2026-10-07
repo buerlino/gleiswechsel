@@ -13,7 +13,7 @@ import androidx.activity.SystemBarStyle
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
 import androidx.compose.animation.AnimatedVisibility
-import androidx.compose.animation.core.animateDpAsState
+import androidx.compose.animation.core.animateFloatAsState
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
@@ -31,7 +31,6 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.safeDrawing
-import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.layout.widthIn
 import androidx.compose.foundation.layout.windowInsetsPadding
 import androidx.compose.foundation.rememberScrollState
@@ -53,7 +52,6 @@ import androidx.compose.material3.lightColorScheme
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.key
-import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
@@ -63,13 +61,13 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.layout.onSizeChanged
+import androidx.compose.ui.layout.layout
 import androidx.compose.ui.platform.LocalContext
-import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.platform.LocalUriHandler
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.semantics.clearAndSetSemantics
 import androidx.compose.ui.semantics.contentDescription
+import androidx.compose.ui.semantics.heading
 import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.semantics.stateDescription
 import androidx.compose.ui.text.font.FontWeight
@@ -133,7 +131,8 @@ class MainActivity : ComponentActivity() {
             null
         }
         setContent {
-            MaterialTheme(lightColorScheme()) {
+            // The buttons, the switch and the links in the logo's blue (user, 2026-10-07), not Material's purple.
+            MaterialTheme(lightColorScheme(primary = BLUE)) {
                 Surface(Modifier.fillMaxSize()) { App(prefs, minimums, saved, last) }
             }
         }
@@ -159,6 +158,7 @@ private fun App(prefs: SharedPreferences, minimums: Minimums, saved: File, last:
     var offset by remember { mutableStateOf(prefs.getString("offset", "")!!) }
     var optimize by remember { mutableStateOf(prefs.getBoolean("optimize", true)) }
     var result by remember { mutableStateOf<Result?>(last?.let { Result.Done(it) }) }
+    var stale by remember { mutableStateOf(false) }
     var changes by remember { mutableStateOf(last?.changes.orEmpty()) }
     var official by remember { mutableStateOf(last?.let { minimums.lowered(it.shortest) } ?: minimums) }
     var job by remember { mutableStateOf<Job?>(null) }
@@ -171,6 +171,7 @@ private fun App(prefs: SharedPreferences, minimums: Minimums, saved: File, last:
     val offsetMinutes = offset.toLongOrNull() ?: DEFAULT_OFFSET
     fun show(r: Result?) {
         result = r
+        stale = false
         val found = (r as? Result.Done)?.found?.takeIf { it.first != null }
         try {
             if (found != null) saved.writeText(found.toJson()) else saved.delete()
@@ -178,13 +179,21 @@ private fun App(prefs: SharedPreferences, minimums: Minimums, saved: File, last:
             Log.w("Gleiswechsel", "Result not saved: $e", e)
         }
     }
-    fun save(key: String, value: String) {
+    // A time, the offset or Optimization changed: the finds stay, faded, until the next Search, so the
+    // rows don't move under the finger (user, 2026-10-07); the saved file goes.
+    fun fade() {
+        val r = result
         show(null)
+        if (r is Result.Done) { result = r; stale = true }
+    }
+    fun save(key: String, value: String) {
+        fade()
         prefs.edit { putString(key, value) }
     }
     fun saveCommute(key: String, value: String) {
+        show(null)
         changes = emptyList()
-        save(key, value)
+        prefs.edit { putString(key, value) }
     }
     // Where the rider hasn't set a time: the offset below the official minimum, at least 0 (user, 2026-10-06).
     fun defaultAt(stop: Stop, official: Minimums) = maxOf(official.at(stop).toMinutes() - offsetMinutes, 0)
@@ -196,24 +205,28 @@ private fun App(prefs: SharedPreferences, minimums: Minimums, saved: File, last:
         Screen.SETTINGS -> Settings(
             offset, optimize, !searching,
             onOffset = { offset = it; save("offset", it) },
-            onOptimize = { optimize = it; show(null); prefs.edit { putBoolean("optimize", it) } },
+            onOptimize = { optimize = it; fade(); prefs.edit { putBoolean("optimize", it) } },
             onBack = { screen = Screen.SEARCH },
         )
         Screen.SEARCH -> Column(Modifier.windowInsetsPadding(WindowInsets.safeDrawing)) {
             TopBar(onSettings = { screen = Screen.SETTINGS }, onHelp = { screen = Screen.HELP })
             // Before a search Destination is in the middle of the page; a search moves it to the top,
             // folded to one line, and a tap on that opens it again (user, 2026-10-06).
-            val centred = result == null && changes.isEmpty()
+            val centred = result == null && (changes.isEmpty() || !optimize)
             BoxWithConstraints {
-                var formHeight by remember { mutableIntStateOf(0) }
-                val free = maxHeight - with(LocalDensity.current) { formHeight.toDp() }
-                val top by animateDpAsState(if (centred) (free / 2).coerceAtLeast(0.dp) else 0.dp, label = "top")
+                val space = constraints.maxHeight
+                val middle by animateFloatAsState(if (centred) 0.5f else 0f, label = "middle")
                 Column(
                     Modifier.verticalScroll(scroll).padding(horizontal = 16.dp).padding(bottom = 16.dp),
                     verticalArrangement = Arrangement.spacedBy(8.dp),
                 ) {
                     Column(
-                        Modifier.padding(top = top).onSizeChanged { formHeight = it.height },
+                        // Placed in the frame it's measured in, so it doesn't slide in from too low.
+                        Modifier.layout { measurable, constraints ->
+                            val form = measurable.measure(constraints)
+                            val top = ((space - form.height) * middle).roundToInt().coerceAtLeast(0)
+                            layout(form.width, top + form.height) { form.place(0, top) }
+                        },
                         verticalArrangement = Arrangement.spacedBy(8.dp),
                     ) {
                         Heading(stringResource(R.string.destination))
@@ -273,18 +286,22 @@ private fun App(prefs: SharedPreferences, minimums: Minimums, saved: File, last:
                         }
                     }
                     // ✕ closes the result and the rows, so Destination is back in the middle, as on start
-                    // (user, 2026-10-06); while a search runs, Search is Cancel instead.
-                    if (result != null) Row(verticalAlignment = Alignment.CenterVertically) {
+                    // (user, 2026-10-06); while a search runs, Search is Cancel instead. Plain text, as the
+                    // fold marks: a button made Journey's title taller than the others.
+                    if (result != null) Row {
                         Box(Modifier.weight(1f)) { Heading(stringResource(R.string.journey)) }
-                        if (!searching) TextButton({ show(null); changes = emptyList() }, Modifier.padding(top = 8.dp)) {
-                            Text("✕", Modifier.spokenAs(stringResource(R.string.close_journey)), fontSize = 20.sp)
-                        }
+                        if (!searching) Text(
+                            "✕",
+                            Modifier.padding(top = 8.dp).clickable { show(null); changes = emptyList() }
+                                .spokenAs(stringResource(R.string.close_journey)),
+                            fontSize = 20.sp,
+                        )
                     }
                     when (val r = result) {
                         null -> {}
                         Result.Searching -> Text(stringResource(R.string.searching))
                         Result.Failed -> Text(stringResource(R.string.search_failed), color = MaterialTheme.colorScheme.error)
-                        is Result.Done -> {
+                        is Result.Done -> Column(Modifier.alpha(if (stale) FADED else 1f), verticalArrangement = Arrangement.spacedBy(8.dp)) {
                             val f = r.found
                             val first = f.first
                             // The day in the language of the texts, not the phone's: a Spanish phone gets English.
@@ -338,15 +355,15 @@ private fun App(prefs: SharedPreferences, minimums: Minimums, saved: File, last:
 }
 
 /**
- * A panel's title (user, 2026-10-06); with [open] given, a tap folds or opens the panel and a
- * ▾ or ▸ says which.
+ * A panel's title (user, 2026-10-06), a heading a screen reader can jump to; with [open] given, a
+ * tap folds or opens the panel and a ▾ or ▸ says which.
  */
 @Composable
 internal fun Heading(text: String, open: Boolean? = null, onClick: () -> Unit = {}) = Row(
     Modifier.fillMaxWidth().padding(top = 8.dp).then(if (open != null) Modifier.folding(open, onClick) else Modifier),
     verticalAlignment = Alignment.CenterVertically,
 ) {
-    Text(text, Modifier.weight(1f), style = MaterialTheme.typography.titleMedium, fontWeight = FontWeight.Bold)
+    Text(text, Modifier.weight(1f).semantics { heading() }, style = MaterialTheme.typography.titleMedium, fontWeight = FontWeight.Bold)
     if (open != null) FoldMark(open)
 }
 
@@ -505,6 +522,9 @@ private fun LateBox(minutes: Long, needed: Long) {
 
 private val RED = Color(0xFFC62828)
 
+/** The logo's blue: the track signs and Material's primary. */
+private val BLUE = Color(0xFF00179B)
+
 /** A default track switch time's text, not set by the rider. */
 private const val FADED = 0.6f
 
@@ -588,16 +608,16 @@ private fun FindCard(find: Find, minimums: Minimums, rider: (Stop) -> Long) {
             Trip(find.faster, minimums, rider)
             // The official connection, folded and quiet (user, 2026-10-06); on the same line the
             // ticket on sbb.ch, for the official connection's from, to and departure (user, 2026-10-06).
-            var official by remember { mutableStateOf(false) }
+            var officialOpen by remember { mutableStateOf(false) }
             val uri = LocalUriHandler.current
             val context = LocalContext.current
             val ticket = ticketUrl(find.official.departure, find.official.arrival, stringResource(R.string.language))
             val noBrowser = stringResource(R.string.no_browser)
             Row(verticalAlignment = Alignment.CenterVertically) {
-                Row(Modifier.folding(official, { official = !official }), verticalAlignment = Alignment.CenterVertically) {
+                Row(Modifier.folding(officialOpen, { officialOpen = !officialOpen }), verticalAlignment = Alignment.CenterVertically) {
                     ProvideTextStyle(MaterialTheme.typography.bodySmall.copy(color = MaterialTheme.colorScheme.onSurfaceVariant)) {
                         Text(stringResource(R.string.official_connection) + " ")
-                        FoldMark(official)
+                        FoldMark(officialOpen)
                     }
                 }
                 Spacer(Modifier.weight(1f))
@@ -611,7 +631,7 @@ private fun FindCard(find: Find, minimums: Minimums, rider: (Stop) -> Long) {
                     }
                 }) { Text(stringResource(R.string.ticket)) }
             }
-            AnimatedVisibility(official) {
+            AnimatedVisibility(officialOpen) {
                 Column(Modifier.alpha(FADED), verticalArrangement = Arrangement.spacedBy(4.dp)) { Trip(find.official, minimums, rider) }
             }
         }
@@ -703,7 +723,7 @@ private fun StopRow(stop: Stop) = Row(verticalAlignment = Alignment.CenterVertic
  * white line inside the edge (user, 2026-10-06).
  */
 @Composable
-private fun TrackSign(track: String) = Surface(color = Color(0xFF00179B)) {
+private fun TrackSign(track: String) = Surface(color = BLUE) {
     Text(
         track,
         Modifier.padding(2.dp).border(1.dp, Color.White, MaterialTheme.shapes.extraSmall).padding(horizontal = 5.dp),
