@@ -25,8 +25,12 @@ The page shows no version or date.
 
 ## transport.opendata.ch (no key) — the first choice
 
-A community API on top of the national timetable and its real-time data (search.ch). No key, so
-nothing secret to ship in an open-source app.
+A community API. It computes connections with MOTIS on the Swiss GTFS and GTFS-RT from
+opentransportdata.swiss (its docs, read 2026-10-07; before, it asked search.ch): "transfer times
+are those of the national timetable, per station; where the timetable gives a walk to a
+neighbouring stop that is shorter than the station's transfer time, the walk counts". It holds a
+window of days, moved weekly: 27 Sep 2026 to 25 Feb 2027 on 7 Oct (a time outside: HTTP 400
+"outside of loaded timetable window"). No key, so nothing secret to ship in an open-source app.
 
 - **Limits:** "no fixed limit per client … please cache what you can"; the same question asked
   again within seconds gets throttled.
@@ -125,7 +129,11 @@ Every planned and actual arrival and departure of the day before, as CSV, one fi
   Wednesdays and Saturdays. On 6 Oct 2026 the 2026 dataset's newest was from 30 Sep.
 - **The next timetable** has its own dataset, `timetable-2027-gtfs2020` (from 13 Dec 2026),
   already published alongside (checked 2026-10-06: files since 17 Jun 2026, the newest 3 Oct,
-  its permalink works). How the two meet at 13 Dec (each file's calendar) not checked.
+  its permalink works). **How they meet** (checked 2026-10-07): 2026's `feed_start_date` to
+  `feed_end_date` is 20251214–20261212, and its calendars end there; 2027's is
+  20261213–20271211. No overlap, by service day: 2026 has the night trains of 12 Dec past 24:00.
+  The 2027 export of 3 Oct is 90 MB (2026's 289 MB) but not a draft: 19,184 train trips on Wed
+  16 Dec, about as many as on a 2026 weekday.
 - **Files** (checked on the 30 Sep 2026 export, 2026-10-06 and 07, in a Python prototype and
   `trains` in `:core`): each starts with a UTF-8 BOM; the header isn't quoted, every field of
   the rows is. Train trips are grouped and in `stop_sequence` order in `stop_times.txt`; none is
@@ -149,11 +157,20 @@ Every planned and actual arrival and departure of the day before, as CSV, one fi
     continues under another number is not a change; 1, guaranteed connections (292, since
     October 2025). An extra column `service_id`: every in-seat continuation has its own days.
     The 4,822 between trains of 7–20 Oct all go from a trip's last stop to the next one's first,
-    at the same station.
+    at the same station. Checked 2026-10-07 (research/harmonize.md): type 2 between the
+    platforms of one station has the same minutes for every pair, at each of its 8,962 stations,
+    and equals `UMSTEIGB` at 2,948 of the 2,949 Swiss ones (Winterthur 0, the table 3); 702k
+    rows of type 2 are per train pair (`UMSTEIGZ`: Zürich HB 5 for 6,595 pairs, Aarau 3; none
+    at Luzern or Olten); 59,571 link two stations (walks). The guaranteed connections are buses
+    (Baar).
 - **Times on the clock** (checked 2026-10-07): not from noon minus 12 hours as GTFS says. On
   25 Oct 2026 (the clocks go back) the night trains have the same times as on 1 Nov (SN1
   Winterthur 00:35 … 02:35, 03:35), and the API shows them on the clock (02:35 +02:00, 03:35
-  +01:00), the hour that comes twice taken as the first. 28 Mar 2027 not checked.
+  +01:00), the hour that comes twice taken as the first. 28 Mar 2027 (the clocks go forward,
+  checked in the 2027 export 2026-10-07): 72 train trips of that service day and 21 of the 27th
+  stop between 02:00 and 03:00, an hour that doesn't exist (SN11 Winterthur 02:05, SN1 02:35,
+  S3 Basel SBB 02:45; 574 stop events in that hour, about 795 on the Sundays around it). How the
+  API shows them can't be checked before its window reaches 28 Mar.
 - **Trips by days:** one train is often several trips with the same times, each on some of the
   days (the RE24 Luzern 09:05: five trips over 7–20 Oct).
 - **Names:** `route_desc` is the category (`S`, `IC`, `ICE`, `TER`, `CC`, `PE`). Swiss lines'

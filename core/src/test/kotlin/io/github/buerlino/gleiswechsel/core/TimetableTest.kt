@@ -81,7 +81,32 @@ class TimetableTest {
         ),
     )
 
-    private val gtfs = File.createTempFile("gtfs", ".zip").apply {
+    // The next timetable year's, from 13 December 2026: an IR7 Aach → Xberg every day, with the
+    // first one's trip and stop ids.
+    private val nextYear = files + mapOf(
+        "feed_info.txt" to file(
+            "feed_publisher_name,feed_publisher_url,feed_lang,feed_start_date,feed_end_date,feed_version",
+            listOf("Made up", "https://example.com", "DE", "20261213", "20271211", "20261003"),
+        ),
+        "routes.txt" to file("route_id,agency_id,route_short_name,route_long_name,route_desc,route_type", listOf("r1", "1", "IR7", "", "IR", "103")),
+        "calendar.txt" to file(
+            "service_id,monday,tuesday,wednesday,thursday,friday,saturday,sunday,start_date,end_date",
+            listOf("daily", "1", "1", "1", "1", "1", "1", "1", "20261213", "20271211"),
+        ),
+        "calendar_dates.txt" to file("service_id,date,exception_type"),
+        "trips.txt" to file(
+            "route_id,service_id,trip_id,trip_headsign,trip_short_name,direction_id,block_id,original_trip_id,hints",
+            listOf("r1", "daily", "t1", "Xberg", "701", "0", "", "", ""),
+        ),
+        "stop_times.txt" to file(
+            "trip_id,arrival_time,departure_time,stop_id,stop_sequence,pickup_type,drop_off_type",
+            listOf("t1", "07:52:00", "07:52:00", "a:1", "1", "0", "0"),
+            listOf("t1", "08:09:00", "08:09:00", "x:1", "2", "0", "0"),
+        ),
+        "transfers.txt" to file("from_stop_id,to_stop_id,from_route_id,to_route_id,from_trip_id,to_trip_id,transfer_type,min_transfer_time,service_id"),
+    )
+
+    private fun zip(files: Map<String, String>) = File.createTempFile("gtfs", ".zip").apply {
         deleteOnExit()
         ZipOutputStream(outputStream()).use { zip ->
             files.forEach { (name, text) ->
@@ -92,8 +117,10 @@ class TimetableTest {
         }
     }
 
+    private val gtfs = zip(files)
+
     // Monday, 2 March 2026, and 13 days more.
-    private val timetable = trains(gtfs, LocalDate.of(2026, 3, 2), 14)
+    private val timetable = trains(listOf(gtfs), LocalDate.of(2026, 3, 2), 14)
 
     /** Each trip: its line, days, stops (station, track, arrival/departure, what isn't possible); then the continuations. */
     private fun Timetable.text(): List<String> {
@@ -121,6 +148,28 @@ class TimetableTest {
         ),
         timetable.text(),
     )
+
+    @Test
+    fun aroundTheTimetableChange() {
+        // Sunday, 6 December 2026, and 13 days more: up to the 12th from the first file, then from the second.
+        val change = trains(listOf(gtfs, zip(nextYear)), LocalDate.of(2026, 12, 6), 14)
+        assertEquals(
+            listOf(
+                "S1 0,1,2,3,4,5,6: Aach 1 07:50/07:50 no drop-off, Xberg, Bahnhof 1 08:10/08:10 no pickup",
+                "RE3 1,2,3,4,5: Xberg, Bahnhof 9 23:40/23:40, Bstadt - 23:58/23:58",
+                "IR7 7,8,9,10,11,12,13: Aach 1 07:52/07:52, Xberg, Bahnhof 1 08:09/08:09",
+            ),
+            change.text(),
+        )
+        assertEquals("opentransportdata.swiss, GTFS 20260301 + 20261003", change.source)
+        // A file without any of the days is skipped.
+        assertEquals(timetable.source, trains(listOf(gtfs, zip(nextYear)), LocalDate.of(2026, 3, 2), 14).source)
+    }
+
+    @Test
+    fun aDayNoFileHasThrows() {
+        assertFailsWith<IOException> { trains(listOf(gtfs), LocalDate.of(2026, 12, 6), 14) }
+    }
 
     @Test
     fun stationsByTheirNationalId() {

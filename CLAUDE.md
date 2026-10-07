@@ -35,6 +35,8 @@ app or the listing; the one exception is sbb.ch, named as the ticket link's targ
   [existing_tools.md](research/existing_tools.md) (what to reuse, what not),
   [architecture.md](research/architecture.md) (the proposal, not decided),
   [missing_features.md](research/missing_features.md) (what the app can't do yet, ideas only).
+- [research/harmonize.md](research/harmonize.md) (2026-10-07): one model for the track switch
+  times, the plan before step 4 of the full search; not decided.
 
 ## How the user works (2026-10-06)
 
@@ -100,7 +102,7 @@ apps built this way; their CLAUDE.md files explain each choice.
 - `.github/workflows/release.yml` builds a signed APK on a `vX.Y.Z` tag and attaches it to a
   GitHub Release (Obtainium); `test.yml` runs the `:core` tests, lint and the debug build on branch
   pushes and pull requests (2026-10-06: a broken app build first showed on a tag); `release.yml`
-  runs lint too.
+  runs lint too. `timetable.yml` makes the full search's file (step 3 below).
   `fastlane/metadata/android/<locale>/` for F-Droid (en-US, de-DE, fr-FR, it-IT), each with
   `changelogs/<versionCode>.txt`.
 - Release build uses R8 (minify + shrinkResources). The build must be reproducible: no
@@ -116,7 +118,8 @@ apps built this way; their CLAUDE.md files explain each choice.
 
 - **transport.opendata.ch**, in use: no key (nothing secret in an open-source app), JSON, the
   official connections. Checked with real requests 2026-10-06; its quirks are in the research
-  file.
+  file. It computes them with MOTIS on the same Swiss GTFS as the full search, plus GTFS-RT
+  (its docs, read 2026-10-07), over a window of days (27 Sep 2026 to 25 Feb 2027 that day).
 - Proposed (2026-10-06): **OJP 2.0** only as an option with the user's own free key (20,000
   requests a day per key, so no shared key in the app).
 - **The Swiss GTFS** (opentransportdata.swiss, no key), for the full search: decided 2026-10-06,
@@ -314,8 +317,8 @@ at every station the rider hasn't set.
   **Changes within one station only** (user, 2026-10-07, as the full search): an onward
   connection that starts with a walk or at another stop isn't one. Before, the search asked again
   from the stop the API walked to, and the API also offered stops nearby: Zürich HB → a tram at
-  Bahnhofstrasse/HB counted as a 5-minute track switch at Zürich HB, no walk shown (open question
-  1 until then).
+  Bahnhofstrasse/HB counted as a 5-minute track switch at Zürich HB, no walk shown (an open question
+  until then).
   **Asked again where a time fell** (2026-10-07): a rider's default follows the answers, so a
   change asked before an answer lowered its station's minimum ran with more time than its row
   then shows (Sursee → Oerlikon 07:45, offset 2: Zürich HB asked with 3, its row 2, the IR13
@@ -427,8 +430,12 @@ Steps (user, 2026-10-06), one at a time, each shown working:
    - **The Swiss GTFS counts on the clock**, not from noon minus 12 hours as GTFS says: on
      25 Oct 2026 (clocks back) it has the same night trains as on 1 Nov, and the API reads them on
      the clock (SN1 Winterthur 02:35 +02:00, 03:35 +01:00). The scan does the same; Java takes an
-     hour that comes twice as the first, as the API does. 28 Mar 2027 (an hour skipped) not
-     checked: it's in the 2027 dataset.
+     hour that comes twice as the first, as the API does. **28 Mar 2027** (an hour skipped,
+     checked in the 2027 GTFS 2026-10-07): 72 train trips of that day and 21 of the 27th stop
+     between 02:00 and 03:00, an hour that doesn't exist (SN1 Winterthur 02:35, S3 Basel SBB
+     02:45; 574 stop events that hour, about 795 on the Sundays around it). The scan reads them as
+     an hour later (Java). How the API shows them: not known, it can't be asked before its window
+     reaches 28 Mar (about 7 Nov 2026).
    - **In-seat continuations in the API:** one section each (6 tried: IR70 → IR13 at Zürich HB,
      RE6 → R20, S7 → RE7, RE3 → RE13, RhB RE24 → RE4, S17 → S4), so they never lower a minimum
      through `shortestChanges`.
@@ -438,9 +445,21 @@ Steps (user, 2026-10-06), one at a time, each shown working:
      between them.
    - **Train names** (`route_short_name`): Swiss lines as the API's (S, SN, R, RE, IR, IC,
      IRLEX); foreign ones not: ICE `651A` (API `ICE651A`), TER `K23` (`TERK23`), Jungfraubahn
-     `65` (`CC65`), EC and TGV without a number (API `EC000015`, `TGV009210`): open question 2.
-3. `.github/workflows/timetable.yml`: download, step 1's task, `upload-pages-artifact` +
-   `deploy-pages`; the two GTFS datasets around the timetable change.
+     `65` (`CC65`), EC and TGV without a number (API `EC000015`, `TGV009210`): open question 1.
+3. `.github/workflows/timetable.yml` (built 2026-10-07, not yet run on GitHub; the skill):
+   Thursdays and Sundays at 03:23 UTC, the day after the GTFS is mostly updated, and by hand
+   (user, 2026-10-07: twice a week, as the terms' §5.2 says). It downloads the year's dataset
+   and, when the 14 days reach December, the next year's; `trains` takes the days each one has
+   (its `feed_start_date` to `feed_end_date`), and a day none has fails the job, so the old file
+   stays on Pages. The two meet without overlap: 2026 has the service days to 12 Dec 2026, 2027
+   from 13 Dec. A file for 6–19 Dec from both: 62,802 trips, 572 KB, 31 s; the test case found
+   on 11–14 Dec. Then `timetable.bin.gz` and `index.html`, which names opentransportdata.swiss
+   as the source and Gleiswechsel as the publisher (§5.1, §5.3), to Pages
+   (`upload-pages-artifact@v5`, `deploy-pages@v5`). Its two scripts run on the desktop: 22 s
+   download, 38 s file and page.
+   **GitHub switches off scheduled workflows in a public repo after 60 days without activity**
+   (a commit counts): the file then runs out of days within 14. Switch it on again in the
+   Actions tab, or commit.
 4. The app: the download, both searches, Optimization rows (today's plus the finds' change
    stations), Help and README in all four languages, F-Droid's `NonFreeNet`, which version; on
    the phone, and how long loading the file takes there. `best(today's finds + the full
@@ -450,6 +469,9 @@ Steps (user, 2026-10-06), one at a time, each shown working:
    stations (today's are `Searched.changes`). Its `error` (should the two scans disagree) is
    caught and logged.
    `find()` and `parseTime()` move to `:core` with tests (declutter pass 3, 3.1).
+   Proposed before it (2026-10-07, not decided): [research/harmonize.md](research/harmonize.md),
+   one model for the official time, the defaults and the rows, which would change the minimums
+   and rows above.
 
 ## After the first release
 
@@ -475,11 +497,7 @@ instead.
 
 ## Open questions (for the user)
 
-1. **The timetable job weekly or twice a week** (2026-10-06): the GTFS is updated twice a week
-   (the dataset page; files mostly from Wednesdays and Saturdays), and the terms (§5.2) ask that
-   data be updated "at the same frequency as the underlying raw data". That section's heading
-   says raw data, and the file is processed data, so weekly may be enough.
-2. **Foreign train names in the full search** (2026-10-07): GTFS `route_desc` is the category
+1. **Foreign train names in the full search** (2026-10-07): GTFS `route_desc` is the category
    (ICE, TER, CC, TGV). Putting it before a `route_short_name` that doesn't start with it would
    match the API for ICE, TGV, TER and the Jungfraubahn (`ICE651A`, `TERK23`, `CC65`), but make
    `PEGEX`, `REN1`, `IRVAE`, `SEV` of the Glacier Express, the Nachtnetz, the Voralpen-Express and

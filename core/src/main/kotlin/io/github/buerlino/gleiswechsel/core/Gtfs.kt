@@ -9,61 +9,93 @@ import java.util.zip.ZipFile
 
 /**
  * The trains (GTFS `route_type` 100–117; buses would be 12× the data) of [days] days from [first]
- * in the Swiss GTFS [zip] (research/data_sources.md). Reads the whole zip, 4.5 GB unpacked.
+ * in the Swiss GTFS [zips] (research/data_sources.md): each timetable year has its own, for the
+ * days from its `feed_start_date` to its `feed_end_date`, so around the timetable change in
+ * December the days need two. A zip with none of the days is skipped; a day none has throws.
+ * Reads each zip it uses whole, 4.5 GB unpacked.
  */
-fun trains(zip: File, first: LocalDate, days: Int): Timetable = ZipFile(zip).use { gtfs ->
+fun trains(zips: List<File>, first: LocalDate, days: Int): Timetable {
     require(days in 1..31) { "$days days don't fit in a trip's 32 bits" }
     val dates = List(days) { first.plusDays(it.toLong()) }
     val dateTexts = dates.map { it.format(gtfsDate) }
 
-    var version = ""
-    gtfs.forEachRow("feed_info.txt") { version = it["feed_version"] }
-
-    // The days each service runs.
-    val services = HashMap<String, Int>()
-    gtfs.forEachRow("calendar.txt") { row ->
-        services[row["service_id"]] = dates.indices.fold(0) { mask, d ->
-            val runs = row[dates[d].dayOfWeek.name.lowercase()] == "1" && dateTexts[d] in row["start_date"]..row["end_date"]
-            if (runs) mask or (1 shl d) else mask
-        }
-    }
-    gtfs.forEachRow("calendar_dates.txt") { row ->
-        val d = dateTexts.indexOf(row["date"])
-        if (d < 0) return@forEachRow
-        val id = row["service_id"]
-        val mask = services[id] ?: 0
-        services[id] = if (row["exception_type"] == "1") mask or (1 shl d) else mask and (1 shl d).inv()
-    }
-
-    val lines = HashMap<String, String>()
-    gtfs.forEachRow("routes.txt") { row ->
-        if (row["route_type"].toInt() in 100..117) lines[row["route_id"]] = row["route_short_name"]
-    }
-
     class StopTime(val sequence: Int, val stop: String, val arrival: Int, val departure: Int, val pickup: Boolean, val dropOff: Boolean)
     class Kept(val line: String, val days: Int, val stops: MutableList<StopTime> = ArrayList())
 
-    val kept = LinkedHashMap<String, Kept>()
-    gtfs.forEachRow("trips.txt") { row ->
-        val line = lines[row["route_id"]] ?: return@forEachRow
-        val tripDays = services[row["service_id"]] ?: 0
-        if (tripDays != 0) kept[row["trip_id"]] = Kept(line, tripDays)
-    }
-    gtfs.forEachRow("stop_times.txt") { row ->
-        val trip = kept[row["trip_id"]] ?: return@forEachRow
-        trip.stops += StopTime(
-            row["stop_sequence"].toInt(), row["stop_id"], minutes(row["arrival_time"]), minutes(row["departure_time"]),
-            pickup = row["pickup_type"] != "1", dropOff = row["drop_off_type"] != "1",
-        )
-    }
-    val used = kept.values.flatMapTo(HashSet()) { trip -> trip.stops.map { it.stop } }
+    val versions = ArrayList<String>()
+    var covered = 0
+    val kept = ArrayList<Kept>()
     val stops = HashMap<String, Pair<Timetable.Station, String?>>()
-    gtfs.forEachRow("stops.txt") { row ->
-        val id = row["stop_id"]
-        if (id !in used) return@forEachRow
-        val didok = row["didok"].ifEmpty { throw IOException("No didok for stop $id") }
-        stops[id] = Timetable.Station(didok, row["stop_name"]) to row["platform_code"].ifEmpty { null }
+    val continuations = ArrayList<Timetable.Continuation>()
+    for (zip in zips) ZipFile(zip).use { gtfs ->
+        var feed = 0
+        gtfs.forEachRow("feed_info.txt") { row ->
+            feed = dates.indices.fold(0) { mask, d ->
+                if (dateTexts[d] in row["feed_start_date"]..row["feed_end_date"]) mask or (1 shl d) else mask
+            }
+            if (feed != 0) versions += row["feed_version"]
+        }
+        if (feed == 0) return@use
+        covered = covered or feed
+
+        // The days each service runs.
+        val services = HashMap<String, Int>()
+        gtfs.forEachRow("calendar.txt") { row ->
+            services[row["service_id"]] = dates.indices.fold(0) { mask, d ->
+                val runs = row[dates[d].dayOfWeek.name.lowercase()] == "1" && dateTexts[d] in row["start_date"]..row["end_date"]
+                if (runs) mask or (1 shl d) else mask
+            }
+        }
+        gtfs.forEachRow("calendar_dates.txt") { row ->
+            val d = dateTexts.indexOf(row["date"])
+            if (d < 0) return@forEachRow
+            val id = row["service_id"]
+            val mask = services[id] ?: 0
+            services[id] = if (row["exception_type"] == "1") mask or (1 shl d) else mask and (1 shl d).inv()
+        }
+
+        val lines = HashMap<String, String>()
+        gtfs.forEachRow("routes.txt") { row ->
+            if (row["route_type"].toInt() in 100..117) lines[row["route_id"]] = row["route_short_name"]
+        }
+
+        // This zip's trip ids: each year's are its own.
+        val tripIndex = HashMap<String, Int>()
+        gtfs.forEachRow("trips.txt") { row ->
+            val line = lines[row["route_id"]] ?: return@forEachRow
+            val tripDays = services[row["service_id"]] ?: 0
+            if (tripDays != 0) {
+                tripIndex[row["trip_id"]] = kept.size
+                kept += Kept(line, tripDays)
+            }
+        }
+        gtfs.forEachRow("stop_times.txt") { row ->
+            val trip = tripIndex[row["trip_id"]]?.let(kept::get) ?: return@forEachRow
+            trip.stops += StopTime(
+                row["stop_sequence"].toInt(), row["stop_id"], minutes(row["arrival_time"]), minutes(row["departure_time"]),
+                pickup = row["pickup_type"] != "1", dropOff = row["drop_off_type"] != "1",
+            )
+        }
+        val used = tripIndex.values.flatMapTo(HashSet()) { trip -> kept[trip].stops.map { it.stop } }
+        gtfs.forEachRow("stops.txt") { row ->
+            val id = row["stop_id"]
+            if (id !in used || id in stops) return@forEachRow
+            val didok = row["didok"].ifEmpty { throw IOException("No didok for stop $id") }
+            stops[id] = Timetable.Station(didok, row["stop_name"]) to row["platform_code"].ifEmpty { null }
+        }
+
+        gtfs.forEachRow("transfers.txt") { row ->
+            if (row["transfer_type"] != "4") return@forEachRow
+            val from = tripIndex[row["from_trip_id"]] ?: return@forEachRow
+            val to = tripIndex[row["to_trip_id"]] ?: return@forEachRow
+            // The Swiss GTFS gives each in-seat transfer its own service.
+            val continuationDays = services[row["service_id"]] ?: 0
+            if (continuationDays != 0) continuations += Timetable.Continuation(from, to, continuationDays)
+        }
     }
+    dates.indices.firstOrNull { covered shr it and 1 == 0 }?.let { throw IOException("No GTFS has ${dates[it]}") }
+
+    val used = kept.flatMapTo(HashSet()) { trip -> trip.stops.map { it.stop } }
     val stations = stops.values.map { it.first }.distinctBy { it.id }.sortedBy { it.id }
     val stationIndex = stations.withIndex().associate { it.value.id to it.index }
     val platformIds = used.sorted()
@@ -73,24 +105,13 @@ fun trains(zip: File, first: LocalDate, days: Int): Timetable = ZipFile(zip).use
         Timetable.Platform(stationIndex.getValue(station.id), code)
     }
 
-    val tripIndex = kept.keys.withIndex().associate { it.value to it.index }
-    val continuations = ArrayList<Timetable.Continuation>()
-    gtfs.forEachRow("transfers.txt") { row ->
-        if (row["transfer_type"] != "4") return@forEachRow
-        val from = tripIndex[row["from_trip_id"]] ?: return@forEachRow
-        val to = tripIndex[row["to_trip_id"]] ?: return@forEachRow
-        // The Swiss GTFS gives each in-seat transfer its own service.
-        val continuationDays = services[row["service_id"]] ?: 0
-        if (continuationDays != 0) continuations += Timetable.Continuation(from, to, continuationDays)
-    }
-
-    Timetable(
-        source = "opentransportdata.swiss, GTFS $version",
+    return Timetable(
+        source = "opentransportdata.swiss, GTFS ${versions.joinToString(" + ")}",
         first = first,
         days = days,
         stations = stations,
         platforms = platforms,
-        trips = kept.values.map { trip ->
+        trips = kept.map { trip ->
             val s = trip.stops.sortedBy { it.sequence }
             Timetable.Trip(
                 trip.line, trip.days,
@@ -157,14 +178,15 @@ private fun fields(line: String): List<String> {
 }
 
 /**
- * Writes the timetable file for the full search: `<GTFS zip> <out file> [first day, yyyy-MM-dd]`,
- * 14 days from the first (today in Switzerland if not given). Run by `./gradlew :core:timetable`.
+ * Writes the timetable file for the full search: `<GTFS zip>[,<zip>…] <out file> [first day,
+ * yyyy-MM-dd]`, 14 days from the first (today in Switzerland if not given). Run by
+ * `./gradlew :core:timetable`.
  */
 fun main(args: Array<String>) {
-    require(args.size in 2..3) { "Arguments: <GTFS zip> <out file> [first day, yyyy-MM-dd]" }
+    require(args.size in 2..3) { "Arguments: <GTFS zip>[,<zip>…] <out file> [first day, yyyy-MM-dd]" }
     val first = args.getOrNull(2)?.let(LocalDate::parse) ?: LocalDate.now(ZoneId.of("Europe/Zurich"))
     val start = System.nanoTime()
-    val timetable = trains(File(args[0]), first, days = 14)
+    val timetable = trains(args[0].split(',').map(::File), first, days = 14)
     val out = File(args[1])
     out.outputStream().use { timetable.write(it) }
     println(

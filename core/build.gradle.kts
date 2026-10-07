@@ -31,7 +31,7 @@ dependencies {
 }
 
 // The timetable file for the full search from the Swiss GTFS (CLAUDE.md, The full search):
-// ./gradlew :core:timetable -Pgtfs=<zip> -Pout=<file> [-Pfrom=yyyy-MM-dd, else today], paths from the repo's root
+// ./gradlew :core:timetable -Pgtfs=<zip>[,<zip>…] -Pout=<file> [-Pfrom=yyyy-MM-dd, else today], paths from the repo's root
 tasks.register<JavaExec>("timetable") {
     classpath = sourceSets.main.get().runtimeClasspath
     mainClass = "io.github.buerlino.gleiswechsel.core.GtfsKt"

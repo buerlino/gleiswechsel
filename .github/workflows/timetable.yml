@@ -1,0 +1,77 @@
+name: Timetable
+
+# The trains of the next 14 days from the Swiss GTFS, for the app's full search (CLAUDE.md, The full
+# search), on GitHub Pages: https://buerlino.github.io/gleiswechsel/timetable.bin.gz. Twice a week,
+# the day after the GTFS is mostly updated (Wednesdays and Saturdays), and by hand. Not a release or
+# a tag: Obtainium and F-Droid's tag check would see those.
+on:
+  schedule:
+    - cron: "23 3 * * 0,4"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+concurrency:
+  group: pages
+  cancel-in-progress: false
+
+jobs:
+  timetable:
+    runs-on: ubuntu-latest
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - uses: actions/checkout@v7
+
+      - uses: actions/setup-java@v6
+        with:
+          distribution: temurin
+          java-version: 21
+
+      # Each timetable year has its own dataset; around the change in December the 14 days need
+      # the next year's too (trains() takes the days each one has).
+      - name: Download the GTFS
+        run: |
+          export TZ=Europe/Zurich
+          first=$(date +%Y)
+          last=$(date -d '+13 days' +%Y)
+          if [ "$(date -d '+13 days' +%m)" = 12 ]; then last=$((last + 1)); fi
+          zips=
+          for year in $(seq "$first" "$last"); do
+            curl -fsSL --retry 3 -A 'Mozilla/5.0 (X11; Linux x86_64; rv:140.0) Gecko/20100101 Firefox/140.0' \
+              -o "$RUNNER_TEMP/gtfs-$year.zip" "https://data.opentransportdata.swiss/dataset/timetable-$year-gtfs2020/permalink"
+            zips="$zips${zips:+,}$RUNNER_TEMP/gtfs-$year.zip"
+          done
+          echo "GTFS=$zips" >> "$GITHUB_ENV"
+
+      # The page names the source and the publisher, as opentransportdata.swiss's terms ask (§5.1, §5.3).
+      - name: Make the file and its page
+        run: |
+          mkdir site
+          made=$(./gradlew -q :core:timetable -Pgtfs="$GTFS" -Pout=site/timetable.bin.gz)
+          echo "$made"
+          cat > site/index.html <<EOF
+          <!doctype html>
+          <html lang="en">
+          <meta charset="utf-8">
+          <meta name="viewport" content="width=device-width, initial-scale=1">
+          <title>Gleiswechsel timetable</title>
+          <h1>Gleiswechsel timetable</h1>
+          <p><a href="timetable.bin.gz">timetable.bin.gz</a>: the trains in Switzerland for the next 14 days, for the full search
+          of the Android app <a href="https://github.com/buerlino/gleiswechsel">Gleiswechsel</a>, made from the Swiss GTFS
+          timetable by Gleiswechsel.</p>
+          <p>Source: <a href="https://opentransportdata.swiss">opentransportdata.swiss</a>
+          (<a href="https://opentransportdata.swiss/en/terms-of-use/">terms of use</a>).</p>
+          <p>This file: $made.</p>
+          EOF
+
+      - uses: actions/upload-pages-artifact@v5
+        with:
+          path: site
+
+      - id: deployment
+        uses: actions/deploy-pages@v5

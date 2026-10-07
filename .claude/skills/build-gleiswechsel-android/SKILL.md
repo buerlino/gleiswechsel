@@ -37,10 +37,20 @@ is in `research/`.
   didok, platforms, trips with a bit per day, in-seat `Continuation`s), its gzipped binary
   (`write`; times as steps from the previous departure plus a dwell byte) and the reader
   `timetable()`, which throws on another `FORMAT` or a broken file. `core/.../Gtfs.kt`: `trains()`,
-  the GTFS zip → `Timetable` (JDK only; its own CSV reader for the BOM and the quotes), and the
-  `main` of `./gradlew :core:timetable -Pgtfs=<zip> -Pout=<file> [-Pfrom=yyyy-MM-dd]` (paths from
+  the GTFS zips → `Timetable` (JDK only; its own CSV reader for the BOM and the quotes; each zip
+  for the days from its `feed_start_date` to its `feed_end_date`, a zip without any skipped, a
+  day none has throws), and the `main` of
+  `./gradlew :core:timetable -Pgtfs=<zip>[,<zip>…] -Pout=<file> [-Pfrom=yyyy-MM-dd]` (paths from
   the repo's root). `TimetableTest`: a made-up GTFS in the Swiss export's shape, read, written and
-  read back. Not used by the app yet, so R8 strips it from the release APK.
+  read back, and a next year's from 13 Dec. Not used by the app yet, so R8 strips it from the
+  release APK.
+- `.github/workflows/timetable.yml`: the file on GitHub Pages, Thursdays and Sundays and by hand
+  (Actions → Timetable → Run workflow). Downloads the year's GTFS from the dataset's `/permalink`
+  with a browser User-Agent (and the next year's when the 14 days reach December), runs
+  `:core:timetable` (its summary line goes into `index.html`, with the source and the
+  publisher), then `upload-pages-artifact` + `deploy-pages`. Pages' source must be "GitHub
+  Actions" (Settings → Pages). To try its two scripts locally, take them from the YAML and run
+  them with `RUNNER_TEMP` and `GITHUB_ENV` set (done 2026-10-07).
 - `core/.../FullSearch.kt`: the full search `fullSearch(timetable, officials, transfer)`, a
   connection scan (`Scan`: the rides of the window by departure, `earliest` forwards, `latest`
   backwards for the trip leaving last, `connection` builds the result). Times are minutes on the
@@ -152,8 +162,9 @@ On an arrival board the arrival time is in `stop.departure` (research/data_sourc
 real responses for tests' shape in `private/`; tests themselves use made-up data. `private/` has
 Horw → Sursee 08:50, Luzern → Sursee 09:05 (the onward request) and one with a walk, all for
 Wed 7 Oct 2026. `private/gtfs/` has the GTFS export of 30 Sep 2026 (289 MB; `curl -L` the
-dataset's `/permalink` with a browser User-Agent, 5 s) and `timetable.bin.gz` made from it for
-7–20 Oct.
+dataset's `/permalink` with a browser User-Agent, 5 s), `timetable.bin.gz` made from it for
+7–20 Oct, and the 2027 export of 3 Oct 2026 (`gtfs_fp2027_20261003.zip`, 90 MB, from
+`timetable-2027-gtfs2020`).
 
 ## Still untested
 
@@ -171,8 +182,6 @@ Everything else was tried on the phone with the R8 release build signed with the
   has shown it.
 - The fold states (2026-10-06): `uiautomator dump` doesn't show `stateDescription`; not heard
   in TalkBack.
-- CI's lint and app build (2026-10-06): only run locally; the runner's SDK may need to fetch
-  platform 37.
 - The rule between the finds (2026-10-06): only the unit tests; no real search has shown two
   finds yet.
 - Languages: a phone set to German itself (only `set-app-locales` and the title's menu; the
@@ -214,6 +223,9 @@ Everything else was tried on the phone with the R8 release build signed with the
 - The themed icon in a launcher that shows themed icons (Niagara doesn't); only checked as a
   render.
 
+- The timetable job (2026-10-07): only its two scripts, on the desktop (download, file, page);
+  not run on GitHub, Pages not on yet. Not checked: the deploy, the file's URL and its headers
+  (whether Pages sends the `.gz` with `Content-Encoding: gzip`), the schedule.
 - The full search (2026-10-07): only `FullSearchTest` and the live check on Horw → Sursee
   (8 Oct, the test case with the defaults, nothing with 5 at Luzern; four long trips timed, no
   finds among them, so no full-search find through other stations seen on real data). Not in
