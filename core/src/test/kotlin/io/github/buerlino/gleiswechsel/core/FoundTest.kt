@@ -50,6 +50,17 @@ class FoundTest {
     }
 
     @Test
+    fun theDayOfTheFirstTripShown() {
+        assertEquals(LocalDate.of(2026, 3, 3), found.firstDay)
+        // Asked for 23:50, the first train at 00:02 the next day.
+        val night = Connection(listOf(Leg("IC8", Stop("Aach", "Aach", OffsetDateTime.parse("2026-03-04T00:02:00+01:00")), stop("Bstadt", "08:40"))))
+        val late = found.copy(day = LocalDateTime.parse("2026-03-03T23:50"), first = night, finds = emptyList())
+        assertEquals(LocalDate.of(2026, 3, 4), late.firstDay)
+        // No connections: the day asked for.
+        assertEquals(LocalDate.of(2026, 3, 3), late.copy(first = null).firstDay)
+    }
+
+    @Test
     fun anotherFormatThrows() {
         assertFailsWith<Exception> { found("""{"day":"2026-03-03T07:55"}""") }
     }

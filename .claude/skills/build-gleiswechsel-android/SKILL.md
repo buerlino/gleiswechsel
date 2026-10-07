@@ -183,8 +183,8 @@ is in `research/`.
   new R8 build over it with `install -r` (2026-10-07, from 0.2.0). Back up the user's data first
   through the debug build: `adb exec-out run-as … tar cf - shared_prefs files`, and back the same
   way with `exec-in … sh -c 'cat > shared_prefs/commute.xml'`.
-- `input keyevent 66` is a hardware Enter, not the keyboard's action key: from To it moves to ⇅,
-  and the next Enter swaps the fields (2026-10-07). Tap each field instead.
+- `input keyevent 66` is a hardware Enter, not the keyboard's action key, but it does the same:
+  From → To → the time → Search (2026-10-07, since ⇅ left the focus order).
 - If the phone is locked, ask the user; don't try to unlock it.
 
 ## Official minimums: each timetable change
@@ -282,9 +282,12 @@ Everything else was tried on the phone with the R8 release build signed with the
 - The fixes after that test pass (2026-10-07), seen on the phone the same day (R8 release): one
   station per change (Luzern → Zürich, Central 08:00: nothing faster, the tram from
   Bahnhofstrasse/HB gone); the keyboard's next keys (From → To → the time, past ⇅) and the number
-  keyboard's search key (searches, closes the keyboard); the plain blue ⇅ between the borders; the
+  keyboard's search key (searches, closes the keyboard); ⇅ between the borders (its grey circle
+  seen 2026-10-07, in a screenshot; a hardware Enter past it, over adb); the
   no-break spaces in Help (German, English, French) and the cards; the French day line ("jeu. 8
-  oct. :"). Not seen: Italian.
+  oct. :"). Not seen: Italian. The day of the first trip shown (2026-10-07): `FoundTest`, and
+  Zürich HB → Bern 23:50 on the phone ("Thu 8 Oct" over the 00:02); not seen with finds on both
+  sides of midnight.
 - The themed icon in a launcher that shows themed icons (Niagara doesn't); only checked as a
   render.
 - The timetable job (2026-10-07): run once by hand on GitHub (2 min 4 s; the file and page

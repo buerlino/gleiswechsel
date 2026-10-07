@@ -14,6 +14,8 @@ import androidx.activity.enableEdgeToEdge
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.core.animateFloatAsState
 import androidx.compose.foundation.BorderStroke
+import androidx.compose.foundation.background
+import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.BoxWithConstraints
 import androidx.compose.foundation.layout.Arrangement
@@ -29,6 +31,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.safeDrawing
 import androidx.compose.foundation.layout.windowInsetsPadding
 import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.foundation.verticalScroll
@@ -55,6 +58,7 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.alpha
+import androidx.compose.ui.focus.focusProperties
 import androidx.compose.ui.layout.layout
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalFocusManager
@@ -238,10 +242,16 @@ private fun App(prefs: SharedPreferences, minimums: Minimums, saved: File, last:
                                         Field(stringResource(R.string.from), from, !searching) { from = it; saveCommute("from", it) }
                                         Field(stringResource(R.string.to), to, !searching) { to = it; saveCommute("to", it) }
                                     }
-                                    // A plain blue ⇅, as ⚙ and ? (user, 2026-10-07: the pale background was Material's).
+                                    // A blue ⇅ in a grey circle, white inside, over the fields' borders (user,
+                                    // 2026-10-07: easier to see; before, plain, as ⚙ and ?). Not in the focus
+                                    // order: a hardware Enter in To went to it, and the next one swapped the
+                                    // fields (2026-10-07); the keyboard's Next skipped it.
                                     IconButton(
                                         onClick = { val f = from; from = to; to = f; saveCommute("from", from); saveCommute("to", to) },
-                                        Modifier.align(Alignment.CenterEnd).offset(y = 1.dp).padding(end = 12.dp),
+                                        Modifier.align(Alignment.CenterEnd).offset(y = 1.dp).padding(end = 12.dp)
+                                            .focusProperties { canFocus = false }
+                                            .background(MaterialTheme.colorScheme.background, CircleShape)
+                                            .border(1.dp, MaterialTheme.colorScheme.outline, CircleShape),
                                         enabled = !searching,
                                         colors = IconButtonDefaults.iconButtonColors(contentColor = MaterialTheme.colorScheme.primary),
                                     ) { Text("⇅", Modifier.spokenAs(stringResource(R.string.swap)), fontSize = 20.sp) }
@@ -299,7 +309,7 @@ private fun App(prefs: SharedPreferences, minimums: Minimums, saved: File, last:
                             val first = f.first
                             // The day in the language of the texts, not the phone's: a Spanish phone gets English.
                             val locale = Locale.forLanguageTag(stringResource(R.string.language))
-                            val day = f.day.format(DateTimeFormatter.ofPattern(stringResource(R.string.day_pattern), locale))
+                            val day = f.firstDay.format(DateTimeFormatter.ofPattern(stringResource(R.string.day_pattern), locale))
                             Text(when {
                                 first == null -> stringResource(R.string.no_connections, day)
                                 f.finds.isEmpty() -> stringResource(R.string.nothing_faster, day)

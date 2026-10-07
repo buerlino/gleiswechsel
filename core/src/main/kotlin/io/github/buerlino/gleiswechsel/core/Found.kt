@@ -8,6 +8,7 @@ import kotlinx.serialization.encoding.Decoder
 import kotlinx.serialization.encoding.Encoder
 import java.io.IOException
 import java.time.Duration
+import java.time.LocalDate
 import java.time.LocalDateTime
 import java.time.LocalTime
 import java.time.OffsetDateTime
@@ -40,6 +41,13 @@ data class Found(
      * the official connection leaving [first].
      */
     val trips: List<Connection> get() = if (finds.isEmpty()) listOfNotNull(first) else finds.flatMap { listOf(it.faster, it.official) }
+
+    /**
+     * The day of the first of the [trips] to leave, for the line above them; without any, the [day]
+     * asked for. A search at 23:50 may show only trips after midnight (2026-10-07: "Wed 7 Oct" above
+     * a train at 00:02 on the 8th).
+     */
+    val firstDay: LocalDate get() = trips.minOfOrNull { it.departure.time }?.toLocalDate() ?: day.toLocalDate()
 
     /** Whether one of the [trips] stops at [station] (its id); Optimization's other rows are faded (D3). */
     fun onTrips(station: String): Boolean = trips.any { trip -> trip.legs.any { it.departure.id == station || it.arrival.id == station } }

@@ -193,12 +193,16 @@ at every station the rider hasn't set.
   it is typed. Stations go to the API as typed: it matches loosely ("horw", "Luzern Bhf" and even
   "Surseexq" find the station); a name it can't match gives no connections, and the page says so.
   The time takes `8:50`, `08:50`, `850` or `0850` (the number keyboard has no colon). Search asks
-  for the next such time, Swiss time (today or tomorrow), and shows the day. Editing a field
+  for the next such time, Swiss time (today or tomorrow), and shows the day of the first trip
+  shown (`Found.firstDay`; 2026-10-07: a search at 23:50 said Wednesday over a train at 00:02 on
+  Thursday), or of the time asked for when there's none. Editing a field
   clears the result, so it never shows another commute's finds; the fields are locked while it
   searches. A ⇅ button swaps from and to (user, 2026-10-06): on the right, centred over the gap
-  between the two fields, which keep their distance; a plain blue symbol, as ⚙ and ? (user,
-  2026-10-07: its pale background was Material's). The keyboard's key goes From → To → the time,
-  and there searches (user, 2026-10-07: it only closed the keyboard).
+  between the two fields, which keep their distance; a blue symbol in a grey circle (the fields'
+  border colour), white inside, over the fields' borders (user, 2026-10-07: easier to see; it had
+  Material's pale background, then none). The keyboard's key goes From → To → the time, and there
+  searches (user, 2026-10-07: it only closed the keyboard); a hardware Enter too: ⇅ isn't in the
+  focus order (2026-10-07: from To, Enter went to it and the next one swapped the fields).
 - **Optimization** (user, 2026-10-06), under Journey: a line saying to lower the time and search
   again to find more, then a row per station the search changed at (the official connections'
   changes and those of the onward connections, see the local search), each station once, in
