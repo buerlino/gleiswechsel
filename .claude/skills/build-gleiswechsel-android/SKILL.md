@@ -31,6 +31,14 @@ is in `research/`.
   shown as the delays' time while `delaysKnown`), and its JSON
   (`toJson`, `found`; `FoundTest`: written and read back, made-up data). `Stop`, `Leg`,
   `Connection` and `Find` are `@Serializable` for it; times as ISO text (`IsoText`).
+- `core/.../Timetable.kt`: `Timetable`, the trains of 14 days for the full search (stations by
+  didok, platforms, trips with a bit per day, in-seat `Continuation`s), its gzipped binary
+  (`write`; times as steps from the previous departure plus a dwell byte) and the reader
+  `timetable()`, which throws on another `FORMAT` or a broken file. `core/.../Gtfs.kt`: `trains()`,
+  the GTFS zip → `Timetable` (JDK only; its own CSV reader for the BOM and the quotes), and the
+  `main` of `./gradlew :core:timetable -Pgtfs=<zip> -Pout=<file> [-Pfrom=yyyy-MM-dd]` (paths from
+  the repo's root). `TimetableTest`: a made-up GTFS in the Swiss export's shape, read, written and
+  read back. Not used by the app yet, so R8 strips it from the release APK.
 - `core/.../LiveTest.kt`: the Horw → Sursee test case, live. Excluded from `:core:test` (and so
   from CI); run it with `./gradlew :core:test -Plive`, which also prints the finds and the number
   of requests. It asks for the next weekday, so a public holiday or a timetable change can fail it.
@@ -130,7 +138,9 @@ curl -s 'https://transport.opendata.ch/v1/stationboard?station=8500218&type=arri
 On an arrival board the arrival time is in `stop.departure` (research/data_sources.md). Keep
 real responses for tests' shape in `private/`; tests themselves use made-up data. `private/` has
 Horw → Sursee 08:50, Luzern → Sursee 09:05 (the onward request) and one with a walk, all for
-Wed 7 Oct 2026.
+Wed 7 Oct 2026. `private/gtfs/` has the GTFS export of 30 Sep 2026 (289 MB; `curl -L` the
+dataset's `/permalink` with a browser User-Agent, 5 s) and `timetable.bin.gz` made from it for
+7–20 Oct.
 
 ## Still untested
 

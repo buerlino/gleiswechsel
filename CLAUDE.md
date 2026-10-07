@@ -118,6 +118,8 @@ apps built this way; their CLAUDE.md files explain each choice.
   file.
 - Proposed (2026-10-06): **OJP 2.0** only as an option with the user's own free key (20,000
   requests a day per key, so no shared key in the app).
+- **The Swiss GTFS** (opentransportdata.swiss, no key), for the full search: decided 2026-10-06,
+  not in the app yet, see [The full search](#the-full-search-decided-2026-10-06-being-built).
 - No server of our own.
 
 ## Test case: Horw → Sursee (user, 2026-10-06)
@@ -353,12 +355,68 @@ sbb.ch too (user, 2026-10-06: the ticket link), edited there, not committed yet.
 `changelogs/2.txt` in all four, the new phone screenshot (the test case's find and Luzern's row).
 README's "Soon on F-Droid" stays until F-Droid has it.
 
+## The full search (decided 2026-10-06, being built)
+
+Today's search tries other trains only where the official connections change: the API has no
+transfer time setting, so it never suggests a route through other stations. The full search
+finds the fastest train route A → B through any stations, with the rider's track switch time at
+every change (theirs where set, else the official minimum minus the offset, as today).
+research/architecture.md, phase 2.
+
+Decided (user, 2026-10-06, after a research session):
+
+- **A GitHub Actions job**, weekly and by hand, downloads the Swiss GTFS, keeps the trains of the
+  next 14 days, writes a compact file (about 1 MB) and deploys it to GitHub Pages. The same file
+  for everyone, so the commute never leaves the phone; no server. Not a release or a tag: those
+  would show up in Obtainium and in F-Droid's tag check.
+- **Trains only** (GTFS `route_type` 100–117): buses are 12× the data.
+- **The app** downloads the file during a search when its copy is missing or older than 7 days
+  (keeping the old copy if that fails) and runs a connection scan (CSA) over it on the phone.
+- **Both searches run:** today's stays; the finds of both go through the same filters.
+- **Changes within one station only** (same station id), no walks between stations (open
+  question 1 stays open).
+- **Only when A and B** (the official connections' first departure and last arrival) are both in
+  the file; otherwise today's search alone.
+- **Later, not now:** checking each find with the API leg by leg (delays, changed tracks, trains
+  the file has that no longer run).
+
+Allowed (opentransportdata.swiss's terms, checked 2026-10-06, research/data_sources.md): the
+data may be processed and published; the published file must name opentransportdata.swiss as its
+source (§5.1) and be published under the project's name (§5.3). GitHub Pages: 1 GB a site, 100 GB a month (soft), so about
+100,000 downloads of 1 MB.
+
+Measured (2026-10-06, a Python prototype, not kept): the trains of 14 days are 51,382 trips,
+544k stop events and 5,010 platforms; a plain binary (u16 platform, u16 arrival minutes, u8
+dwell per stop) 3.0 MB, 0.9 MB gzipped; reading the GTFS about a minute. A CSA over one day's
+trains took 3–10 ms per search and found the test case with Luzern at 4 minutes. 377 random
+trips between the 150 busiest stations, offset 1: 33 faster, 13 of them through stations today's
+search can't reach (overcounted: it compared against `UMSTEIGB`, and the planner has finer
+times, e.g. 6 minutes at Zürich HB where the table says 7).
+
+Steps (user, 2026-10-06), one at a time, each shown working:
+
+0. These notes (done).
+1. `:core`, the timetable file (done 2026-10-07, `Timetable`, `trains`, the skill): a writer
+   (GTFS zip → the trains of 14 days from a given date), a reader, JDK only; a format number
+   first, so an older app ignores a newer file quietly and logs it; a Gradle task runs the
+   writer; tests on a made-up GTFS. On the real GTFS (the 30 Sep export, 7–20 Oct): 51,382
+   trips, 544,085 stops, 5,010 platforms, 3,023 stations, 4,822 continuations; **453 KB**, made
+   in 25 s; read in 80–120 ms on a desktop JVM, about 18 MB of heap. The test case's S4 and
+   RE24 are in it with their tracks. Each stop's times as the step from the previous departure
+   plus a dwell byte: plain times made it 1.38 MB.
+2. `:core`, the CSA: the search's day (and the next day's early trips for a late search); the
+   rider's time where they change trains, none for staying on (in-seat continuations count as
+   staying); the pickup and drop-off flags; of two trips arriving together, the one leaving
+   later. Its result as `Connection`/`Leg`/`Stop` (didok ids, Swiss time, `via`), through the
+   same filters as `search`. The transfer function is called very often: compute the lowered
+   minimums once per search. Tests on made-up data; a live check behind `-Plive`.
+3. `.github/workflows/timetable.yml`: download, step 1's task, `upload-pages-artifact` +
+   `deploy-pages`; the two GTFS datasets around the timetable change.
+4. The app: the download, both searches, Optimization rows (today's plus the finds' change
+   stations), Help and README in all four languages, F-Droid's `NonFreeNet`, which version; on
+   the phone, and how long loading the file takes there.
+
 ## After the first release
-
-Wanted (user, 2026-10-06), one at a time:
-
-- **Routes through stations the official connections don't touch** (research/architecture.md,
-  phase 2): only if the local search finds too little.
 
 Each timetable change (next: 13 Dec 2026, timetable 2027): refresh the official minimums (the
 skill), the year in Help, and release, or the app compares against last year's minimums. Later
@@ -384,3 +442,7 @@ Ideas, not decided (Claude, 2026-10-06; ask the user first):
    minutes), and the app shows it as any other change. Undecided: give such a change its own
    time, mark it in the result, or leave it out. Deferred until a commute needs it (user,
    2026-10-06).
+2. **The timetable job weekly or twice a week** (2026-10-06): the GTFS is updated twice a week
+   (the dataset page; files mostly from Wednesdays and Saturdays), and the terms (§5.2) ask that
+   data be updated "at the same frequency as the underlying raw data". That section's heading
+   says raw data, and the file is processed data, so weekly may be enough.

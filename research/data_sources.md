@@ -1,8 +1,27 @@
 # Data sources (researched 2026-10-06)
 
 All Swiss public transport data is open: free to use with attribution, under the
-[opentransportdata.swiss terms of use](https://opentransportdata.swiss/en/terms-of-use/).
+[opentransportdata.swiss terms of use](https://opentransportdata.swiss/en/terms-of-use/) (below).
 "Checked" means a real request was made on that date; the rest is from the documentation.
+
+## Terms of use (read 2026-10-06)
+
+The terms the GTFS dataset names (its page links them; the FEDRO terms there are for road
+traffic data only). They allow publishing a file made from the GTFS:
+
+- §1: "The data obtained can be processed, analysed and published, including incorporating
+  additional data."
+- Definitions: processed data are "ODMCH data that have been converted, edited or refined by a
+  third party": the timetable file is processed data.
+- §5.1: "The URL opentransportdata.swiss must be cited as the source for raw data in publications
+  and analyses." (§5.1.1: in a database from several sources, once in its list of sources.)
+- §5.2, "Updating raw data": "ODMCH data must be updated regularly and at the same frequency as
+  the underlying raw data." The GTFS is updated twice a week (below).
+- §5.3: "Processed data and analyses must be published under the name of the data user."
+- §7: SBB gives no guarantee that the data are "up to date, correct, complete, available or
+  accurate", and no liability.
+
+The page shows no version or date.
 
 ## transport.opendata.ch (no key) — the first choice
 
@@ -76,11 +95,10 @@ Every planned and actual arrival and departure of the day before, as CSV, one fi
   station is the guess).
 - Swiss punctuality counts an arrival under 3 minutes late as on time.
 
-## Timetable files — only for a full search later
+## Timetable files
 
-- **GTFS** (weekly): the whole timetable with platforms. `transfers.txt` has
-  `min_transfer_time` (`transfer_type=2`) for stations with their own time and `transfer_type=1`
-  for guaranteed connections (since October 2025); the 2-minute default isn't in the file.
+- **GTFS**: the whole timetable with platforms, for the full search (decided 2026-10-06,
+  `CLAUDE.md`). Details below.
 - **HRDF**: the raw format GTFS is made from, with every transfer table (`UMSTEIGB` per station,
   `UMSTEIGZ` per train pair, …). GTFS carries "most, but not all" of it. In the 2026 export of
   29 Sep: `UMSTEIGB` 366 KB, `UMSTEIGV` (per operator pair) 425 lines, `UMSTEIGL` (per line pair)
@@ -93,11 +111,57 @@ Every planned and actual arrival and departure of the day before, as CSV, one fi
   platforms with coordinates where `hasGeolocation` is set, for walking times between platforms.
   Coverage not checked.
 
+### GTFS
+
+- **Where:** dataset
+  [timetable-2026-gtfs2020](https://data.opentransportdata.swiss/dataset/timetable-2026-gtfs2020);
+  `…/timetable-2026-gtfs2020/permalink` is the newest zip (289 MB, the export of 30 Sep 2026;
+  `stop_times.txt` 3.7 GB unpacked). No key. The permalink redirects to the file's download
+  link, and that to a signed Cloudflare R2 URL valid 60 s (`X-Amz-Expires=60`); range requests
+  work. The portal wanted a browser User-Agent in the prototype (curl's default refused);
+  checked 2026-10-06, the permalink and both redirects also took curl's default and sent the
+  zip's first bytes.
+- **Updated** "zweimal pro Woche" (the dataset page), not on holidays: the files are mostly from
+  Wednesdays and Saturdays. On 6 Oct 2026 the 2026 dataset's newest was from 30 Sep.
+- **The next timetable** has its own dataset, `timetable-2027-gtfs2020` (from 13 Dec 2026),
+  already published alongside (checked 2026-10-06: files since 17 Jun 2026, the newest 3 Oct,
+  its permalink works). How the two meet at 13 Dec (each file's calendar) not checked.
+- **Files** (checked on the 30 Sep 2026 export, 2026-10-06 and 07, in a Python prototype and
+  `trains` in `:core`): each starts with a UTF-8 BOM; the header isn't quoted, every field of
+  the rows is. Train trips are grouped and in `stop_sequence` order in `stop_times.txt`; none is
+  in `frequencies.txt`. Every stop has a `didok`, one name per `didok`; foreign ones start with
+  80 (Germany), 81, 82, 83 (Italy), 87 (France), 88 or 71. One weekday (Wed 7 Oct): 104 stops
+  where riders can't get on, 92 where they can't get off, none where the train only passes;
+  3,843 times past 24:00. `agency_timezone` is `Europe/Berlin` (the same offsets as Zurich).
+  - `stops.txt`: `stop_id` is a SLOID (`ch:1:sloid:5000:4:9`); the column `didok` is the API's
+    station id (`8505000`), `platform_code` the track (`9`, `2CD`, `41/42`); parents
+    `Parentch:1:sloid:5000`. Foreign stops are in it too.
+  - `routes.txt`: `route_type` 100–117 are trains (101 TGV, 102 IC/EC/ICE, 103 IR, 106
+    R/RE/RB/TER, 109 S/SN, 116 rack, 117 EXT); `route_short_name` is the line as the app shows it
+    (`S1`, `R55`, `IC6`); `trips.txt`'s `trip_short_name` is the train number.
+  - `trips.txt` `service_id` → `calendar.txt` (weekday flags, start and end date) and
+    `calendar_dates.txt` (`exception_type` 1 added, 2 removed).
+  - `stop_times.txt`: `trip_id`, `arrival_time`, `departure_time` (can be past 24:00),
+    `stop_id`, `stop_sequence`, `pickup_type`, `drop_off_type` (1: not possible). Every field is
+    quoted.
+  - `transfers.txt`: `transfer_type` 2, minimum times (811k rows; for stations with their own
+    time, the 2-minute default isn't in the file); 4, in-seat continuations (301k): a train that
+    continues under another number is not a change; 1, guaranteed connections (292, since
+    October 2025). An extra column `service_id`: every in-seat continuation has its own days.
+    The 4,822 between trains of 7–20 Oct all go from a trip's last stop to the next one's first,
+    at the same station.
+- **Size** (the prototype, 2026-10-06): one weekday's trains are 20,007 trips and 206k stop
+  events, all modes 3.05M (buses 2.5M, so 12× the trains). The trains of 14 days: 51,382 trips,
+  544k stop events, 5,010 platforms; a plain binary (u16 platform, u16 arrival minutes, u8 dwell
+  per stop) 3.0 MB, 0.9 MB gzipped. Reading the GTFS took about a minute.
+
 ## Sources
 
 - [transport.opendata.ch docs](https://transport.opendata.ch/docs.html)
 - [OJP landing page](https://opentransportdata.swiss/en/cookbook/open-journey-planner-ojp-landing-page/), [OJPTripRequest 2.0](https://opentransportdata.swiss/en/cookbook/open-journey-planner-ojp/ojptriprequest-2-0/)
 - [Limits and costs](https://opentransportdata.swiss/en/limits-and-costs/)
 - [Actual data cookbook](https://opentransportdata.swiss/en/cookbook/historic-and-statistics-cookbook/actual-data/), [Ist-Daten v2](https://opentransportdata.swiss/en/ist-daten-v2-new-version-2/)
+- [Terms of use](https://opentransportdata.swiss/en/terms-of-use/)
 - [GTFS](https://opentransportdata.swiss/en/cookbook/timetable-cookbook/gtfs/), [HRDF](https://opentransportdata.swiss/en/cookbook/timetable-cookbook/hafas-rohdaten-format-hrdf/), [GTFS-RT](https://opentransportdata.swiss/en/cookbook/realtime-prediction-cookbook/gtfs-rt/)
 - [Service points and traffic points](https://opentransportdata.swiss/en/cookbook/masterdata-cookbook/servicepoints/)
+- [GitHub Pages limits](https://docs.github.com/en/pages/getting-started-with-github-pages/github-pages-limits): 1 GB a site, 100 GB a month (soft)
