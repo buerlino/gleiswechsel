@@ -49,7 +49,11 @@ is in `research/`.
   with a browser User-Agent (and the next year's when the 14 days reach December), runs
   `:core:timetable` (its summary line goes into `index.html`, with the source and the
   publisher), then `upload-pages-artifact` + `deploy-pages`. Pages' source must be "GitHub
-  Actions" (Settings → Pages). To try its two scripts locally, take them from the YAML and run
+  Actions" (Settings → Pages; on since 2026-10-07). The file:
+  https://buerlino.github.io/gleiswechsel/timetable.bin.gz, `Content-Type: application/gzip`,
+  no `Content-Encoding` even when asked for gzip (checked with curl 2026-10-07), so the reader
+  gets the gzipped bytes as written; `max-age=600`. The run's log needs a login; its summary
+  line is on the index page. To try its two scripts locally, take them from the YAML and run
   them with `RUNNER_TEMP` and `GITHUB_ENV` set (done 2026-10-07).
 - `core/.../FullSearch.kt`: the full search `fullSearch(timetable, officials, transfer)`, a
   connection scan (`Scan`: the rides of the window by departure, `earliest` forwards, `latest`
@@ -223,9 +227,9 @@ Everything else was tried on the phone with the R8 release build signed with the
 - The themed icon in a launcher that shows themed icons (Niagara doesn't); only checked as a
   render.
 
-- The timetable job (2026-10-07): only its two scripts, on the desktop (download, file, page);
-  not run on GitHub, Pages not on yet. Not checked: the deploy, the file's URL and its headers
-  (whether Pages sends the `.gz` with `Content-Encoding: gzip`), the schedule.
+- The timetable job (2026-10-07): run once by hand on GitHub (2 min 4 s; the file and page
+  1 min 38 s), deployed. Not checked: the schedule (first run Thu 8 Oct, 03:23 UTC), the
+  December run with two years' GTFS on GitHub (only on the desktop).
 - The full search (2026-10-07): only `FullSearchTest` and the live check on Horw → Sursee
   (8 Oct, the test case with the defaults, nothing with 5 at Luzern; four long trips timed, no
   finds among them, so no full-search find through other stations seen on real data). Not in

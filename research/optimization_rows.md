@@ -167,6 +167,11 @@ does.
 
 ## Open questions for the user
 
+Decided 2026-10-07 (user), see [harmonize.md](harmonize.md): 1. A, with the rows off the
+page's trips faded; 2. always the table (2), the planner's own changes never green, and the
+defaults follow the table, not the lowered minimum; 3. still open.
+
+
 1. Rows: A, B or C?
 2. Colour reference: 1, 2 or 3? Should defaults keep following the lowered minimum?
 3. Should a set row be easier to tell from a default (it's only 60% vs 100% text now)?

@@ -4,7 +4,8 @@
 row though no card goes there, and Luzern at 4 was orange in one search and green in the next.
 Step 4 of the full search (CLAUDE.md) would build on the same rules. This file traces both to one
 root and proposes one model for the search, the cards, the rows and both searches, then the
-order to build it. **Nothing here is decided**: the decisions (D1–D5) are at the end.
+order to build it. **Decided by the user 2026-10-07** (at the end): as proposed, except the rows
+(D3: A, with the stations off the page's trips faded).
 
 ## Found today (2026-10-07)
 
@@ -58,15 +59,17 @@ shows only what it can explain.
 3. **The default is the official time − the offset, at least 0**, stable. The rider's time is the
    set one, else the default. One function in `:core`, used by both searches, the cards and the
    rows. (D2)
-4. **The rows are the change stations of the trips on the page** (optimization_rows.md, option
-   B): each find and the official connection it beats; with nothing faster, the official
-   connection shown. Worked out from the result, not kept apart. The full search's stations come
-   in through its finds. (D3)
+4. ~~The rows are the change stations of the trips on the page (option B).~~ **Decided
+   otherwise (D3, A):** every station the search asked a time for, as now, plus the full
+   search's finds' change stations; those not on a trip on the page (each find and the official
+   connection it beats; with nothing faster, the official connection shown) faded. Kept with the
+   result. (D3)
 5. **The table stays bundled** for now: it equals the GTFS's and works offline before the first
    download. (D5)
 
 What goes: `Minimums.lowered`, `shortestChanges`, the re-run loop in `search`,
-`Searched.changes`, `Found.shortest` and `Found.changes`, the page's `official` state. The search
+`Found.shortest`, the page's `official` state. `Searched.changes` and `Found.changes` stay (D3,
+A): the rows. The search
 asks each change once with a time that can't move. `result.json` gets a new shape; an older one
 is ignored, as decided (no migration).
 
@@ -87,10 +90,10 @@ What it costs:
 2. **The model in `:core`**, with tests: the official time, the default and the rider's time in
    one place. `find()` and `parseTime()` move to `:core` (declutter pass 3, 3.1) and return the
    result with the planner's changes; the lowering and the loop go. Tests: the same time is the
-   same colour in two searches; the rows are the cards' stations (Brugg isn't one).
-3. **The page on it**: the box rule (1 and 2), the rows from the result, Help's 🎨 and ⏱️ in all
-   four languages. On the phone: the two surprises again. Expected: Luzern 4 green in both
-   searches; the rows for Sursee → Oerlikon are Luzern and Zürich HB.
+   same colour in two searches; which rows are on the page's trips (Brugg isn't, so faded).
+3. **The page on it**: the box rule (1 and 2), the rows faded off the page's trips, Help's 🎨
+   and ⏱️ in all four languages. On the phone: the two surprises again. Expected: Luzern 4
+   green in both searches; for Sursee → Oerlikon, Luzern and Zürich HB full, Brugg AG faded.
 4. **Step 4, the full search in the app**, now smaller: the download, `fullSearch` with the same
    rider function, `best` of both, the rows follow by themselves; Help 🚆 and 📡, a new version,
    the phone, the measurements.
@@ -103,7 +106,22 @@ What it costs:
    - set and default easier to tell apart (optimization_rows.md, question 3), if stable defaults
      aren't enough.
 
-## Decisions for the user
+## Decisions (user, 2026-10-07)
+
+Asked as below. The user's answers: D1+D2 "the most important part is that we show the best
+option, I don't care about the colors that much … pick the solution that is precise, while
+always showing the fastest path". Claude picked the proposal: the planner's own changes are
+official connections, so a find has to beat them anyway; a lowered default only extrapolates
+one train pair's time to every pair at the station (other tracks), so a find from it may not be
+doable. The precise way to such finds is the per-pair times in the full search (step 5). D3: A,
+"if we don't show the options for the others, the user cannot find a faster route (potentially)
+by lowering one of the stations … maybe lower the opacity so it's clear that it's not part of
+the current route". D4 and D5 as proposed.
+
+- **D1** the timetable's. **D2** the timetable's − the offset. **D3** A, rows off the page's trips
+  faded. **D4** never green, per change. **D5** bundled.
+
+As asked:
 
 - **D1** The official time at a station: the timetable's, the same in every search (proposed) |
   lowered by this search's answers (as now).

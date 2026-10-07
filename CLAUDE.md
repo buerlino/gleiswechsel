@@ -36,7 +36,8 @@ app or the listing; the one exception is sbb.ch, named as the ticket link's targ
   [architecture.md](research/architecture.md) (the proposal, not decided),
   [missing_features.md](research/missing_features.md) (what the app can't do yet, ideas only).
 - [research/harmonize.md](research/harmonize.md) (2026-10-07): one model for the track switch
-  times, the plan before step 4 of the full search; not decided.
+  times, the plan before step 4 of the full search; decided 2026-10-07, see
+  [One model](#one-model-for-the-track-switch-times-decided-2026-10-07-being-built).
 
 ## How the user works (2026-10-06)
 
@@ -446,7 +447,7 @@ Steps (user, 2026-10-06), one at a time, each shown working:
    - **Train names** (`route_short_name`): Swiss lines as the API's (S, SN, R, RE, IR, IC,
      IRLEX); foreign ones not: ICE `651A` (API `ICE651A`), TER `K23` (`TERK23`), Jungfraubahn
      `65` (`CC65`), EC and TGV without a number (API `EC000015`, `TGV009210`): open question 1.
-3. `.github/workflows/timetable.yml` (built 2026-10-07, not yet run on GitHub; the skill):
+3. `.github/workflows/timetable.yml` (done 2026-10-07; the skill):
    Thursdays and Sundays at 03:23 UTC, the day after the GTFS is mostly updated, and by hand
    (user, 2026-10-07: twice a week, as the terms' §5.2 says). It downloads the year's dataset
    and, when the 14 days reach December, the next year's; `trains` takes the days each one has
@@ -456,22 +457,63 @@ Steps (user, 2026-10-06), one at a time, each shown working:
    on 11–14 Dec. Then `timetable.bin.gz` and `index.html`, which names opentransportdata.swiss
    as the source and Gleiswechsel as the publisher (§5.1, §5.3), to Pages
    (`upload-pages-artifact@v5`, `deploy-pages@v5`). Its two scripts run on the desktop: 22 s
-   download, 38 s file and page.
+   download, 38 s file and page. First run on GitHub, by hand 2026-10-07: 2 minutes (5 s
+   download, 1 min 38 s file and page); https://buerlino.github.io/gleiswechsel/timetable.bin.gz,
+   453,334 bytes, the same bytes as the desktop's from the same GTFS and day; Pages sends it as
+   `application/gzip` without `Content-Encoding`, so the app reads it as is. Read with
+   `timetable()`: 7–20 Oct, 51,382 trips, 55–140 ms, about 18 MB of heap (desktop JVM).
    **GitHub switches off scheduled workflows in a public repo after 60 days without activity**
    (a commit counts): the file then runs out of days within 14. Switch it on again in the
    Actions tab, or commit.
-4. The app: the download, both searches, Optimization rows (today's plus the finds' change
-   stations), Help and README in all four languages, F-Droid's `NonFreeNet`, which version; on
-   the phone, and how long loading the file takes there. `best(today's finds + the full
-   search's, officials)`, today's first: of two the same, the first stays, and it has the API's
-   names and delays. The full search runs after today's, with the minimums its answers lowered;
-   its `transfer` is asked at every station it scans, so its rows are only its finds' change
-   stations (today's are `Searched.changes`). Its `error` (should the two scans disagree) is
-   caught and logged.
-   `find()` and `parseTime()` move to `:core` with tests (declutter pass 3, 3.1).
-   Proposed before it (2026-10-07, not decided): [research/harmonize.md](research/harmonize.md),
-   one model for the official time, the defaults and the rows, which would change the minimums
-   and rows above.
+4. The app, after [One model](#one-model-for-the-track-switch-times-decided-2026-10-07-being-built):
+   the download, both searches, Optimization rows (today's plus the finds' change stations),
+   Help and README in all four languages, F-Droid's `NonFreeNet`, which version; on the phone,
+   and how long loading the file takes there. `best(today's finds + the full search's,
+   officials)`, today's first: of two the same, the first stays, and it has the API's names and
+   delays. The full search runs after today's, with the same rider function (the table's
+   minimums, nothing lowered); its `transfer` is asked at every station it scans, so its rows
+   are only its finds' change stations (today's are `Searched.changes`). Its `error` (should the
+   two scans disagree) is caught and logged.
+
+### One model for the track switch times (decided 2026-10-07, being built)
+
+[research/harmonize.md](research/harmonize.md) traces the two surprises on the phone
+([research/optimization_rows.md](research/optimization_rows.md): Brugg AG a row no card goes
+through, Luzern at 4 orange in one search and green in the next) to one root: the official time
+at a station was worked out anew in each search from the planner's answers. Decided (user,
+2026-10-07: "show the best option … precise, while always showing the fastest path"; the
+colours matter less):
+
+- **D1 The official time at a station is the table's** (`UMSTEIGB`, which the GTFS repeats), the
+  same in every search and in both searches. Why: the planner's own changes are official
+  connections, so a find has to beat them anyway; lowering a station's time from one train
+  pair's change assumes it for every pair there, other tracks too, so a find from it may not be
+  doable. The precise way to such finds: the GTFS's per-pair times in the full search (later).
+- **D2 The default is the table's − the offset, at least 0**, stable; the rider's time is the
+  set one, else the default. One function in `:core` for both searches, the cards and the rows.
+  Cost, accepted: the IR13 at Zürich HB (Sursee → Oerlikon, offset 2) needs Zürich HB set to 3.
+- **D3 Rows: every station the search asked a time for, as now (A)**, plus the full search's
+  finds' change stations; those not on a trip on the page (each find and the official
+  connection it beats; with nothing faster, the official connection shown) faded (user: "the
+  user cannot find a faster route (potentially) by lowering one of the stations … not in the
+  current journey … lower the opacity so it's clear that it's not part of the current route").
+- **D4 A change the planner itself makes is official, per change:** its box is never green,
+  orange at or below the station's time, red above, in the official connection's timetable and
+  at a find's change the answers also make. The S1 → S41 in 4 doesn't make Luzern 4 for the
+  S4 → RE24. Kept with the result: each answer's changes (station, arrival, departure). Help
+  says once that the planner sometimes allows less for particular trains.
+- **D5 The table stays bundled** (it equals the GTFS's and works offline before the first
+  download); from the timetable file later.
+
+What goes: `Minimums.lowered`, `shortestChanges`, the re-run loop in `search` ("Asked again
+where a time fell" and "The planner's own changes count" under The app describe it until then),
+`Found.shortest`, the page's `official` state. `result.json` gets a new shape; an older one is
+ignored (no migration). `find()` and `parseTime()` move to `:core` with tests (declutter pass
+3, 3.1).
+
+Steps, one at a time: the model in `:core` with tests; the page on it (colours, faded rows,
+Help's 🎨 and ⏱️ in all four languages; on the phone the two surprises again: Luzern 4 green in
+both, Brugg AG faded); then step 4.
 
 ## After the first release
 
