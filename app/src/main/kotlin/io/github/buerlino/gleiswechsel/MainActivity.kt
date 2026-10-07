@@ -71,23 +71,20 @@ import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.core.content.edit
-import io.github.buerlino.gleiswechsel.core.Connection
 import io.github.buerlino.gleiswechsel.core.Found
 import io.github.buerlino.gleiswechsel.core.Minimums
-import io.github.buerlino.gleiswechsel.core.Stop
+import io.github.buerlino.gleiswechsel.core.TrackSwitchTimes
 import io.github.buerlino.gleiswechsel.core.connections
+import io.github.buerlino.gleiswechsel.core.find
 import io.github.buerlino.gleiswechsel.core.found
-import io.github.buerlino.gleiswechsel.core.search
-import io.github.buerlino.gleiswechsel.core.shortestChanges
+import io.github.buerlino.gleiswechsel.core.parseTime
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import java.io.File
-import java.time.Duration
 import java.time.LocalDateTime
 import java.time.LocalTime
-import java.time.ZoneId
 import java.time.format.DateTimeFormatter
 import java.util.Locale
 import kotlin.math.roundToInt
@@ -149,7 +146,6 @@ private fun App(prefs: SharedPreferences, minimums: Minimums, saved: File, last:
     var result by remember { mutableStateOf<Result?>(last?.let { Result.Done(it) }) }
     var stale by remember { mutableStateOf(false) }
     var changes by remember { mutableStateOf(last?.changes.orEmpty()) }
-    var official by remember { mutableStateOf(last?.let { minimums.lowered(it.shortest) } ?: minimums) }
     var job by remember { mutableStateOf<Job?>(null) }
     var open by remember { mutableStateOf(last == null) }
     var optimizationOpen by remember { mutableStateOf(true) }
@@ -184,22 +180,16 @@ private fun App(prefs: SharedPreferences, minimums: Minimums, saved: File, last:
         changes = emptyList()
         prefs.edit { putString(key, value) }
     }
-    // Where the rider hasn't set a time: the offset below the official minimum, at least 0 (user, 2026-10-06).
-    fun defaultAt(stop: Stop, official: Minimums) = maxOf(official.at(stop).toMinutes() - offsetMinutes, 0)
     // With Optimization off, the times set at stations are kept but not used.
-    fun riderAt(stop: Stop, official: Minimums) =
-        prefs.getString(stop.id, null)?.toLongOrNull()?.takeIf { optimize } ?: defaultAt(stop, official)
+    val times = TrackSwitchTimes(minimums, offsetMinutes) { id -> prefs.getString(id, null)?.toLongOrNull()?.takeIf { optimize } }
     val ready = from.isNotBlank() && to.isNotBlank() && time != null
     fun startSearch() {
         open = false
         show(Result.Searching)
-        val transfer = { stop: Stop, official: Minimums -> Duration.ofMinutes(riderAt(stop, official)) }
         job = scope.launch {
-            val r = withContext(Dispatchers.IO) { find(from.trim(), to.trim(), time!!, minimums, transfer) }
+            val r = withContext(Dispatchers.IO) { search(from.trim(), to.trim(), time!!, times) }
             show(r)
-            val found = (r as? Result.Done)?.found
-            found?.let { official = minimums.lowered(it.shortest) }
-            changes = found?.changes.orEmpty()
+            changes = (r as? Result.Done)?.found?.changes.orEmpty()
         }
     }
     when (screen) {
@@ -318,13 +308,12 @@ private fun App(prefs: SharedPreferences, minimums: Minimums, saved: File, last:
                                 style = MaterialTheme.typography.bodySmall,
                             )
                             if (f.incomplete) Text(stringResource(R.string.not_all_checked), color = MaterialTheme.colorScheme.error)
-                            val rider = { stop: Stop -> riderAt(stop, official) }
-                            f.finds.forEach { FindCard(it, official, rider) }
+                            f.finds.forEach { FindCard(it, times) }
                             // Nothing faster: the official connection leaving first, to see where it changes (user, 2026-10-06).
                             if (f.finds.isEmpty() && first != null) Card(Modifier.fillMaxWidth()) {
                                 Column(Modifier.padding(12.dp), verticalArrangement = Arrangement.spacedBy(4.dp)) {
                                     Text(stringResource(R.string.official_connection), style = MaterialTheme.typography.titleMedium)
-                                    Trip(first, official, rider)
+                                    Trip(first, times)
                                 }
                             }
                         }
@@ -338,7 +327,7 @@ private fun App(prefs: SharedPreferences, minimums: Minimums, saved: File, last:
                                     key(stop.id) {
                                         var minutes by remember { mutableStateOf(prefs.getString(stop.id, null)?.toLongOrNull()) }
                                         MinutesStepper(
-                                            stop.station, minutes, defaultAt(stop, official), official.at(stop).toMinutes(), !searching, station = true,
+                                            stop.station, minutes, times.default(stop.id), times.official(stop.id), !searching, station = true,
                                         ) {
                                             minutes = it; save(stop.id, it?.toString() ?: "")
                                         }
@@ -478,39 +467,16 @@ internal fun MinutesStepper(
     }
 }
 
-/** `8:50`, `08:50`, `850` or `0850`; null if it isn't a time. */
-private fun parseTime(text: String): LocalTime? {
-    val digits = text.filter { it.isDigit() }.takeIf { it.length in 3..4 }?.padStart(4, '0') ?: return null
-    return runCatching { LocalTime.of(digits.take(2).toInt(), digits.drop(2).toInt()) }.getOrNull()
-}
-
 /**
- * [from] → [to] at the next [leaving], Swiss time, searched live with the rider's [transfer] times,
- * given the official [minimums] lowered by the planner's answers so far (the search asks again
- * where they fell). Only the official connections' request failing fails the search; a failed
- * onward request skips its change. Blocking.
+ * [from] → [to] at the next [leaving], searched live with the rider's [times] ([find]). Only the
+ * official connections' request failing fails the search; a failed onward request skips its change.
+ * Blocking.
  */
-private fun find(
-    from: String,
-    to: String,
-    leaving: LocalTime,
-    minimums: Minimums,
-    transfer: (Stop, Minimums) -> Duration,
-): Result {
-    val now = LocalDateTime.now(ZoneId.of("Europe/Zurich"))
-    val time = now.toLocalDate().atTime(leaving).let { if (it.isBefore(now)) it.plusDays(1) else it }
-    return try {
-        val answers = mutableListOf<Connection>()
-        val ask = { a: String, b: String, at: LocalDateTime -> connections(a, b, at, BuildConfig.VERSION_NAME).also { answers += it } }
-        val officials = ask(from, to, time)
-        val searched = search(officials, { stop -> transfer(stop, minimums.lowered(shortestChanges(answers))) }, ask)
-        searched.failures.forEach { Log.w("Gleiswechsel", "Change not checked: $it", it) }
-        Result.Done(
-            Found(time, officials.firstOrNull(), searched.changes, searched.finds, shortestChanges(answers), searched.failures.isNotEmpty(), now),
-        )
-    } catch (e: Exception) {
-        // In the message too: Log drops the stack trace of an UnknownHostException (no network).
-        Log.w("Gleiswechsel", "Search failed: $e", e)
-        Result.Failed
-    }
+private fun search(from: String, to: String, leaving: LocalTime, times: TrackSwitchTimes): Result = try {
+    val ask = { a: String, b: String, at: LocalDateTime -> connections(a, b, at, BuildConfig.VERSION_NAME) }
+    Result.Done(find(from, to, leaving, times, ask) { Log.w("Gleiswechsel", "Change not checked: $it", it) })
+} catch (e: Exception) {
+    // In the message too: Log drops the stack trace of an UnknownHostException (no network).
+    Log.w("Gleiswechsel", "Search failed: $e", e)
+    Result.Failed
 }

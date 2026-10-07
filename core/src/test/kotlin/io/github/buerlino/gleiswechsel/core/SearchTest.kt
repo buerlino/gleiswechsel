@@ -124,16 +124,15 @@ class SearchTest {
     }
 
     @Test
-    fun aTimeThatFallsDuringTheSearchIsAskedAgain() {
-        // Xberg's time is 5 until the API's first answer lowers it to 4 (the planner changes faster
-        // there): asked with 5 first, nothing; asked again with 4, the RE3.
-        val searched = search(listOf(official), { minutes(if (asked.isEmpty()) 5 else 4) }) { from, _, time ->
-            asked += "$from ${time.toLocalTime()}"
-            listOf(re3, Connection(listOf(ir2)))
+    fun thePlannersChangesAreKept() {
+        // The official connection's change at Xberg and, in the answer from Xberg, the RE3 → R7 at Yfeld.
+        val re3 = ride("RE3", stop("Xberg", "08:14"), stop("Yfeld", "08:24"))
+        val r7 = ride("R7", stop("Yfeld", "08:27"), stop("Bstadt", "08:45"))
+        val searched = search(listOf(official), { minutes(4) }) { from, _, _ ->
+            if (from == "Xberg") listOf(Connection(listOf(re3, r7))) else emptyList()
         }
-        assertEquals(listOf(s1) + re3.legs, searched.finds.single().faster.legs)
-        assertEquals(listOf("Xberg 08:15", "Xberg 08:14"), asked)
-        assertEquals(listOf(s1.arrival), searched.changes)
+        assertEquals(setOf(Change(s1.arrival, ir2.departure), Change(re3.arrival, r7.departure)), searched.offered)
+        assertEquals(3, Change(re3.arrival, r7.departure).minutes)
     }
 
     @Test

@@ -43,14 +43,9 @@ typealias Connections = (from: String, to: String, time: LocalDateTime) -> List<
  * the trips that change faster at one or more of its changes ([shortened]); a find if it reaches B
  * earlier. Then [best].
  *
- * [transfer] may fall as the answers come in, never rise (the app lowers a station's official
- * minimum where the planner changes faster there). A change asked before it fell would have been
- * asked with more time than the rider's row shows, so the search runs again until every change was
- * asked with the time [transfer] gives at the end (2026-10-07: Zürich HB asked with 3, its row 2).
- *
- * [connections] is asked each question once, in every run: two official connections on the same
- * train to the same change would ask it twice, and the API answers too many questions with HTTP 429.
- * A change whose question fails is skipped, the others go on; its error is in [Searched.failures].
+ * [connections] is asked each question once: two official connections on the same train to the same
+ * change would ask it twice, and the API answers too many questions with HTTP 429. A change whose
+ * question fails is skipped, the others go on; its error is in [Searched.failures].
  */
 fun search(
     officials: List<Connection>,
@@ -61,17 +56,14 @@ fun search(
     val ask: Connections = { from, to, time ->
         answers.getOrPut(Triple(from, to, time)) { runCatching { connections(from, to, time) } }.getOrThrow()
     }
-    while (true) {
-        val asked = mutableListOf<Pair<Stop, Duration>>()
-        val failures = mutableListOf<Exception>()
-        val finds = officials.flatMap { official ->
-            shortened(official, { stop -> transfer(stop).also { asked += stop to it } }, ask, failures)
-                .filter { it.arrival.time.isBefore(official.arrival.time) }.map { Find(official, it) }
-        }
-        if (asked.all { (stop, time) -> transfer(stop) == time }) {
-            return Searched(best(finds, officials), failures, asked.map { it.first }.distinctBy { it.id })
-        }
+    val asked = mutableListOf<Stop>()
+    val failures = mutableListOf<Exception>()
+    val finds = officials.flatMap { official ->
+        shortened(official, { stop -> asked += stop; transfer(stop) }, ask, failures)
+            .filter { it.arrival.time.isBefore(official.arrival.time) }.map { Find(official, it) }
     }
+    val offered = (officials + answers.values.flatMap { it.getOrDefault(emptyList()) }).flatMap { it.transfers }.toSet()
+    return Searched(best(finds, officials), failures, asked.distinctBy { it.id }, offered)
 }
 
 /**
@@ -87,10 +79,11 @@ fun best(finds: List<Find>, officials: List<Connection>): List<Find> =
         .fold(emptyList()) { kept, find -> if (kept.any { it.faster.noWorseThan(find.faster) }) kept else kept + find }
 
 /**
- * What [search] found, the errors of the changes it couldn't check (e.g. HTTP 429), and the
- * stations it changed at (Optimization's rows), each once, in the order it asked.
+ * What [search] found, the errors of the changes it couldn't check (e.g. HTTP 429), the stations it
+ * changed at (Optimization's rows, D3), each once, in the order it asked, and the changes the planner
+ * itself makes in its answers, the official connections' and the onward ones' ([offered], D4).
  */
-class Searched(val finds: List<Find>, val failures: List<Exception>, val changes: List<Stop>)
+class Searched(val finds: List<Find>, val failures: List<Exception>, val changes: List<Stop>, val offered: Set<Change>)
 
 /**
  * [trip] changing faster: at each of its changes, with the rider's [transfer] time there, the

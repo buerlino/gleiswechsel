@@ -40,8 +40,8 @@ import androidx.compose.ui.unit.sp
 import io.github.buerlino.gleiswechsel.core.Connection
 import io.github.buerlino.gleiswechsel.core.Find
 import io.github.buerlino.gleiswechsel.core.Leg
-import io.github.buerlino.gleiswechsel.core.Minimums
 import io.github.buerlino.gleiswechsel.core.Stop
+import io.github.buerlino.gleiswechsel.core.TrackSwitchTimes
 import io.github.buerlino.gleiswechsel.core.ticketUrl
 import io.github.buerlino.gleiswechsel.core.tooShort
 import java.time.Duration
@@ -49,7 +49,7 @@ import java.time.format.DateTimeFormatter
 import kotlin.math.roundToInt
 
 @Composable
-internal fun FindCard(find: Find, minimums: Minimums, rider: (Stop) -> Long) {
+internal fun FindCard(find: Find, times: TrackSwitchTimes) {
     Card(Modifier.fillMaxWidth()) {
         Column(Modifier.padding(12.dp), verticalArrangement = Arrangement.spacedBy(4.dp)) {
             Text(
@@ -77,7 +77,7 @@ internal fun FindCard(find: Find, minimums: Minimums, rider: (Stop) -> Long) {
                 style = MaterialTheme.typography.bodySmall,
             )
             Spacer(Modifier.height(4.dp))
-            Trip(find.faster, minimums, rider)
+            Trip(find.faster, times)
             // The official connection, folded and quiet (user, 2026-10-06); on the same line the
             // ticket on sbb.ch, for the official connection's from, to and departure (user, 2026-10-06).
             var officialOpen by remember { mutableStateOf(false) }
@@ -104,7 +104,7 @@ internal fun FindCard(find: Find, minimums: Minimums, rider: (Stop) -> Long) {
                 }) { Text(stringResource(R.string.ticket)) }
             }
             AnimatedVisibility(officialOpen) {
-                Column(Modifier.alpha(FADED), verticalArrangement = Arrangement.spacedBy(4.dp)) { Trip(find.official, minimums, rider) }
+                Column(Modifier.alpha(FADED), verticalArrangement = Arrangement.spacedBy(4.dp)) { Trip(find.official, times) }
             }
         }
     }
@@ -112,12 +112,12 @@ internal fun FindCard(find: Find, minimums: Minimums, rider: (Stop) -> Long) {
 
 /**
  * [trip] as a timetable: a row per stop, the train in between, and at each change its minutes in a
- * box, coloured against the station's [minimums], or a [LateBox] where the delays make it shorter than
- * the [rider]'s time there. A walk between two trains is part of the change; one before the first
+ * box, coloured against the station's official time, or a [LateBox] where the delays make it shorter
+ * than the rider's time there ([times]). A walk between two trains is part of the change; one before the first
  * train or after the last is shown on its own.
  */
 @Composable
-internal fun Trip(trip: Connection, minimums: Minimums, rider: (Stop) -> Long) {
+internal fun Trip(trip: Connection, times: TrackSwitchTimes) {
     val legs = trip.legs
     val rides = legs.indices.filter { legs[it].train != null }
     legs.forEachIndexed { i, leg ->
@@ -135,11 +135,11 @@ internal fun Trip(trip: Connection, minimums: Minimums, rider: (Stop) -> Long) {
                 }
                 StopRow(leg.arrival)
                 if (next != null) Indented {
-                    val needed = rider(leg.arrival)
+                    val needed = times.rider(leg.arrival.id)
                     val late = tooShort(leg.arrival, legs[next].departure, Duration.ofMinutes(needed))
                     if (late != null) LateBox(late.toMinutes(), needed) else MinutesBox(
                         Duration.between(leg.arrival.time, legs[next].departure.time).toMinutes(),
-                        minimums.at(leg.arrival).toMinutes(),
+                        times.official(leg.arrival.id),
                     )
                     val walk = legs.subList(i + 1, next).sumOf { it.minutes }
                     Text(

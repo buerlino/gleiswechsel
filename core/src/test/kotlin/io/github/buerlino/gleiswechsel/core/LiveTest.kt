@@ -39,8 +39,7 @@ class LiveTest {
 
     private fun Stop.text() = "$station ${time.toLocalTime()}" + (platform?.let { " ($it)" } ?: "")
 
-    // The full search with the app's defaults (the official minimums, lowered by the planner's
-    // answers, minus 1) or [luzern] minutes there.
+    // The full search with the app's defaults (the official minimums minus 1) or [luzern] minutes there.
     private val timetable by lazy {
         val start = System.nanoTime()
         File("../private/gtfs/timetable.bin.gz").inputStream().use { timetable(it) }
@@ -49,11 +48,9 @@ class LiveTest {
 
     private fun fullSearch(hour: Int, luzern: Long? = null): List<Find> {
         val official = connections("Horw", "Sursee", day.atTime(hour, 50), "test")
-        val minimums = Minimums(File("../app/src/main/res/raw/umsteigb.txt").readText()).lowered(shortestChanges(official))
+        val times = TrackSwitchTimes(Minimums(File("../app/src/main/res/raw/umsteigb.txt").readText()), 1) { id -> luzern?.takeIf { id == "8505000" } }
         val start = System.nanoTime()
-        val finds = fullSearch(timetable, official) { stop ->
-            Duration.ofMinutes(luzern?.takeIf { stop.id == "8505000" } ?: maxOf(minimums.at(stop).toMinutes() - 1, 0))
-        }
+        val finds = fullSearch(timetable, official) { Duration.ofMinutes(times.rider(it.id)) }
         println("$day $hour:50, full search, Luzern ${luzern ?: "default"}: ${finds.size} found in ${(System.nanoTime() - start) / 1_000_000} ms")
         finds.forEach { println("  official ${it.official.text()}\n  faster   ${it.faster.text()}\n  saved ${it.saved.toMinutes()} min") }
         return finds

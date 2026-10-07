@@ -56,13 +56,14 @@ data class Connection(val legs: List<Leg>) {
     val duration: Duration get() = Duration.between(departure.time, arrival.time)
 
     /**
-     * Where it changes trains and the time it has there: from the end of each ride but the last to
-     * the next ride's departure. A walk is part of a change, not one of its own.
+     * Where it changes trains: from the end of each ride but the last to the next ride's departure. A
+     * walk is part of a change, not one of its own.
      */
-    val transfers: List<Pair<Stop, Duration>>
-        get() = legs.filter { it.train != null }.zipWithNext { a, b -> a.arrival to Duration.between(a.arrival.time, b.departure.time) }
+    val transfers: List<Change>
+        get() = legs.filter { it.train != null }.zipWithNext { a, b -> Change(a.arrival, b.departure) }
 
-    val changes: List<Stop> get() = transfers.map { it.first }
+    /** The stations it changes at, each where its ride ends. */
+    val changes: List<Stop> get() = legs.filter { it.train != null }.dropLast(1).map { it.arrival }
 
     /**
      * Passes a station twice, e.g. rides past a station and back to change there. Such a trip may
@@ -72,6 +73,21 @@ data class Connection(val legs: List<Leg>) {
         get() = legs.flatMap { listOf(it.departure.id) + it.via + it.arrival.id }
             .fold(emptyList<String>()) { ids, id -> if (ids.lastOrNull() == id) ids else ids + id }
             .let { it.size != it.toSet().size }
+}
+
+/**
+ * A change from one ride to the next at [station] (its id), arriving at [arrival], the next ride
+ * leaving at [departure] (planned times). A walk between them is part of it.
+ */
+@Serializable
+data class Change(
+    val station: String,
+    @Serializable(with = OffsetDateTimeText::class) val arrival: OffsetDateTime,
+    @Serializable(with = OffsetDateTimeText::class) val departure: OffsetDateTime,
+) {
+    constructor(arrival: Stop, departure: Stop) : this(arrival.id, arrival.time, departure.time)
+
+    val minutes: Long get() = Duration.between(arrival, departure).toMinutes()
 }
 
 /**

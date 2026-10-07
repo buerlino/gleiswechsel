@@ -230,6 +230,7 @@ Release v0.2.0 green, both releases have their APK. AGP 9.4.1, Kotlin 2.4.20, Co
   (today or tomorrow), the rows, the lowered minimums, `Found`; `8:50`, `850`, `24:00`. Move to
   `:core` with tests, `connections` passed in as for `search`?
   User (2026-10-07): with the full search's step 4, which rewrites `find()` anyway (CLAUDE.md).
+  Done with One model (2026-10-07): both in `Found.kt`, tested in `FoundTest`.
 - [x] 3.2 Unused import `width` in MainActivity.kt (Kotlin doesn't warn).
   Done (2026-10-07).
 - [x] 3.3 "official" names three things: `Minimums` in `App`, the fold in `FindCard`, the

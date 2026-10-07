@@ -159,13 +159,13 @@ the result and a running search stay.
 
 **The last result is kept** (user, 2026-10-06: e.g. to read the track on a platform with poor
 reception): a search with connections writes it to `result.json` in the app's own files (`Found`
-in `:core`: the day, the first official connection, the change stations, the finds, the shortest
-change at each station the planner's answers made, `incomplete` and when it searched (`asOf`);
+in `:core`: the day, the first official connection, the change stations, the finds, the changes the
+planner makes in its answers (`offered`, D4), `incomplete` and when it searched (`asOf`);
 times as ISO text), and
 whatever clears or fades the result deletes it (editing the commute, a time, the offset or
 Optimization, Search, Cancel), so it never shows another commute's finds. The page opens with it,
 Destination folded, after a restart, the system killing the app or the language switch; the
-Optimization rows and the lowered minimums come back with it. Never dropped by time (user,
+Optimization rows come back with it. Never dropped by time (user,
 2026-10-06): the day line says which day it's for, and yesterday's tracks are usually today's. A
 file that can't be read (e.g. an older format after an update) is ignored quietly and logged (user,
 2026-10-06); no migration. No cloud backup; a phone-to-phone transfer takes it.
@@ -320,15 +320,14 @@ at every station the rider hasn't set.
   from the stop the API walked to, and the API also offered stops nearby: Zürich HB → a tram at
   Bahnhofstrasse/HB counted as a 5-minute track switch at Zürich HB, no walk shown (an open question
   until then).
-  **Asked again where a time fell** (2026-10-07): a rider's default follows the answers, so a
-  change asked before an answer lowered its station's minimum ran with more time than its row
-  then shows (Sursee → Oerlikon 07:45, offset 2: Zürich HB asked with 3, its row 2, the IR13
-  09:08 → Oerlikon 09:14 never found). `search` runs again until every change was asked with the
-  time it ends with; what it asked before is answered from memory. Checked live for 8 Oct: 3 more
-  requests, 12 in all, and the IR13 found (3 minutes saved).
+  `search` also returns the changes the planner makes in all its answers (`Searched.offered`:
+  station, arrival, departure), kept in `Found.offered` (D4). `find()` in `:core` (the next such
+  time, the official connections, `search`, the `Found`; the request passed in) and
+  `parseTime()` are tested in `FoundTest` (2026-10-07, from the app).
 - **Transfer time per station, covering the whole change, walks included** (user, 2026-10-06:
   "a fixed estimated time we need for a specific trainstation"). `search` takes it as a function
-  of the station. **At a station the rider hasn't set: the official minimum there minus the
+  of the station; `TrackSwitchTimes` in `:core` gives it (D2), and the official time and the
+  default to the cards and the rows. **At a station the rider hasn't set: the official minimum there minus the
   offset in Settings, at least 0** (user, 2026-10-06: "the defaults are a fixed amount lower than
   the official ones"; a flat 5 was too high: riders who don't know their times would find nothing
   and think the app doesn't work). With the offset at 1, Horw → Sursee finds the test case with
@@ -340,22 +339,21 @@ at every station the rider hasn't set.
   Basel SBB 6, Sursee 3, most bus and tram stops 0–1. HRDF also has times per operator, line
   and train pair (`UMSTEIGV`, `UMSTEIGL`, `UMSTEIGZ`); none at Luzern, and not used. Refreshed by
   hand at each timetable change (next: 13 Dec 2026), see the skill.
-  **The planner's own changes count** (user, 2026-10-06): it offers RE24 → IR16 at Olten in 4
-  minutes (track 11 → 8), the table says 5, and `UMSTEIGV`/`L`/`Z` have nothing there (checked in
-  the 29 Sep 2026 export: Olten only has "999" pairs), so it uses finer per-track times that
-  aren't published. So in each search a station's official minimum is the table's or the
-  shortest change any of the API's answers makes there, whichever is less
-  (`shortestChanges`, `Minimums.lowered`): the official card shows Olten's 4 orange, its row starts at 3. A rider's
-  default at a station follows the answers, and the search asks again where it fell.
+  **The planner sometimes changes faster** than the table: RE24 → IR16 at Olten in 4 minutes
+  (track 11 → 8), S1 → S41 at Luzern in 4; the table says 5 and `UMSTEIGV`/`L`/`Z` have nothing
+  there (research/harmonize.md). Such a change is official for those trains only (D4,
+  `TrackSwitchTimes.official(change, offered)`); the station's time stays the table's (D1).
+  Until 2026-10-07 each search lowered the station's time to it, so colours and defaults moved
+  between searches.
 - **Requests:** 1 + one per change searched (those of the onward connections too, each question
-  once), + one per change asked again where its time fell (5 for Horw → Sursee).
+  once): 5 for Horw → Sursee 08:50, 9 for Sursee → Zürich Oerlikon 07:45 (8 Oct, live).
 - **Proven live** 2026-10-06 for Wed 7 Oct (`LiveTest`): 08:50 with 4 minutes finds the
   [test case](#test-case-horw--sursee-user-2026-10-06) (14 minutes saved, RE24 track 9), with 6
   minutes nothing; 14:50 finds the same change from the 14:53 (it repeats every hour).
 - **Limits, known:** the search uses planned times only (delays are shown, not searched with); only stations the official
   connections or the onward ones touch; changes only within a station; the live check doesn't skip public holidays; the official
-  minimums are a copy of one timetable year's, lowered only where an answer shows the planner's
-  finer time; `doublesBack` sees only stations by id (a train station and its bus stop differ).
+  minimums are a copy of one timetable year's, the planner's finer times only for its own changes;
+  `doublesBack` sees only stations by id (a train station and its bus stop differ).
 
 ## The first version (user, 2026-10-06)
 
@@ -438,8 +436,8 @@ Steps (user, 2026-10-06), one at a time, each shown working:
      an hour later (Java). How the API shows them: not known, it can't be asked before its window
      reaches 28 Mar (about 7 Nov 2026).
    - **In-seat continuations in the API:** one section each (6 tried: IR70 → IR13 at Zürich HB,
-     RE6 → R20, S7 → RE7, RE3 → RE13, RhB RE24 → RE4, S17 → S4), so they never lower a minimum
-     through `shortestChanges`.
+     RE6 → R20, S7 → RE7, RE3 → RE13, RhB RE24 → RE4, S17 → S4), so they're never one of the
+     planner's changes (`offered`).
    - **12 of 4,822 continuations** go on into the next service day (Italian S50 and S into the
      S10 at Mendrisio, 00:34): not modelled, so a change there.
    - **Trips are split by days**: the RE24 Luzern 09:05 is five trips over 7–20 Oct, every day
@@ -470,8 +468,7 @@ Steps (user, 2026-10-06), one at a time, each shown working:
    Help and README in all four languages, F-Droid's `NonFreeNet`, which version; on the phone,
    and how long loading the file takes there. `best(today's finds + the full search's,
    officials)`, today's first: of two the same, the first stays, and it has the API's names and
-   delays. The full search runs after today's, with the same rider function (the table's
-   minimums, nothing lowered); its `transfer` is asked at every station it scans, so its rows
+   delays. The full search runs after today's, with the same `TrackSwitchTimes`; its `transfer` is asked at every station it scans, so its rows
    are only its finds' change stations (today's are `Searched.changes`). Its `error` (should the
    two scans disagree) is caught and logged.
 
@@ -505,15 +502,25 @@ colours matter less):
 - **D5 The table stays bundled** (it equals the GTFS's and works offline before the first
   download); from the timetable file later.
 
-What goes: `Minimums.lowered`, `shortestChanges`, the re-run loop in `search` ("Asked again
-where a time fell" and "The planner's own changes count" under The app describe it until then),
-`Found.shortest`, the page's `official` state. `result.json` gets a new shape; an older one is
-ignored (no migration). `find()` and `parseTime()` move to `:core` with tests (declutter pass
-3, 3.1).
+Steps, one at a time:
 
-Steps, one at a time: the model in `:core` with tests; the page on it (colours, faded rows,
-Help's 🎨 and ⏱️ in all four languages; on the phone the two surprises again: Luzern 4 green in
-both, Brugg AG faded); then step 4.
+1. **The model in `:core`** (done 2026-10-07): `TrackSwitchTimes` (D1, D2; `official(change,
+   offered)` for D4), `Change`, `Searched.offered` and `Found.offered`, `Found.trips` and
+   `onTrips` (D3). Gone: `Minimums.lowered`, `shortestChanges`, the re-run loop in `search`
+   (each change asked once), `Found.shortest`, the page's `official` state; `result.json` has
+   the new shape, an older one is ignored and logged. `find()` and `parseTime()` in `:core`
+   (declutter pass 3, 3.1). The page uses `TrackSwitchTimes` for the rows and the cards (the
+   table's time at every change, D4 not shown yet, no faded rows yet). Checked live for Thu 8
+   Oct through `find()` (a one-off test, not kept), Luzern set to 4, offset 1: Sursee → Horw
+   07:45 Luzern's row 4 against 5, the S1 → S41 in 4 the planner's (against 4); Sursee → Zürich
+   Oerlikon 07:45 nothing faster with the defaults (Zürich HB 7 − 1 = 6; the IR75 → S8 needs
+   3), so the official connection via Olten shown: Olten, Zürich HB full, Brugg AG, Luzern
+   faded; with Zürich HB set to 3 the S8 find (09:29, 9 minutes) and Luzern, Zürich HB full,
+   Olten, Brugg AG faded.
+2. **The page on it:** the box rule (D4, `offered` into the cards), the rows off `onTrips`
+   faded, Help's 🎨 and ⏱️ in all four languages; on the phone the two surprises again
+   (Luzern 4 green in both, Brugg AG faded).
+3. Then step 4 of the full search.
 
 ## After the first release
 

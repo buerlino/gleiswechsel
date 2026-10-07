@@ -87,10 +87,13 @@ What it costs:
 0. The user decides D1–D5.
 1. **Finish step 3**, unaffected by this: notes, then the user pushes, turns Pages on and runs
    the job; check the file, its headers, and that `timetable()` reads it.
-2. **The model in `:core`**, with tests: the official time, the default and the rider's time in
+2. **The model in `:core`** (done 2026-10-07, CLAUDE.md, One model, step 1), with tests: the official time, the default and the rider's time in
    one place. `find()` and `parseTime()` move to `:core` (declutter pass 3, 3.1) and return the
    result with the planner's changes; the lowering and the loop go. Tests: the same time is the
    same colour in two searches; which rows are on the page's trips (Brugg isn't, so faded).
+   Found live (8 Oct): with the defaults, Sursee → Oerlikon has nothing faster (the IR75 → S8
+   needs Zürich HB at 3, the default is 6), so the page shows the official connection via Olten
+   and Olten is full; with Zürich HB set to 3, as below.
 3. **The page on it**: the box rule (1 and 2), the rows faded off the page's trips, Help's 🎨
    and ⏱️ in all four languages. On the phone: the two surprises again. Expected: Luzern 4
    green in both searches; for Sursee → Oerlikon, Luzern and Zürich HB full, Brugg AG faded.

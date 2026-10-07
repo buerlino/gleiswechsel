@@ -14,25 +14,31 @@ is in `research/`.
 
 - `core/.../Opendata.kt`: `Stop` (`delay`, null while not known; `newPlatform`, a changed
   track; `expected`), `tooShort` (a change the delays make shorter than the rider's time), `Leg` (`via`: the ids of the stations a ride passes, from the
-  API's `passList`), `Connection` (with `duration`, `transfers` and `changes`, the change stations
-  and their minutes: the search, `Minimums` and the page use them, and `doublesBack`), the client
+  API's `passList`), `Connection` (with `duration`, `transfers`, its changes as `Change`s (station id, arrival,
+  departure), `changes`, the change stations, and `doublesBack`), the client
   `connections()` and its parser.
   Tests in `OpendataTest` with made-up JSON shaped like a real response.
 - `core/.../Minimums.kt`: `Minimums`, the official minimum transfer time per station from the
-  HRDF `UMSTEIGB` text (`MinimumsTest`, made-up lines); `lowered` takes `shortestChanges` of the
-  API's answers of a search, where the planner changes faster than the table. The real file is the app's
+  HRDF `UMSTEIGB` text, and `TrackSwitchTimes`, the one model (CLAUDE.md, One model): `official`
+  (the table's), `default` (− the offset, at least 0), `rider` (set, else default), all by
+  station id, and `official(change, offered)`, a change the planner makes never below
+  (`MinimumsTest`, made-up lines). The real file is the app's
   `res/raw/umsteigb.txt`, see [Official minimums](#official-minimums-each-timetable-change).
 - `core/.../Search.kt`: `Find` (with `saved` and `moreEfficient`), `ticketUrl` (the sbb.ch
-  link), the local search `search()` (each question once; it runs again where a time fell, and
-  returns the stations it changed at, `Searched.changes`), `shortened` (the onward
+  link), the local search `search()` (each question once; it returns the stations it changed at,
+  `Searched.changes`, and the planner's changes in its answers, `Searched.offered`), `shortened` (the onward
   connections' changes too, recursively), `onward` (rides from the change station itself) and `best`, the rules between the finds and the
   official connections, for both searches.
   It takes the official connections, the transfer time per station and the request as a
   function, so `SearchTest` runs it on a fake API with made-up connections.
-- `core/.../Found.kt`: `Found`, a search's result as the page shows it (`asOf`: when it searched,
+- `core/.../Found.kt`: `find()` (the next such time, Swiss; the official connections; `search`
+  with `TrackSwitchTimes`; the request passed in, a failed onward one to `skipped`),
+  `parseTime()` (`FoundTest`, also the two surprises of research/optimization_rows.md on a fake
+  API); `Found`, a search's result as the page shows it (`offered`; `trips`, what the page
+  shows, and `onTrips`, a row's station on one of them) (`asOf`: when it searched,
   shown as the delays' time while `delaysKnown`), and its JSON
   (`toJson`, `found`; `FoundTest`: written and read back, made-up data). `Stop`, `Leg`,
-  `Connection` and `Find` are `@Serializable` for it; times as ISO text (`IsoText`).
+  `Connection`, `Change` and `Find` are `@Serializable` for it; times as ISO text (`IsoText`).
 - `core/.../Timetable.kt`: `Timetable`, the trains of 14 days for the full search (stations by
   didok, platforms, trips with a bit per day, in-seat `Continuation`s), its gzipped binary
   (`write`; times as steps from the previous departure plus a dwell byte) and the reader
@@ -70,11 +76,12 @@ is in `research/`.
   Help's topics; `Folded` for the folded Destination, ▴ on the Search row to fold it again, ✕
   on Journey's title to close the result), `MinutesStepper` (− and +, the rows and the offset in
   Settings; `arrows = false` for the offset), `folding` and `FoldMark` (a fold's state for a
-  screen reader, the ▾ or ▸ hidden from it), `parseTime` and `find`. SharedPreferences
+  screen reader, the ▾ or ▸ hidden from it) and `search` (core's `find` on the live API, a
+  failure as `Result.Failed`). `times` (`TrackSwitchTimes`) is made from the offset, the set
+  times and `optimize` at each composition. SharedPreferences
   `commute`: `from`, `to`, `leaving` as typed, `offset` and the transfer times keyed by station id as numbers in strings (empty:
   unset), `optimize`. The rows come from `Found.changes` (`Searched.changes`: the stations the
-  search asked the transfer time at) and stay in `changes`, with the lowered minimums in
-  `official`, while a time or the offset is edited. The result is set only through `show`, which
+  search asked the transfer time at) and stay in `changes` while a time or the offset is edited. The result is set only through `show`, which
   writes `files/result.json` (a result with connections) or deletes it; `onCreate` reads it
   back (`last`). `fade` (a time, the offset or Optimization changed) deletes the file but keeps
   the result on the page at 60% (`stale`) until the next Search. While a search runs, the Search
@@ -218,14 +225,18 @@ Everything else was tried on the phone with the R8 release build signed with the
   recorded), the page after a change in Settings with Optimization off (only Cancel), and the
   titles as headings in TalkBack.
 - The fixes after that test pass (2026-10-07), seen on the phone the same day (R8 release): the
-  search asking again where a time fell (Sursee → oerlikon 07:45, offset 2: the IR13 Zürich HB
-  09:08, 3 minutes earlier); one station per change (Luzern → Zürich, Central 08:00: nothing
+  search asking again where a time fell (gone since, with One model); one station per change (Luzern → Zürich, Central 08:00: nothing
   faster, the tram from Bahnhofstrasse/HB gone); the keyboard's next keys (From → To → the time,
   past ⇅) and the number keyboard's search key (searches, closes the keyboard); the plain blue
   ⇅ between the borders; the no-break spaces in Help (German, English, French) and the cards; the
   French day line ("jeu. 8 oct. :"). Not seen: Italian.
 - The themed icon in a launcher that shows themed icons (Niagara doesn't); only checked as a
   render.
+
+- One model in `:core` (2026-10-07): `MinimumsTest`, `SearchTest`, `FoundTest` (the two
+  surprises on a fake API), and `find()` live for Thu 8 Oct in a one-off test (CLAUDE.md, One
+  model, step 1). Not on the phone: the page with `TrackSwitchTimes`, an older `result.json`
+  ignored after the update (only `FoundTest`), `parseTime` from the app.
 
 - The timetable job (2026-10-07): run once by hand on GitHub (2 min 4 s; the file and page
   1 min 38 s), deployed. Not checked: the schedule (first run Thu 8 Oct, 03:23 UTC), the
