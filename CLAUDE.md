@@ -451,9 +451,8 @@ Steps (user, 2026-10-06), one at a time, each shown working:
      S10 at Mendrisio, 00:34): not modelled, so a change there.
    - **Trips are split by days**: the RE24 Luzern 09:05 is five trips over 7–20 Oct, every day
      between them.
-   - **Train names** (`route_short_name`): Swiss lines as the API's (S, SN, R, RE, IR, IC,
-     IRLEX); foreign ones not: ICE `651A` (API `ICE651A`), TER `K23` (`TERK23`), Jungfraubahn
-     `65` (`CC65`), EC and TGV without a number (API `EC000015`, `TGV009210`): open question 1.
+   - **Train names** (`route_short_name`): most Swiss lines as the API's; not ICE, TER, the
+     Jungfraubahn, EC and TGV, nor a train without a line: step 4.2 below.
 3. `.github/workflows/timetable.yml` (done 2026-10-07; the skill):
    Thursdays and Sundays at 03:23 UTC, the day after the GTFS is mostly updated, and by hand
    (user, 2026-10-07: twice a week, as the terms' §5.2 says). It downloads the year's dataset
@@ -472,14 +471,40 @@ Steps (user, 2026-10-06), one at a time, each shown working:
    **GitHub switches off scheduled workflows in a public repo after 60 days without activity**
    (a commit counts): the file then runs out of days within 14. Switch it on again in the
    Actions tab, or commit.
-4. The app, after [One model](#one-model-for-the-track-switch-times-decided-2026-10-07-being-built):
-   the download, both searches, Optimization rows (today's plus the finds' change stations),
-   Help and README in all four languages, F-Droid's `NonFreeNet`, which version; on the phone,
-   and how long loading the file takes there. `best(today's finds + the full search's,
-   officials)`, today's first: of two the same, the first stays, and it has the API's names and
-   delays. The full search runs after today's, with the same `TrackSwitchTimes`; its `transfer` is asked at every station it scans, so its rows
-   are only its finds' change stations (today's are `Searched.changes`). Its `error` (should the
-   two scans disagree) is caught and logged.
+4. The app, in five steps (user, 2026-10-07), one at a time:
+   1. **The local copy** (done 2026-10-07, `:core`): `localTimetable` reads the phone's copy and
+      downloads `TIMETABLE_URL` (`download`, the API's User-Agent) when it's missing, older than
+      7 days (its modification time: with the job off, still only once a week) or doesn't read
+      (after an update to a new format). A download replaces it only once it reads, so no
+      network, a Wi-Fi login page or a newer app's format keep the old copy; null if none reads;
+      each error to `failed`. `TimetableTest` (a fake download); `LiveTest` from Pages on the
+      desktop: 453,334 bytes downloaded and read in 682 ms, then 83 ms from the copy. Not in the
+      app yet.
+   2. **Train names as the API's** (user, 2026-10-07: now, not later; was an open question;
+      the rule proposed the same day, waiting for the user's go): `trains()` names a trip
+      `route_short_name` where it starts with `route_desc` (S4, IR35, SN1); `route_desc` + the
+      train number (`trip_short_name`) in six digits where it's only the category (IC000484,
+      EC000150, ICE000276, TGV009213); else `route_desc` + it (CC64, PEGEX, IRVAE, TERC12,
+      RB30). The API's own rule as seen 2026-10-07: 5,102 trains from the boards of 40 stations,
+      joined to the GTFS trips by train number and departure time: the rule names 4,958 as the
+      API does; 31 match two routes at that time, the API's name one of them; none differ.
+      `route_short_name` alone differed for about 680 (every EC, ICE, TGV, TER, CC, PE, RB, NJ,
+      RJX, and IC, IR, S without a line). Every train trip has a numeric `trip_short_name`
+      (2026 and 2027 exports). Not on the boards: `REN1`, `SEV`, `EXT`, `ZUG`. The file's format
+      stays; the job's next file has the names.
+   3. **Both searches, and the rows:** `best(today's finds + the full search's, officials)`,
+      today's first: of two the same, the first stays, and it has the API's names and delays.
+      The full search runs after today's, with the same `TrackSwitchTimes`; its `transfer` is
+      asked at every station it scans, so its rows are only its finds' change stations (today's
+      are `Searched.changes`). Its `error` (should the two scans disagree) is caught and logged.
+      No copy that reads, or one without the day: logged and a line on the page (user,
+      2026-10-07). On the phone: the first search downloads, the next doesn't; the test case; a
+      find only the full search has; how long reading the file takes there.
+   4. **The texts**, all four languages: Help (🚆; 📡 the file on buerlino.github.io; ⚠️ a find
+      from the timetable file shows no delays, user 2026-10-07), README, the store descriptions,
+      F-Droid's `NonFreeNet` (buerlino.github.io).
+   5. **The version and the phone check** (0.3.0, versionCode 3, proposed): changelogs; the R8
+      build end to end, a copy older than 7 days, no network.
 
 ### One model for the track switch times (decided 2026-10-07, being built)
 
@@ -526,15 +551,17 @@ Steps, one at a time:
    3), so the official connection via Olten shown: Olten, Zürich HB full, Brugg AG, Luzern
    faded; with Zürich HB set to 3 the S8 find (09:29, 9 minutes) and Luzern, Zürich HB full,
    Olten, Brugg AG faded.
-2. **The page on it** (built 2026-10-07, not yet on the phone): the box rule (D4, `offered`
-   into `FindCard` and `Trip`, the `Change` built as `Connection.transfers` does), the rows off
-   `onTrips` faded (`MinutesStepper`'s `modifier`), Help's 🎨 and ⏱️ in all four languages
-   (🎨's old "or less where the planner itself changes faster" gone). Checked: `:core:test`,
-   lint, `assembleDebug`. To check on the phone (the user's call), offset 1, Luzern set to 4:
-   Sursee → Horw 07:45, Luzern 4 green in two searches in a row, the S1 → S41 in 4 orange;
-   Sursee → Zürich Oerlikon 07:45, Brugg AG faded; with the defaults the official connection via
-   Olten, Olten and Zürich HB full, Brugg AG and Luzern faded; with Zürich HB set to 3 the S8 find
-   (09:29, 9 minutes saved), Luzern and Zürich HB full, Olten and Brugg AG faded.
+2. **The page on it** (done 2026-10-07): the box rule (D4, `offered` into `FindCard` and
+   `Trip`, the `Change` built as `Connection.transfers` does), the rows off `onTrips` faded
+   (`MinutesStepper`'s `modifier`), Help's 🎨 and ⏱️ in all four languages (🎨's old "or less
+   where the planner itself changes faster" gone). Checked on the phone the same day (R8 release,
+   offset 1, live for Thu 8 Oct): Sursee → Horw 07:45 with Luzern at 4, nothing faster, the
+   S1 → S41 in 4 orange and Luzern's row 4 green, pixel for pixel the same in two searches in a
+   row; Sursee → Zürich Oerlikon 07:45 with the defaults the official connection via Olten (10
+   there, red; the planner's IC5 → S6 in 5 at Zürich HB orange), Olten and Zürich HB full, Brugg
+   AG and Luzern faded; Zürich HB at 3 the S8 find (09:29 instead of 09:38), Luzern and Zürich HB
+   full, Olten and Brugg AG faded; at 2 a second find as well (S29 → IR35 at Olten in 8, red,
+   then IR13 at Zürich HB in 2: 09:14 instead of 09:17), only Brugg AG faded.
 3. Then step 4 of the full search.
 
 ## After the first release
@@ -561,9 +588,4 @@ instead.
 
 ## Open questions (for the user)
 
-1. **Foreign train names in the full search** (2026-10-07): GTFS `route_desc` is the category
-   (ICE, TER, CC, TGV). Putting it before a `route_short_name` that doesn't start with it would
-   match the API for ICE, TGV, TER and the Jungfraubahn (`ICE651A`, `TERK23`, `CC65`), but make
-   `PEGEX`, `REN1`, `IRVAE`, `SEV` of the Glacier Express, the Nachtnetz, the Voralpen-Express and
-   rail replacement. EC and TGV the API names by train number, which needs `trip_short_name`.
-   Swiss lines match already; a find shows the API's name where today's search found it too.
+None now (the train names became step 2 of the app's full search, 2026-10-07).

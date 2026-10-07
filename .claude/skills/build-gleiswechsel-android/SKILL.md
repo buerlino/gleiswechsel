@@ -12,25 +12,26 @@ is in `research/`.
 
 ## Where things are
 
-- `core/.../Opendata.kt`: `Stop` (`delay`, null while not known; `newPlatform`, a changed
-  track; `expected`), `tooShort` (a change the delays make shorter than the rider's time), `Leg` (`via`: the ids of the stations a ride passes, from the
-  API's `passList`), `Connection` (with `duration`, `transfers`, its changes as `Change`s (station id, arrival,
-  departure), `changes`, the change stations, and `doublesBack`), the client
-  `connections()` and its parser.
-  Tests in `OpendataTest` with made-up JSON shaped like a real response.
+- `core/.../Opendata.kt`: `Stop` (`delay`, null while not known; `newPlatform`, a changed track;
+  `expected`), `tooShort` (a change the delays make shorter than the rider's time), `Leg` (`via`:
+  the ids of the stations a ride passes, from the API's `passList`), `Connection` (with `duration`,
+  `transfers`, its changes as `Change`s (station id, arrival, departure), `changes`, the change
+  stations, and `doublesBack`), the client `connections()` and its parser, and `download()` (the
+  timetable file), both through `get` (the User-Agent). Tests in `OpendataTest` with made-up JSON
+  shaped like a real response.
 - `core/.../Minimums.kt`: `Minimums`, the official minimum transfer time per station from the
   HRDF `UMSTEIGB` text, and `TrackSwitchTimes`, the one model (CLAUDE.md, One model): `official`
   (the table's), `default` (− the offset, at least 0), `rider` (set, else default), all by
   station id, and `official(change, offered)`, a change the planner makes never below
   (`MinimumsTest`, made-up lines). The real file is the app's
   `res/raw/umsteigb.txt`, see [Official minimums](#official-minimums-each-timetable-change).
-- `core/.../Search.kt`: `Find` (with `saved` and `moreEfficient`), `ticketUrl` (the sbb.ch
-  link), the local search `search()` (each question once; it returns the stations it changed at,
-  `Searched.changes`, and the planner's changes in its answers, `Searched.offered`), `shortened` (the onward
-  connections' changes too, recursively), `onward` (rides from the change station itself) and `best`, the rules between the finds and the
-  official connections, for both searches.
-  It takes the official connections, the transfer time per station and the request as a
-  function, so `SearchTest` runs it on a fake API with made-up connections.
+- `core/.../Search.kt`: `Find` (with `saved` and `moreEfficient`), `ticketUrl` (the sbb.ch link),
+  the local search `search()` (each question once; it returns the stations it changed at,
+  `Searched.changes`, and the planner's changes in its answers, `Searched.offered`), `shortened`
+  (the onward connections' changes too, recursively), `onward` (rides from the change station
+  itself) and `best`, the rules between the finds and the official connections, for both searches.
+  It takes the official connections, the transfer time per station and the request as a function, so
+  `SearchTest` runs it on a fake API with made-up connections.
 - `core/.../Found.kt`: `find()` (the next such time, Swiss; the official connections; `search`
   with `TrackSwitchTimes`; the request passed in, a failed onward one to `skipped`),
   `parseTime()` (`FoundTest`, also the two surprises of research/optimization_rows.md on a fake
@@ -42,14 +43,17 @@ is in `research/`.
 - `core/.../Timetable.kt`: `Timetable`, the trains of 14 days for the full search (stations by
   didok, platforms, trips with a bit per day, in-seat `Continuation`s), its gzipped binary
   (`write`; times as steps from the previous departure plus a dwell byte) and the reader
-  `timetable()`, which throws on another `FORMAT` or a broken file. `core/.../Gtfs.kt`: `trains()`,
+  `timetable()`, which throws on another `FORMAT` or a broken file; `localTimetable()`, the
+  phone's copy, downloaded from `TIMETABLE_URL` when it's missing, older than 7 days or doesn't
+  read, replaced only by a download that reads (CLAUDE.md, The full search, step 4.1).
+  `core/.../Gtfs.kt`: `trains()`,
   the GTFS zips → `Timetable` (JDK only; its own CSV reader for the BOM and the quotes; each zip
   for the days from its `feed_start_date` to its `feed_end_date`, a zip without any skipped, a
   day none has throws), and the `main` of
   `./gradlew :core:timetable -Pgtfs=<zip>[,<zip>…] -Pout=<file> [-Pfrom=yyyy-MM-dd]` (paths from
   the repo's root). `TimetableTest`: a made-up GTFS in the Swiss export's shape, read, written and
-  read back, and a next year's from 13 Dec. Not used by the app yet, so R8 strips it from the
-  release APK.
+  read back, and a next year's from 13 Dec; `localTimetable` with a fake download in a temp file.
+  Not used by the app yet, so R8 strips it from the release APK.
 - `.github/workflows/timetable.yml`: the file on GitHub Pages, Thursdays and Sundays and by hand
   (Actions → Timetable → Run workflow). Downloads the year's GTFS from the dataset's `/permalink`
   with a browser User-Agent (and the next year's when the 14 days reach December), runs
@@ -71,32 +75,37 @@ is in `research/`.
   of requests. It asks for the next weekday, so a public holiday or a timetable change can fail it.
   Its full search runs on `private/gtfs/timetable.bin.gz` with the officials from the API: the
   file must have that weekday (make a new one with `-Pfrom=<today>`), and it prints the times.
+  `thePublishedTimetableIsDownloadedOnce`: the file on Pages through `localTimetable`; one test
+  alone: `--tests '*LiveTest.thePublished*'`.
 - `app/.../MainActivity.kt`: `App` holds all state and shows the search page, Help or Settings
-  (`Screen`); the search page (`Heading` for each panel's title, foldable with `open`, also
-  Help's topics; `Folded` for the folded Destination, ▴ on the Search row to fold it again, ✕
-  on Journey's title to close the result), `MinutesStepper` (− and +, the rows and the offset in
-  Settings; `arrows = false` for the offset), `folding` and `FoldMark` (a fold's state for a
-  screen reader, the ▾ or ▸ hidden from it) and `search` (core's `find` on the live API, a
-  failure as `Result.Failed`). `times` (`TrackSwitchTimes`) is made from the offset, the set
-  times and `optimize` at each composition. SharedPreferences
-  `commute`: `from`, `to`, `leaving` as typed, `offset` and the transfer times keyed by station id as numbers in strings (empty:
-  unset), `optimize`. The rows come from `Found.changes` (`Searched.changes`: the stations the
-  search asked the transfer time at) and stay in `changes` while a time or the offset is edited. The result is set only through `show`, which
-  writes `files/result.json` (a result with connections) or deletes it; `onCreate` reads it
-  back (`last`). `fade` (a time, the offset or Optimization changed) deletes the file but keeps
-  the result on the page at 60% (`stale`) until the next Search. While a search runs, the Search
-  button is Cancel (`job`). The keyboard's key goes to the next field, in the time field it
-  searches (`Field`'s `onSearch`, `startSearch`). `app/.../Cards.kt`: the cards (`FindCard`, `Trip`, `StopRow` with the
-  delay and a changed track, `TrackSign`), `MinutesBox`, `LateBox` (a change the delays make too
-  short) and the colours. `app/.../Pages.kt`: Settings, Help (`help`: emoji, title, text; folded
-  until tapped) and `SubPage` (← and the back gesture). A symbol on a button gets
-  `Modifier.spokenAs(…)`, the word a screen reader says instead (`uiautomator dump` shows it as the
-  child's `content-desc`). Every text is
-  in `res/values*/strings.xml` (en, de, fr, it); a new one goes in all four, or lint fails on
-  the missing translation. The search runs on `Dispatchers.IO`; a failure of the first request
-  shows one text (`search_failed`), of an onward one `not_all_checked` under the day; each
-  exception goes to the log under the tag `Gleiswechsel`, in the message too (Android's `Log`
-  drops the stack trace of an `UnknownHostException`). `buildConfig` is on for the version name in the User-Agent.
+  (`Screen`); the search page (`Heading` for each panel's title, foldable with `open`, also Help's
+  topics; `Folded` for the folded Destination, ▴ on the Search row to fold it again, ✕ on Journey's
+  title to close the result), `MinutesStepper` (− and +, the rows and the offset in Settings;
+  `arrows = false` for the offset), `folding` and `FoldMark` (a fold's state for a screen reader,
+  the ▾ or ▸ hidden from it) and `search` (core's `find` on the live API, a failure as
+  `Result.Failed`). `times` (`TrackSwitchTimes`) is made from the offset, the set times and
+  `optimize` at each composition. SharedPreferences `commute`: `from`, `to`, `leaving` as typed,
+  `offset` and the transfer times keyed by station id as numbers in strings (empty: unset),
+  `optimize`. The rows come from `Found.changes` (`Searched.changes`: the stations the search asked
+  the transfer time at) and stay in `changes` while a time or the offset is edited; a row whose
+  station isn't on a trip shown (`Found.onTrips`) is faded through `MinutesStepper`'s `modifier`
+  (D3). The result is set only through `show`, which writes `files/result.json` (a result with
+  connections) or deletes it; `onCreate` reads it back (`last`). `fade` (a time, the offset or
+  Optimization changed) deletes the file but keeps the result on the page at 60% (`stale`) until the
+  next Search. While a search runs, the Search button is Cancel (`job`). The keyboard's key goes to
+  the next field, in the time field it searches (`Field`'s `onSearch`, `startSearch`).
+  `app/.../Cards.kt`: the cards (`FindCard`, `Trip`, `StopRow` with the delay and a changed track,
+  `TrackSign`), `MinutesBox`, `LateBox` (a change the delays make too short) and the colours.
+  `FindCard` and `Trip` take `Found.offered` and colour each change against `times.official(change,
+  offered)` (D4). `app/.../Pages.kt`: Settings, Help (`help`: emoji, title, text; folded until
+  tapped) and `SubPage` (← and the back gesture). A symbol on a button gets `Modifier.spokenAs(…)`,
+  the word a screen reader says instead (`uiautomator dump` shows it as the child's `content-desc`).
+  Every text is in `res/values*/strings.xml` (en, de, fr, it); a new one goes in all four, or lint
+  fails on the missing translation. The search runs on `Dispatchers.IO`; a failure of the first
+  request shows one text (`search_failed`), of an onward one `not_all_checked` under the day; each
+  exception goes to the log under the tag `Gleiswechsel`, in the message too (Android's `Log` drops
+  the stack trace of an `UnknownHostException`). `buildConfig` is on for the version name in the
+  User-Agent.
 - Before input over adb, check the app is in front (`adb shell dumpsys activity activities | grep
   topResumedActivity`): the user uses the phone meanwhile, and a back key with no keyboard open
   leaves the app, so later taps and text go into whatever app is behind (2026-10-06: they went
@@ -182,8 +191,9 @@ dataset's `/permalink` with a browser User-Agent, 5 s), `timetable.bin.gz` made 
 Everything else was tried on the phone with the R8 release build signed with the debug key.
 
 - On the page: a walk before the first train in a card (inside a change, after the last train,
-  a second change and the orange and red boxes seen 2026-10-07); a set time at a second change
-  finding something; a long station name in a row or a card.
+  a second change and the orange and red boxes seen 2026-10-07; a set time at a second change
+  finding something too: Zürich HB at 2, Sursee → Zürich Oerlikon); a long station name in a
+  row or a card.
 - The ticket link (2026-10-06): tapped from the app only in German and only in Brave; the
   English, French and Italian URLs were opened in Brave directly. Another browser, and a phone
   without one (the `no_browser` message: not seen, the test phone has a browser).
@@ -193,8 +203,9 @@ Everything else was tried on the phone with the R8 release build signed with the
   has shown it.
 - The fold states (2026-10-06): `uiautomator dump` doesn't show `stateDescription`; not heard
   in TalkBack.
-- The rule between the finds (2026-10-06): only the unit tests; no real search has shown two
-  finds yet.
+- The rule between the finds (2026-10-06): two real finds seen together, neither beating the
+  other (Sursee → Zürich Oerlikon 07:45, Zürich HB at 2, 2026-10-07); a find another one beats,
+  and the same trip twice, only in the unit tests.
 - Languages: a phone set to German itself (only `set-app-locales` and the title's menu; the
   page, Settings and Help seen in all four on 2026-10-07).
 - HTTP 429 with the plain error text (got once before it, after many searches).
@@ -209,13 +220,15 @@ Everything else was tried on the phone with the R8 release build signed with the
 - The saved result (2026-10-06, R8 release build): kept after a force-stop and the language
   switch, gone after a step in Optimization; the rest only `FoundTest`. Not seen: a file in an
   older format (none exists yet), a failed write, the system killing the app in the background,
-  a phone-to-phone transfer, a result with a walk or a second change read back on the phone.
+  a phone-to-phone transfer, a result with a walk read back on the phone (one with two finds
+  and second changes came back after the language switch, 2026-10-07).
   `run-as` doesn't work on the release build, so the file itself wasn't looked at.
 - Split screen.
-- One model, the page (2026-10-07): the D4 box rule (a change the planner itself makes never
-  green), the faded Optimization rows (`onTrips`) and Help's new 🎨 and ⏱️ texts: only built
-  (`:core:test`, lint, `assembleDebug`), not on the phone yet. The check is in CLAUDE.md, One
-  model, step 2. Not looked at: whether the faded − and + read as disabled.
+- One model (2026-10-07): `:core` by `MinimumsTest`, `SearchTest`, `FoundTest` (the two
+  surprises on a fake API) and `find()` live for Thu 8 Oct in a one-off test (CLAUDE.md, One
+  model, step 1). The page on the phone the same day (CLAUDE.md, One model, step 2), in
+  English; Help's new 🎨 and ⏱️ texts in all four. Not seen: an older `result.json` ignored
+  after the update (only `FoundTest`), whether the faded − and + read as disabled (TalkBack).
 - Delays (2026-10-06, R8 release build, German only): real "+1"s and the "as of" line seen live
   (Horw → Sursee at 23:22 and 23:30), kept after a force-stop, absent for tomorrow's 08:50. The
   red "! 1 min", the grey "−2 min" and a changed track (14 instead of 12) only from a made-up
@@ -229,19 +242,13 @@ Everything else was tried on the phone with the R8 release build signed with the
   recorded), the page after a change in Settings with Optimization off (only Cancel), and the
   titles as headings in TalkBack.
 - The fixes after that test pass (2026-10-07), seen on the phone the same day (R8 release): the
-  search asking again where a time fell (gone since, with One model); one station per change (Luzern → Zürich, Central 08:00: nothing
-  faster, the tram from Bahnhofstrasse/HB gone); the keyboard's next keys (From → To → the time,
-  past ⇅) and the number keyboard's search key (searches, closes the keyboard); the plain blue
-  ⇅ between the borders; the no-break spaces in Help (German, English, French) and the cards; the
-  French day line ("jeu. 8 oct. :"). Not seen: Italian.
+  search asking again where a time fell (gone since, with One model); one station per change (Luzern
+  → Zürich, Central 08:00: nothing faster, the tram from Bahnhofstrasse/HB gone); the keyboard's
+  next keys (From → To → the time, past ⇅) and the number keyboard's search key (searches, closes
+  the keyboard); the plain blue ⇅ between the borders; the no-break spaces in Help (German, English,
+  French) and the cards; the French day line ("jeu. 8 oct. :"). Not seen: Italian.
 - The themed icon in a launcher that shows themed icons (Niagara doesn't); only checked as a
   render.
-
-- One model in `:core` (2026-10-07): `MinimumsTest`, `SearchTest`, `FoundTest` (the two
-  surprises on a fake API), and `find()` live for Thu 8 Oct in a one-off test (CLAUDE.md, One
-  model, step 1). Not on the phone: the page with `TrackSwitchTimes`, an older `result.json`
-  ignored after the update (only `FoundTest`), `parseTime` from the app.
-
 - The timetable job (2026-10-07): run once by hand on GitHub (2 min 4 s; the file and page
   1 min 38 s), deployed. Not checked: the schedule (first run Thu 8 Oct, 03:23 UTC), the
   December run with two years' GTFS on GitHub (only on the desktop).
@@ -250,6 +257,9 @@ Everything else was tried on the phone with the R8 release build signed with the
   finds among them, so no full-search find through other stations seen on real data). Not in
   the app, not on the phone. Not checked: an hour skipped (28 Mar 2027), a find through an
   in-seat continuation, `best` on finds of both searches together.
+- The local copy (2026-10-07, `localTimetable`): `TimetableTest` and the live download from
+  Pages on the desktop (once, then from the copy). Not in the app, not on the phone; Android's
+  `HttpURLConnection` on Pages, a real Wi-Fi login page, a copy the system cleared.
 
 ## Releasing (as in gridload and APODroid)
 

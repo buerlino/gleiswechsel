@@ -4,13 +4,16 @@ import java.io.ByteArrayOutputStream
 import java.io.DataOutputStream
 import java.io.File
 import java.io.IOException
+import java.time.Duration
 import java.time.LocalDate
 import java.util.zip.GZIPOutputStream
 import java.util.zip.ZipEntry
 import java.util.zip.ZipOutputStream
 import kotlin.test.Test
+import kotlin.test.assertContentEquals
 import kotlin.test.assertEquals
 import kotlin.test.assertFailsWith
+import kotlin.test.assertFalse
 
 class TimetableTest {
     /** A GTFS file as the Swiss export writes it: a BOM, the header, every field quoted, CRLF. */
@@ -205,5 +208,61 @@ class TimetableTest {
     fun aBrokenFileIsRefused() {
         val bytes = ByteArrayOutputStream().also { timetable.write(it) }.toByteArray()
         assertFailsWith<IOException> { timetable(bytes.copyOf(bytes.size / 2).inputStream()) }
+    }
+
+    // The phone's copy, at first missing; the download sends [published], from 2 March.
+    private val copy = File.createTempFile("timetable", ".bin.gz").apply { delete(); deleteOnExit() }
+    private val published = ByteArrayOutputStream().also { timetable.write(it) }.toByteArray()
+    private var downloads = 0
+    private val errors = mutableListOf<String>()
+
+    private fun local(download: () -> ByteArray = { published }) =
+        localTimetable(copy, { downloads++; download() }) { errors += it.javaClass.simpleName }?.first
+
+    // A copy from 3 March, [days] old.
+    private fun old(days: Long) = copy.run {
+        ByteArrayOutputStream().also { trains(listOf(gtfs), LocalDate.of(2026, 3, 3), 14).write(it) }.toByteArray().let(::writeBytes)
+        setLastModified(System.currentTimeMillis() - Duration.ofDays(days).toMillis())
+    }
+
+    @Test
+    fun aMissingCopyIsDownloadedOnce() {
+        assertEquals(LocalDate.of(2026, 3, 2), local())
+        assertEquals(LocalDate.of(2026, 3, 2), local())
+        assertContentEquals(published, copy.readBytes())
+        assertEquals(1, downloads)
+        assertEquals(emptyList(), errors)
+    }
+
+    @Test
+    fun aCopyOlderThanAWeekIsReplaced() {
+        old(6)
+        assertEquals(LocalDate.of(2026, 3, 3), local())
+        assertEquals(0, downloads)
+        old(8)
+        assertEquals(LocalDate.of(2026, 3, 2), local())
+        assertContentEquals(published, copy.readBytes())
+    }
+
+    @Test
+    fun aFailedDownloadKeepsTheOldCopy() {
+        old(8)
+        assertEquals(LocalDate.of(2026, 3, 3), local { throw IOException("No network") })
+        // A Wi-Fi login page, or a newer app's format.
+        assertEquals(LocalDate.of(2026, 3, 3), local { "<html>Log in</html>".toByteArray() })
+        assertEquals(listOf("IOException", "ZipException"), errors)
+        assertEquals(2, downloads)
+        // None at all: null.
+        copy.delete()
+        assertEquals(null, local { throw IOException("No network") })
+        assertFalse(copy.exists())
+    }
+
+    @Test
+    fun aCopyThatDoesntReadIsReplaced() {
+        // An older app's format, after an update.
+        copy.outputStream().use { out -> DataOutputStream(GZIPOutputStream(out)).use { it.writeInt(0) } }
+        assertEquals(LocalDate.of(2026, 3, 2), local())
+        assertEquals(listOf("IOException"), errors)
     }
 }

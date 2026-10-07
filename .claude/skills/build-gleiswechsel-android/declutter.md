@@ -274,3 +274,97 @@ Release v0.2.0 green, both releases have their APK. AGP 9.4.1, Kotlin 2.4.20, Co
 - [x] 5.1 `git gc`: 365 loose objects (1.9 MB).
   Done (2026-10-07): 438 loose objects (2.3 MB) packed, none left.
 - Nothing else: the latest versions, reproducible, CI green.
+
+## Pass 2026-10-07 (4)
+
+The fourth pass, report only (no code changed), of 46e251e. Without the phone (another session
+may be using it).
+
+Ran: `clean :core:test :app:lintDebug :app:lintAnalyzeDebug :app:assembleDebug
+:app:assembleRelease --rerun-tasks --warning-mode all`: 56 tests green, lint "No issues found",
+no `w:` lines, the only deprecation `Configuration.setVisible`. `:core:test -Plive`: 5 green
+(Thu 8 Oct; 5 requests each, S4 → RE24, 14 minutes; the full search on
+`private/gtfs/timetable.bin.gz` finds it with the defaults in 193 ms and nothing with 5 at
+Luzern, the file read in 68–122 ms). Fresh clones in two paths (one with a space) and the repo's
+own build: the same sha256 (`dcbf7cbc…`). CI: every Test run on master green up to 46e251e, the
+Timetable run by hand green; Pages serves the file of 7 Oct (453,334 bytes, `application/gzip`).
+AGP 9.4.1, Kotlin 2.4.20, Compose BOM 2026.09.00, activity-compose 1.13.0, core-ktx 1.19.1,
+kotlinx.serialization 1.11.0, Gradle 9.8.0, `checkout@v7`, `setup-java@v6`,
+`upload-pages-artifact@v5`, `deploy-pages@v5`: the latest stable.
+
+### Checked, no change needed
+- **No dead code:** every declaration is used (checked with a script), no unused imports, every
+  string used and in all four languages with the same placeholders.
+- **The full search** (`fullSearch`), read through: boarding at A, a change needing the rider's
+  time, in-seat continuations (a trip either goes on or is left, never both), rides of 0 minutes
+  kept in their order, the early stop; the backward scan agrees with the forward one. Its times
+  carry the same offsets as the API's, so `official(change, offered)` will also match its finds.
+- **A search day the file doesn't have:** the scan has no rides and finds nothing, the same as
+  today's search alone, so step 4 needs no extra check for it.
+- **`timetable.yml`'s years:** between 13 and 31 Dec it also downloads the ending year's zip,
+  which `trains` skips (none of the days): one extra download of about 5 s. Left.
+- **The page:** `show`, `fade` and `stale`; the rows, `centred`, Cancel. A dark-mode switch
+  (`uiMode` isn't in `configChanges`) recreates the activity, as the language switch does: the
+  result comes back from its file, a running search is lost, as when the system kills the app.
+- **The parser:** every walk in the 8 saved answers in `private/` has both times (the parser
+  throws without one).
+- **Migrations:** none in the code; an older `result.json` is ignored (`FoundTest`).
+- **Links** in `CLAUDE.md`, the skill, README and `research/`, anchors included, all resolve.
+
+### Bugs
+- None found.
+
+### UI
+- [ ] 2.1 60% opacity now means four things: a default (the box's text), a row whose station
+  isn't on the trips shown (D3, the whole row with − and +), finds faded after a step, and the
+  official connection under a find. A default in a faded row is at 36%. Question 3 of
+  research/optimization_rows.md ("should a set row be easier to tell from a default?") is still
+  open there, but missing from CLAUDE.md's Open questions. User: leave, or mark a default
+  another way? At least move the question into CLAUDE.md.
+
+### Code
+- [ ] 3.1 `trains()` takes each trip's days from the calendar and doesn't limit them to its
+  zip's `feed_start_date`–`feed_end_date`, though its doc, the skill and CLAUDE.md (step 3) say
+  it does. No difference with the real data: in both exports the `calendar.txt` and
+  `calendar_dates.txt` ranges equal the feed range (2026: 14 Dec 2025–12 Dec 2026; 2027:
+  13 Dec 2026–11 Dec 2027). Fix: `and feed` on the service masks (then a calendar running past
+  its feed can't count a day twice), or reword the three docs. Recommended: `and feed`.
+
+### Docs
+- [ ] 4.1 CLAUDE.md says "no SBB name … in the app or the listing; the one exception is
+  sbb.ch", but Help's 📡 ("Not affiliated with SBB", in all four) and the full descriptions ("Not
+  affiliated with SBB or any other transport company") name SBB in a disclaimer, there since
+  the first version. User: add the disclaimer as a second exception in CLAUDE.md, or leave SBB
+  out of the texts ("not affiliated with any transport company")? README ("the SBB app") is
+  neither the app nor the listing.
+- [ ] 4.2 research/optimization_rows.md and harmonize.md are out of date since One model:
+  optimization_rows.md says "Nothing is decided yet" and "as now" about the lowered minimum, and
+  points to a CLAUDE.md heading that no longer exists ("Asked again where a time fell");
+  harmonize.md says data_sources.md "still says search.ch" (fixed since), and its "Tested, not
+  tested" numbers the steps differently from CLAUDE.md. Their findings are already in CLAUDE.md
+  (D1–D5, the steps) and data_sources.md (the GTFS times equal `UMSTEIGB`, Winterthur, MOTIS).
+  User: delete both once step 2 has been checked on the phone (git keeps them; move question 3
+  first, 2.1), or add a status line at the top of each?
+- [ ] 4.3 CLAUDE.md, finished work (its own rule: git keeps it):
+  - Official minimums: "Until 2026-10-07 each search lowered the station's time to it, …".
+  - One model, step 1: the "Gone: …" list and the live check, which step 2's phone check
+    repeats.
+  - The full search, step 3: the run times (22 s and 38 s on the desktop, 2 minutes on GitHub),
+    "the same bytes as the desktop's", the read times and heap; Pages' `Content-Type` is also in
+    the skill.
+  - "Measured (2026-10-06, a Python prototype, not kept)": steps 1 and 2 have the real numbers
+    (453 KB, not 0.9 MB; 10–21 ms). Its "377 random trips … 13 through stations today's search
+    can't reach" is the reason for the full search: into research/architecture.md?
+- [ ] 4.4 Skill, out of date: "Trying the API by hand" lists three answers in `private/`; there
+  are eight (also Horw → Sursee now and tomorrow and Zürich → Bern now, 6 Oct 23:07, and the
+  arrival boards of Zürich HB and Luzern). Still untested, "The fixes after that test pass":
+  "the search asking again where a time fell (gone since …)" is about code that no longer
+  exists.
+- [ ] 4.5 Lines over 100 characters: CLAUDE.md 175, 245, 315, 339, 362, 363, 405, 480;
+  research/data_sources.md 66, hidden_connections.md 41, harmonize.md 90, 145 (the commands
+  left as they are).
+
+### Repo, build and CI
+- [ ] 5.1 `git gc`: 231 loose objects (1.1 MB), 2 packs.
+- Nothing else: the latest versions, reproducible, CI green, no unused files, changelogs only
+  for 1 and 2 (both in the F-Droid recipe).

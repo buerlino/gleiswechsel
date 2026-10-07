@@ -85,4 +85,19 @@ class LiveTest {
     @Test
     fun theFullSearchWithFiveMinutesAtLuzernMissesIt() =
         assertEquals(false, fullSearch(8, luzern = 5).any { find -> find.faster.legs.any { it.train == "RE24" && it.departure.id == "8505000" } })
+
+    @Test
+    fun thePublishedTimetableIsDownloadedOnce() {
+        val copy = File.createTempFile("timetable", ".bin.gz").apply { delete(); deleteOnExit() }
+        var downloads = 0
+        val local = {
+            val start = System.nanoTime()
+            localTimetable(copy, { downloads++; download(TIMETABLE_URL, "test") }) { throw it }!!
+                .also { println("${it.source}, from ${it.first}, ${it.days} days, ${copy.length()} bytes: ${(System.nanoTime() - start) / 1_000_000} ms") }
+        }
+        val published = local()
+        local()
+        assertEquals(1, downloads)
+        assertEquals(true, day in published.first..<published.first.plusDays(published.days.toLong()))
+    }
 }

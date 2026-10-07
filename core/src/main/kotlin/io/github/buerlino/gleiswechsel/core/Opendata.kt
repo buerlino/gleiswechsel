@@ -3,6 +3,7 @@ package io.github.buerlino.gleiswechsel.core
 import kotlinx.serialization.Serializable
 import kotlinx.serialization.json.Json
 import java.io.IOException
+import java.io.InputStream
 import java.net.HttpURLConnection
 import java.net.URI
 import java.net.URLEncoder
@@ -92,19 +93,28 @@ data class Change(
 
 /**
  * Blocking fetch of the official connections [from] → [to] (station names or ids) leaving at or
- * after [time], Swiss local time; the API sends four. [version] goes in the User-Agent, so the
- * operators can see which client calls them and reach the project. Call off the main thread.
- * Throws on network or format errors.
+ * after [time], Swiss local time; the API sends four. Call off the main thread. Throws on network
+ * or format errors.
  */
-fun connections(from: String, to: String, time: LocalDateTime, version: String): List<Connection> {
-    val conn = URI(connectionsUrl(from, to, time)).toURL().openConnection() as HttpURLConnection
+fun connections(from: String, to: String, time: LocalDateTime, version: String): List<Connection> =
+    parseConnections(get(connectionsUrl(from, to, time), "application/json", version) { it.bufferedReader().readText() })
+
+/** Blocking fetch of the file at [url], e.g. the timetable ([TIMETABLE_URL]). Throws on network errors. */
+fun download(url: String, version: String): ByteArray = get(url, "*/*", version) { it.readBytes() }
+
+/**
+ * [url]'s body, [read] from the stream. [version] goes in the User-Agent, so the operators can see
+ * which client calls them and reach the project.
+ */
+private fun <T> get(url: String, accept: String, version: String, read: (InputStream) -> T): T {
+    val conn = URI(url).toURL().openConnection() as HttpURLConnection
     try {
         conn.connectTimeout = 15_000
         conn.readTimeout = 30_000
-        conn.setRequestProperty("Accept", "application/json")
+        conn.setRequestProperty("Accept", accept)
         conn.setRequestProperty("User-Agent", "Gleiswechsel/$version (+https://github.com/buerlino/gleiswechsel)")
         if (conn.responseCode != HttpURLConnection.HTTP_OK) throw IOException("HTTP ${conn.responseCode}")
-        return parseConnections(conn.inputStream.bufferedReader().use { it.readText() })
+        return conn.inputStream.use(read)
     } finally {
         conn.disconnect()
     }

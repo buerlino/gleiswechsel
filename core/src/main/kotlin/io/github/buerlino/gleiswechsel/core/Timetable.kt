@@ -4,9 +4,11 @@ import java.io.BufferedInputStream
 import java.io.BufferedOutputStream
 import java.io.DataInputStream
 import java.io.DataOutputStream
+import java.io.File
 import java.io.IOException
 import java.io.InputStream
 import java.io.OutputStream
+import java.time.Duration
 import java.time.LocalDate
 import java.util.zip.GZIPInputStream
 import java.util.zip.GZIPOutputStream
@@ -127,3 +129,37 @@ fun timetable(input: InputStream): Timetable =
         val continuations = List(readInt()) { Timetable.Continuation(readInt(), readInt(), readInt()) }
         Timetable(source, first, days, stations, platforms, trips, continuations)
     }
+
+/** Where the timetable job (`.github/workflows/timetable.yml`) publishes the file. */
+const val TIMETABLE_URL = "https://buerlino.github.io/gleiswechsel/timetable.bin.gz"
+
+/**
+ * The timetable for the full search: the phone's [copy], downloaded anew ([download]) when it's
+ * missing, older than 7 days or can't be read, e.g. after an update to a new format (CLAUDE.md, The
+ * full search). A download replaces it only once it reads, so a failed one keeps the old copy: no
+ * network, a Wi-Fi login page, a newer app's format. Null if there's none that reads; each error
+ * goes to [failed]. Blocking.
+ */
+fun localTimetable(copy: File, download: () -> ByteArray, failed: (Exception) -> Unit): Timetable? {
+    fun read() = try {
+        copy.inputStream().use { timetable(it) }
+    } catch (e: Exception) {
+        failed(e)
+        null
+    }
+    val recent = copy.exists() && System.currentTimeMillis() - copy.lastModified() < WEEK
+    if (recent) read()?.let { return it }
+    try {
+        val bytes = download()
+        return timetable(bytes.inputStream()).also {
+            val part = File("${copy.path}.part")
+            part.writeBytes(bytes)
+            if (!part.renameTo(copy)) throw IOException("$part not renamed")
+        }
+    } catch (e: Exception) {
+        failed(e)
+    }
+    return if (copy.exists() && !recent) read() else null
+}
+
+private val WEEK = Duration.ofDays(7).toMillis()
