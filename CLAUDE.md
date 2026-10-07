@@ -357,8 +357,9 @@ at every station the rider hasn't set.
 - **Proven live** 2026-10-06 for Wed 7 Oct (`LiveTest`): 08:50 with 4 minutes finds the
   [test case](#test-case-horw--sursee-user-2026-10-06) (14 minutes saved, RE24 track 9), with 6
   minutes nothing; 14:50 finds the same change from the 14:53 (it repeats every hour).
-- **Limits, known:** the search uses planned times only (delays are shown, not searched with); only stations the official
-  connections or the onward ones touch; changes only within a station; the live check doesn't skip public holidays; the official
+- **Limits, known:** the search uses planned times only (delays are shown, not searched with); today's
+  search only stations the official connections or the onward ones touch, the full search trains only and
+  only when the file has the day and A and B; changes only within a station; the live check doesn't skip public holidays; the official
   minimums are a copy of one timetable year's, the planner's finer times only for its own changes;
   `doublesBack` sees only stations by id (a train station and its bus stop differ).
 
@@ -497,21 +498,27 @@ Steps (user, 2026-10-06), one at a time, each shown working:
       stays; the job's next file has the names. `LiveTest`'s full search reads the published
       file through `localTimetable` (a copy in `core/build/`; user, 2026-10-07), so it no
       longer needs a file made with `-Pfrom`.
-   3. **Both searches, and the rows:** `best(today's finds + the full search's, officials)`,
-      today's first: of two the same, the first stays, and it has the API's names and delays.
-      The full search runs after today's, with the same `TrackSwitchTimes`; its `transfer` is
-      asked at every station it scans, so its rows are only its finds' change stations (today's
-      are `Searched.changes`). Its `error` (should the two scans disagree) is caught and logged.
-      No copy that reads, or one without the day: logged and a line on the page (user,
-      2026-10-07), the same line for both, under the day as `not_all_checked`: "Only the official
-      connections' changes were checked: the timetable file could not be loaded." (de "Nur die
-      Umstiege der offiziellen Verbindungen wurden geprüft: Der Fahrplan konnte nicht geladen
-      werden.", fr "Seules les correspondances des trajets officiels ont été vérifiées :
-      l'horaire n'a pas pu être chargé.", it "Sono stati verificati solo i cambi dei
-      collegamenti ufficiali: non è stato possibile caricare l'orario."). The copy in the cache
-      folder (user, 2026-10-07: it can be downloaded again and stays out of a phone-to-phone
-      transfer; if the system clears it, the next search downloads it). On the phone: the first search downloads, the next doesn't; the test case; a
-      find only the full search has; how long reading the file takes there.
+   3. **Both searches, and the rows** (done 2026-10-07, `find()` takes the timetable):
+      `best(today's finds + the full search's, officials)`, today's first: of two the same, the
+      first stays, and it has the API's names and delays (`best` compares times only, so names
+      don't matter there). The full search runs after today's, with the same
+      `TrackSwitchTimes`; the rows are today's `Searched.changes`, then the change stations of
+      the finds shown (its `transfer` is asked at every station it scans). Its `error` (should
+      the two scans disagree) is caught and logged. No copy that reads, or one without the
+      search's day: logged and a line under the day (`timetable_missing`, `Found.noTimetable`;
+      user, 2026-10-07); not asked without official connections. The copy is
+      `cacheDir/timetable.bin.gz` (user, 2026-10-07: it can be downloaded again and stays out of
+      a phone-to-phone transfer; if the system clears it, the next search downloads it). Read
+      on every search, not kept in memory (user, 2026-10-07: simplest; 83–93 ms on the phone).
+      Cancel during the download drops the search as usual; the download goes on and is kept if
+      it reads, and a search started meanwhile waits for it (`@Synchronized localTimetable`;
+      user, 2026-10-07). No text while it downloads (user, 2026-10-07).
+      On the phone (R8 release, 7 Oct, live for Thu 8 Oct, offset 1, Luzern and Zürich HB at 2;
+      the file on Pages still from before step 4.2's names): the first search downloaded
+      (16 s for download and read, on LTE through the phone's VPN), the next three didn't
+      (83–93 ms each); Uster → Horw 06:30 a find only the full search has (S9 → IR75 → S4, 15
+      minutes); the test case, once; no network: `search_failed`, as before (the API comes
+      first); the line, with no copy and a build whose file URL gave 404, today's find kept.
    4. **The texts**, all four languages: Help (🚆; 📡 the file on buerlino.github.io; ⚠️ a find
       from the timetable file shows no delays, user 2026-10-07), README, the store descriptions,
       F-Droid's `NonFreeNet` (buerlino.github.io).

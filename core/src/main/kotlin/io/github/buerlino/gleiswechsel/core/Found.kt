@@ -6,6 +6,7 @@ import kotlinx.serialization.descriptors.PrimitiveKind
 import kotlinx.serialization.descriptors.PrimitiveSerialDescriptor
 import kotlinx.serialization.encoding.Decoder
 import kotlinx.serialization.encoding.Encoder
+import java.io.IOException
 import java.time.Duration
 import java.time.LocalDateTime
 import java.time.LocalTime
@@ -17,7 +18,8 @@ import java.time.ZoneId
  * connection leaving [first] (null if there are none), the stations the search changed at
  * ([changes], each once: Optimization's rows), the [finds], the changes the planner itself makes in
  * its answers ([offered], [TrackSwitchTimes.official]), whether some changes couldn't be checked
- * ([incomplete]), and when it searched ([asOf], Swiss time: when its delays were read).
+ * ([incomplete]), whether the full search had no timetable file with the day ([noTimetable]), and
+ * when it searched ([asOf], Swiss time: when its delays were read).
  *
  * The last one is kept as JSON (user, 2026-10-06), so it's still there when the app opens again,
  * e.g. to read the track on a platform with poor reception.
@@ -30,6 +32,7 @@ data class Found(
     val finds: List<Find>,
     val offered: Set<Change>,
     val incomplete: Boolean,
+    val noTimetable: Boolean,
     @Serializable(with = LocalDateTimeText::class) val asOf: LocalDateTime,
 ) {
     /**
@@ -53,8 +56,10 @@ fun found(text: String): Found = json.decodeFromString(text)
 
 /**
  * [from] → [to] at the next [leaving] after [now] (today, or tomorrow once it's past; Swiss time),
- * searched with the rider's [times]. Blocking. Throws if the official connections' request fails;
- * a failed onward one skips its change and goes to [skipped].
+ * searched with the rider's [times]: today's search, then the full search on the [timetable] (null
+ * if there's none), when it has the day (CLAUDE.md, The full search, step 4.3). Blocking. Throws if
+ * the official connections' request fails; a failed onward one skips its change and goes to
+ * [failed], as does a timetable without the day and an error of the full search.
  */
 fun find(
     from: String,
@@ -62,14 +67,31 @@ fun find(
     leaving: LocalTime,
     times: TrackSwitchTimes,
     connections: Connections,
+    timetable: () -> Timetable?,
     now: LocalDateTime = LocalDateTime.now(ZoneId.of("Europe/Zurich")),
-    skipped: (Exception) -> Unit = {},
+    failed: (Exception) -> Unit = {},
 ): Found {
     val day = now.toLocalDate().atTime(leaving).let { if (it.isBefore(now)) it.plusDays(1) else it }
     val officials = connections(from, to, day)
-    val searched = search(officials, { Duration.ofMinutes(times.rider(it.id)) }, connections)
-    searched.failures.forEach(skipped)
-    return Found(day, officials.firstOrNull(), searched.changes, searched.finds, searched.offered, searched.failures.isNotEmpty(), now)
+    val transfer = { stop: Stop -> Duration.ofMinutes(times.rider(stop.id)) }
+    val searched = search(officials, transfer, connections)
+    searched.failures.forEach(failed)
+    val file = if (officials.isEmpty()) null else timetable()?.takeIf { day.toLocalDate() in it.first..<it.first.plusDays(it.days.toLong()) }
+    val noTimetable = officials.isNotEmpty() && file == null
+    if (noTimetable) failed(IOException("No timetable with ${day.toLocalDate()}"))
+    val full = try {
+        file?.let { fullSearch(it, officials, transfer) }.orEmpty()
+    } catch (e: Exception) {
+        failed(e)
+        emptyList()
+    }
+    // Today's first: of two the same, it stays, with the API's names and delays.
+    val finds = best(searched.finds + full, officials)
+    // Today's search's stations, then the full search's finds' (those of today's are among the first).
+    val changes = (searched.changes + finds.flatMap { it.faster.changes }).distinctBy { it.id }
+    return Found(
+        day, officials.firstOrNull(), changes, finds, searched.offered, searched.failures.isNotEmpty(), noTimetable, now,
+    )
 }
 
 /** `8:50`, `08:50`, `850` or `0850` (the number keyboard has no colon); null if it isn't a time. */

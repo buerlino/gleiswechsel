@@ -3,6 +3,7 @@ package io.github.buerlino.gleiswechsel.core
 import kotlinx.serialization.json.JsonObject
 import kotlinx.serialization.json.JsonPrimitive
 import kotlinx.serialization.json.jsonObject
+import java.time.LocalDate
 import java.time.LocalDateTime
 import java.time.LocalTime
 import java.time.OffsetDateTime
@@ -32,6 +33,7 @@ class FoundTest {
         listOf(Find(official, faster)),
         setOf(Change(s1.arrival, ir2.departure)),
         incomplete = true,
+        noTimetable = false,
         asOf = LocalDateTime.parse("2026-03-03T07:41"),
     )
 
@@ -75,11 +77,18 @@ class FoundTest {
     private val minimums = Minimums("9999999 02 02 STANDARD\nXberg 05 05 Xberg\n")
     private val now = LocalDateTime.parse("2026-03-03T07:30")
 
-    private fun find(officials: List<Connection>, times: TrackSwitchTimes, onward: Map<String, List<Connection>>, leaving: String = "07:55") =
-        find("Aach", "Bstadt", LocalTime.parse(leaving), times, { from, _, time ->
-            asked += "$from ${time.toLocalTime()}"
-            if (from == "Aach") officials else onward[from].orEmpty()
-        }, now)
+    private val failed = mutableListOf<Exception>()
+
+    private fun find(
+        officials: List<Connection>,
+        times: TrackSwitchTimes,
+        onward: Map<String, List<Connection>>,
+        leaving: String = "07:55",
+        timetable: () -> Timetable? = { null },
+    ) = find("Aach", "Bstadt", LocalTime.parse(leaving), times, { from, _, time ->
+        asked += "$from ${time.toLocalTime()}"
+        if (from == "Aach") officials else onward[from].orEmpty()
+    }, timetable, now) { failed += it }
 
     // From Xberg: the RE3 08:14 → Bstadt 08:30, the IR7 08:30 → 08:50.
     private val re3 = Connection(listOf(Leg("RE3", stop("Xberg", "08:14", "9"), stop("Bstadt", "08:30"))))
@@ -167,10 +176,78 @@ class FoundTest {
         val times = TrackSwitchTimes(table, 1, mapOf("4" to 3L)::get)
         val found = find("Sursee", "Zürich Oerlikon", LocalTime.of(7, 45), times, { from, _, _ ->
             if (from == "Sursee") listOf(viaOlten, viaBrugg, viaLuzern) else onward[from].orEmpty()
-        }, LocalDateTime.parse("2026-10-08T07:00"))
+        }, { null }, LocalDateTime.parse("2026-10-08T07:00"))
         assertEquals(listOf(viaLuzern.legs[0], ir75, s8), found.finds.single().faster.legs)
         assertEquals(listOf("Olten", "Zürich HB", "Brugg AG", "Luzern"), found.changes.map { it.station })
         assertEquals(listOf("Zürich HB", "Luzern"), found.changes.filter { found.onTrips(it.id) }.map { it.station })
+    }
+
+    /**
+     * A timetable of 14 days from [first], each trip every day, without tracks: a line and its stops
+     * (station, the time it arrives and leaves).
+     */
+    private fun timetable(vararg trips: Pair<String, List<Pair<String, String>>>, first: LocalDate = LocalDate.of(2026, 3, 2)): Timetable {
+        val names = trips.flatMap { (_, stops) -> stops.map { it.first } }.distinct()
+        return Timetable(
+            "Made up", first, 14, names.map { Timetable.Station(it, it) }, names.indices.map { Timetable.Platform(it, null) },
+            trips.map { (line, stops) ->
+                val minutes = IntArray(stops.size) { LocalTime.parse(stops[it].second).toSecondOfDay() / 60 }
+                Timetable.Trip(
+                    line, (1 shl 14) - 1, IntArray(stops.size) { names.indexOf(stops[it].first) }, minutes, minutes.copyOf(),
+                    BooleanArray(stops.size) { true }, BooleanArray(stops.size) { true },
+                )
+            },
+            emptyList(),
+        )
+    }
+
+    // Through Yfeld, a station the official connection doesn't touch: Aach 08:05 → Yfeld 08:12 →
+    // Bstadt 08:35, with Yfeld's default of 1 (the standard 2 − 1).
+    private val viaYfeld = timetable(
+        "S9" to listOf("Aach" to "08:05", "Yfeld" to "08:12"),
+        "RE8" to listOf("Yfeld" to "08:14", "Bstadt" to "08:35"),
+    )
+
+    @Test
+    fun aFindOnlyTheFullSearchHas() {
+        val times = TrackSwitchTimes(minimums, 1) { null }
+        val found = find(listOf(official), times, emptyMap(), timetable = { viaYfeld })
+        assertEquals(listOf("S9", "RE8"), found.finds.single().faster.legs.map { it.train })
+        assertEquals(LocalTime.of(8, 35), found.finds.single().faster.arrival.time.toLocalTime())
+        // Its change station is a row after today's search's, on the trips shown.
+        assertEquals(listOf("Xberg", "Yfeld"), found.changes.map { it.id })
+        assert(found.onTrips("Yfeld"))
+        assert(!found.noTimetable)
+        assertEquals(emptyList(), failed)
+    }
+
+    @Test
+    fun ofTwoTheSameTodaysStays() {
+        // The full search finds the S1 → RE3 too, under other names and without tracks.
+        val same = timetable(
+            "S 1" to listOf("Aach" to "08:00", "Xberg" to "08:10"),
+            "RE 3" to listOf("Xberg" to "08:14", "Bstadt" to "08:30"),
+        )
+        val found = find(listOf(official), TrackSwitchTimes(minimums, 1) { null }, fromXberg, timetable = { same })
+        assertEquals(listOf(Find(official, Connection(listOf(s1, re3.legs.single())))), found.finds)
+        assertEquals(listOf("Xberg"), found.changes.map { it.id })
+    }
+
+    @Test
+    fun withoutATimetableTodaysSearchAloneAndTheLine() {
+        val times = TrackSwitchTimes(minimums, 1) { null }
+        // None that reads.
+        val none = find(listOf(official), times, fromXberg)
+        assert(none.noTimetable)
+        assertEquals(1, none.finds.size)
+        assertEquals(1, failed.size)
+        // One without the day (Tuesday 3 March).
+        assert(find(listOf(official), times, fromXberg, timetable = { timetable(first = LocalDate.of(2026, 3, 4)) }).noTimetable)
+        assert(!find(listOf(official), times, fromXberg, timetable = { timetable(first = LocalDate.of(2026, 3, 3)) }).noTimetable)
+        // No connections: not asked, no line.
+        var asked = false
+        assert(!find(emptyList(), times, emptyMap(), timetable = { asked = true; null }).noTimetable)
+        assert(!asked)
     }
 
     @Test

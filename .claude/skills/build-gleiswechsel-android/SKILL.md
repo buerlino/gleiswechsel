@@ -33,7 +33,9 @@ is in `research/`.
   It takes the official connections, the transfer time per station and the request as a function, so
   `SearchTest` runs it on a fake API with made-up connections.
 - `core/.../Found.kt`: `find()` (the next such time, Swiss; the official connections; `search`
-  with `TrackSwitchTimes`; the request passed in, a failed onward one to `skipped`),
+  with `TrackSwitchTimes`, then `fullSearch` on the timetable passed in when it has the day,
+  `best` over both, today's first; the request passed in; a failed onward one, a timetable
+  without the day and an error of the full search to `failed`; `noTimetable` for the line),
   `parseTime()` (`FoundTest`, also the two surprises of CLAUDE.md, One model, on a fake
   API); `Found`, a search's result as the page shows it (`offered`; `trips`, what the page
   shows, and `onTrips`, a row's station on one of them) (`asOf`: when it searched,
@@ -53,7 +55,8 @@ is in `research/`.
   `./gradlew :core:timetable -Pgtfs=<zip>[,<zip>…] -Pout=<file> [-Pfrom=yyyy-MM-dd]` (paths from
   the repo's root). `TimetableTest`: a made-up GTFS in the Swiss export's shape, read, written and
   read back, and a next year's from 13 Dec; `localTimetable` with a fake download in a temp file.
-  Not used by the app yet, so R8 strips it from the release APK.
+  `localTimetable` is `@Synchronized`: a search started while a cancelled one still downloads waits.
+  The app keeps its copy in `cacheDir/timetable.bin.gz` and reads it on every search.
 - `.github/workflows/timetable.yml`: the file on GitHub Pages, Thursdays and Sundays and by hand
   (Actions → Timetable → Run workflow). Downloads the year's GTFS from the dataset's `/permalink`
   with a browser User-Agent (and the next year's when the 14 days reach December), runs
@@ -69,7 +72,8 @@ is in `research/`.
   connection scan (`Scan`: the rides of the window by departure, `earliest` forwards, `latest`
   backwards for the trip leaving last, `connection` builds the result). Times are minutes on the
   clock from the file's first day (the Swiss GTFS counts so, CLAUDE.md). `FullSearchTest`: a
-  made-up `Timetable`, built directly. Not used by the app yet.
+  made-up `Timetable`, built directly. `FoundTest` runs it through `find()` on small made-up
+  timetables (a find only it has, the same trip as today's, no file or one without the day).
 - `core/.../LiveTest.kt`: the Horw → Sursee test case, live. Excluded from `:core:test` (and so
   from CI); run it with `./gradlew :core:test -Plive`, which also prints the finds and the number
   of requests. It asks for the next weekday, so a public holiday or a timetable change can fail it.
@@ -103,7 +107,8 @@ is in `research/`.
   the word a screen reader says instead (`uiautomator dump` shows it as the child's `content-desc`).
   Every text is in `res/values*/strings.xml` (en, de, fr, it); a new one goes in all four, or lint
   fails on the missing translation. The search runs on `Dispatchers.IO`; a failure of the first
-  request shows one text (`search_failed`), of an onward one `not_all_checked` under the day; each
+  request shows one text (`search_failed`), of an onward one `not_all_checked` under the day, no
+  timetable file with the day `timetable_missing` (`Found.noTimetable`); each
   exception goes to the log under the tag `Gleiswechsel`, in the message too (Android's `Log` drops
   the stack trace of an `UnknownHostException`). `buildConfig` is on for the version name in the
   User-Agent.
@@ -253,17 +258,22 @@ Everything else was tried on the phone with the R8 release build signed with the
 - The timetable job (2026-10-07): run once by hand on GitHub (2 min 4 s; the file and page
   1 min 38 s), deployed. Not checked: the schedule (first run Thu 8 Oct, 03:23 UTC), the
   December run with two years' GTFS on GitHub (only on the desktop).
-- The full search (2026-10-07): only `FullSearchTest` and the live check on Horw → Sursee
-  (8 Oct, the test case with the defaults, nothing with 5 at Luzern; four long trips timed, no
-  finds among them, so no full-search find through other stations seen on real data). Not in
-  the app, not on the phone. Not checked: an hour skipped (28 Mar 2027), a find through an
-  in-seat continuation, `best` on finds of both searches together.
+- The full search (2026-10-07): `FullSearchTest`, `FoundTest` and on the phone (CLAUDE.md,
+  step 4.3: the download once, the test case, Uster → Horw's find only it has, the read time,
+  the line with a 404 URL). Not checked: an hour skipped (28 Mar 2027), a find through an
+  in-seat continuation, a find from it identical to today's on real data (only `FoundTest`; the
+  test case's comes from both, shown once), the line from a copy without the day, Cancel during
+  the download, the file on Pages with step 4.2's names on the phone, the 16 s download on
+  another network (Wi-Fi, without the VPN). `pm clear --cache-only` hangs on the test phone
+  (Android 16): empty the cache in App info → Storage & cache → Clear cache.
 - The train names (2026-10-07, step 4.2): `TimetableTest` and 48 trains of a file made from
   `private/gtfs/` checked against the API's boards by hand. Not in the published file until the
-  job runs; not in the app.
+  job runs (still the 7 Oct file on 7 Oct, 16:00).
 - The local copy (2026-10-07, `localTimetable`): `TimetableTest` and the live download from
-  Pages on the desktop (once, then from the copy). Not in the app, not on the phone; Android's
-  `HttpURLConnection` on Pages, a real Wi-Fi login page, a copy the system cleared.
+  Pages on the desktop (once, then from the copy); on the phone (step 4.3) Android's
+  `HttpURLConnection` on Pages, once and then from the copy, and a copy cleared in App info.
+  Not checked: a real Wi-Fi login page, a copy the system cleared itself, one older than 7 days
+  (step 4.5).
 
 ## Releasing (as in gridload and APODroid)
 

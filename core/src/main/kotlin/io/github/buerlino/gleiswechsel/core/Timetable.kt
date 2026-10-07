@@ -138,8 +138,10 @@ const val TIMETABLE_URL = "https://buerlino.github.io/gleiswechsel/timetable.bin
  * missing, older than 7 days or can't be read, e.g. after an update to a new format (CLAUDE.md, The
  * full search). A download replaces it only once it reads, so a failed one keeps the old copy: no
  * network, a Wi-Fi login page, a newer app's format. Null if there's none that reads; each error
- * goes to [failed]. Blocking.
+ * goes to [failed]. Blocking. One at a time: a search started while a cancelled one still downloads
+ * waits for it, so two don't write the copy together (user, 2026-10-07: Cancel leaves it running).
  */
+@Synchronized
 fun localTimetable(copy: File, download: () -> ByteArray, failed: (Exception) -> Unit): Timetable? {
     fun read() = try {
         copy.inputStream().use { timetable(it) }

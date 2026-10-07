@@ -23,6 +23,7 @@
     <string name="day_line">%1$s:</string>
     <string name="nothing_faster">%1$s: niente di più veloce.</string>
     <string name="not_all_checked">Non è stato possibile verificare tutti i cambi: transport.opendata.ch non ha risposto. Riprovi tra un minuto.</string>
+    <string name="timetable_missing">Sono stati verificati solo i cambi dei collegamenti ufficiali: non è stato possibile caricare l\'orario.</string>
     <string name="delays_as_of">Ritardi alle %1$s</string>
     <string name="optimization_text">Il suo tempo di cambio binario in ogni stazione. Lo abbassi e cerchi di nuovo per trovare di più.</string>
     <string name="less">Un minuto in meno</string>

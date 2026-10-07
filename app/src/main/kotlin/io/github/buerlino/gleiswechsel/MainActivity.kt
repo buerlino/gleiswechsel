@@ -73,10 +73,13 @@ import androidx.compose.ui.unit.sp
 import androidx.core.content.edit
 import io.github.buerlino.gleiswechsel.core.Found
 import io.github.buerlino.gleiswechsel.core.Minimums
+import io.github.buerlino.gleiswechsel.core.TIMETABLE_URL
 import io.github.buerlino.gleiswechsel.core.TrackSwitchTimes
 import io.github.buerlino.gleiswechsel.core.connections
+import io.github.buerlino.gleiswechsel.core.download
 import io.github.buerlino.gleiswechsel.core.find
 import io.github.buerlino.gleiswechsel.core.found
+import io.github.buerlino.gleiswechsel.core.localTimetable
 import io.github.buerlino.gleiswechsel.core.parseTime
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
@@ -119,7 +122,8 @@ class MainActivity : ComponentActivity() {
         setContent {
             // The buttons, the switch and the links in the logo's blue (user, 2026-10-07), not Material's purple.
             MaterialTheme(lightColorScheme(primary = BLUE)) {
-                Surface(Modifier.fillMaxSize()) { App(prefs, minimums, saved, last) }
+                // The timetable's copy in the cache (user, 2026-10-07): it can be downloaded again.
+                Surface(Modifier.fillMaxSize()) { App(prefs, minimums, saved, last, File(cacheDir, "timetable.bin.gz")) }
             }
         }
     }
@@ -130,13 +134,13 @@ class MainActivity : ComponentActivity() {
  * the commute, the rider's transfer time at each change station (keyed by station id), the offset
  * and whether Optimization is on. Editing one clears the result; a time, the offset or Optimization
  * keeps the change stations. A result with connections is kept in [saved] until it's cleared, so
- * the page opens with it again ([last]).
+ * the page opens with it again ([last]). The full search reads the timetable's [copy].
  *
  * The page has three panels (user, 2026-10-06): Destination (the commute), Journey (the result)
  * and Optimization (the rider's time at each change station).
  */
 @Composable
-private fun App(prefs: SharedPreferences, minimums: Minimums, saved: File, last: Found?) {
+private fun App(prefs: SharedPreferences, minimums: Minimums, saved: File, last: Found?, copy: File) {
     var screen by rememberSaveable { mutableStateOf(Screen.SEARCH) }
     var from by remember { mutableStateOf(prefs.getString("from", "")!!) }
     var to by remember { mutableStateOf(prefs.getString("to", "")!!) }
@@ -187,7 +191,7 @@ private fun App(prefs: SharedPreferences, minimums: Minimums, saved: File, last:
         open = false
         show(Result.Searching)
         job = scope.launch {
-            val r = withContext(Dispatchers.IO) { search(from.trim(), to.trim(), time!!, times) }
+            val r = withContext(Dispatchers.IO) { search(from.trim(), to.trim(), time!!, times, copy) }
             show(r)
             changes = (r as? Result.Done)?.found?.changes.orEmpty()
         }
@@ -308,6 +312,7 @@ private fun App(prefs: SharedPreferences, minimums: Minimums, saved: File, last:
                                 style = MaterialTheme.typography.bodySmall,
                             )
                             if (f.incomplete) Text(stringResource(R.string.not_all_checked), color = MaterialTheme.colorScheme.error)
+                            if (f.noTimetable) Text(stringResource(R.string.timetable_missing), color = MaterialTheme.colorScheme.error)
                             f.finds.forEach { FindCard(it, times, f.offered) }
                             // Nothing faster: the official connection leaving first, to see where it changes (user, 2026-10-06).
                             if (f.finds.isEmpty() && first != null) Card(Modifier.fillMaxWidth()) {
@@ -473,13 +478,16 @@ internal fun MinutesStepper(
 }
 
 /**
- * [from] → [to] at the next [leaving], searched live with the rider's [times] ([find]). Only the
- * official connections' request failing fails the search; a failed onward request skips its change.
- * Blocking.
+ * [from] → [to] at the next [leaving], searched live with the rider's [times] ([find]), and in the
+ * timetable, its [copy] downloaded when it's missing or old ([localTimetable]). Only the official
+ * connections' request failing fails the search; a failed onward request skips its change. Blocking.
  */
-private fun search(from: String, to: String, leaving: LocalTime, times: TrackSwitchTimes): Result = try {
+private fun search(from: String, to: String, leaving: LocalTime, times: TrackSwitchTimes, copy: File): Result = try {
     val ask = { a: String, b: String, at: LocalDateTime -> connections(a, b, at, BuildConfig.VERSION_NAME) }
-    Result.Done(find(from, to, leaving, times, ask) { Log.w("Gleiswechsel", "Change not checked: $it", it) })
+    val timetable = {
+        localTimetable(copy, { download(TIMETABLE_URL, BuildConfig.VERSION_NAME) }) { Log.w("Gleiswechsel", "Timetable: $it", it) }
+    }
+    Result.Done(find(from, to, leaving, times, ask, timetable) { Log.w("Gleiswechsel", "Not checked: $it", it) })
 } catch (e: Exception) {
     // In the message too: Log drops the stack trace of an UnknownHostException (no network).
     Log.w("Gleiswechsel", "Search failed: $e", e)
