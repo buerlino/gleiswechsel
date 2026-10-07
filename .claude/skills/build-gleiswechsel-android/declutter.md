@@ -146,3 +146,100 @@ kotlinx.serialization 1.11.0, Gradle 9.8.0, `checkout@v7`, `setup-java@v6`: the 
 - [x] 5.1 core-ktx 1.18.0 → 1.19.1 (needs compileSdk 37 and AGP 9.1: both met). Changes the APK;
   build, tests and lint green.
 - [x] 5.2 `git gc`: 132 loose objects (756 KB) packed, none left.
+
+## Pass 2026-10-06 (3)
+
+The third pass, report only, of 47b2ced (0.2.0) and the uncommitted CLAUDE.md, with a closer
+look at the UI elements and their movements. Without the phone: another session was using it
+(one dump and screenshots of the test case's card, two scroll swipes, then stopped).
+
+Ran: `clean :core:test :app:lintDebug :app:lintAnalyzeDebug :app:assembleDebug
+:app:assembleRelease --rerun-tasks --warning-mode all`: 29 tests green, lint "No issues found",
+no `w:` lines, the only deprecation `Configuration.setVisible`. `:core:test -Plive`: 3 green
+(Wed 7 Oct, 5 requests each, S4 → RE24, 14 minutes). Fresh clones in two paths and the repo's
+own build: the same sha256 (`4b1dbad6…`). CI: every Test run on master green up to 47b2ced,
+Release v0.2.0 green, both releases have their APK. AGP 9.4.1, Kotlin 2.4.20, Compose BOM
+2026.09.00, activity-compose 1.13.0, core-ktx 1.19.1, kotlinx.serialization 1.11.0, Gradle
+9.8.0, `checkout@v7`, `setup-java@v6`: the latest stable.
+
+### Checked, no change needed
+- **The search:** `shortened`'s recursion ends (each level starts after a ride, so later); the
+  order of the finds and the rule between them; Cancel drops the late answer (`withContext`
+  checks for cancellation before it returns); the state read on the IO thread.
+- **Minimums:** 2,971 lines, all `id mm mm name`, the two columns equal; Luzern 5, Zürich HB 7,
+  Olten 5, Bern 6, Sursee 3, standard 2. The saved answers in `private/` have no change of 0–2
+  minutes and none on the same train (see 1.3).
+- **Touch targets:** Compose widens the small clickables (a title, the official line) to 44–48
+  dp (`uiautomator dump`).
+- **Texts:** no unused string; short descriptions ≤ 80 (German 80), changelogs ≤ 500.
+- **Migrations:** none in the code, none needed.
+
+### Bugs
+- [ ] 1.1 Destination slides into the middle each time the page shows without a result (app
+  start, back from Help or Settings, the language switch): `formHeight` starts at 0, so the
+  first frame puts the form's top at the middle, then `animateDpAsState` moves it up by half
+  its height. From the code, not seen. Fix: animate a fraction (½ or 0) and place the form in a
+  `layout` modifier with its measured height, in the same frame; `formHeight`,
+  `onSizeChanged` and `LocalDensity` go.
+- [ ] 1.2 With Optimization off, a change in Settings (or Cancel) leaves only the folded line
+  at the top of an empty page: the rows are hidden, but `centred` counts them. Fix:
+  `centred = result == null && (changes.isEmpty() || !optimize)`. From the code.
+- [ ] 1.3 To check: a train that only changes its number at a station could come as two rides
+  with a 0–1-minute "change"; `shortestChanges` would then lower that station's official
+  minimum for the search (defaults near 0, false finds, colours off). Not in the 8 saved
+  answers; a live check with such a train decides.
+
+### UI and movements
+- [ ] 2.1 Journey's title row is taller than Optimization's: ✕ is a TextButton with 8 dp on
+  top, so "Journey" has more space above and below (the store screenshot). Fix: ✕ as plain
+  clickable text in the title's row, like the fold marks; Compose still gives it ~48 dp to tap.
+- [ ] 2.2 A step in Optimization removes the cards at once, so the rows jump (to just under
+  Search when the rest fits): a second tap on − or + lands where the row was. User: keep, keep
+  the cards faded until Search, or something else?
+- [ ] 2.3 Buttons, ⚙, ?, ✕, the ticket link, ⇅ and the switch are Material's default purple
+  (`lightColorScheme()` unchanged); the app's own blue `00179B` is only on the track signs.
+  User: purple, or the logo's blue as `primary`?
+- [ ] 2.4 Fold marks in three sizes and places: a title's ▾/▸ at the far right, the folded
+  line's ▾ at the far right, the official line's ▸ right after its small text; ▴ at 22 sp.
+  User: leave, or one size?
+- [ ] 2.5 The titles (the panels', Help's topics) aren't headings for a screen reader
+  (`semantics { heading() }`), so TalkBack can't jump between them. One modifier in `Heading`.
+- [ ] 2.6 French: 15 plain spaces before ":" or ";" in the newer texts (Help,
+  `not_all_checked`), against the file's rule (no-break, as in the 5 older ones): a line can
+  start with the colon.
+- [ ] 2.7 German: "Min." in Help, "min" in the boxes and cards. User: leave, or one?
+- Noted, settled: a faded default is 2.9:1 against green and red (4.5:1 on orange); the
+  official connection at 60% has grey text at 2.9:1.
+
+### Code
+- [ ] 3.1 `find()` and `parseTime()` are logic in `:app` without tests: the next such time
+  (today or tomorrow), the rows, the lowered minimums, `Found`; `8:50`, `850`, `24:00`. Move to
+  `:core` with tests, `connections` passed in as for `search`?
+- [ ] 3.2 Unused import `width` in MainActivity.kt (Kotlin doesn't warn).
+- [ ] 3.3 "official" names three things: `Minimums` in `App`, the fold in `FindCard`, the
+  `Connection` in `Find`. Rename the fold (`officialOpen`).
+- [ ] 3.4 MainActivity.kt has 725 lines; the cards (`FindCard`, `Trip`, `StopRow`, `TrackSign`,
+  `Indented`, `MinutesBox`, `LateBox`, the colours) could go to `Cards.kt`. User: split or not?
+
+### Docs
+- [ ] 4.1 The risk indicator left the plan in 0.2.0 (its commit message), but README still
+  promises it ("Later it will also tell you how often…", "later the actual arrival and
+  departure times… for how reliable a change is"), as do the skill's description ("how risky
+  they are comes later"), architecture.md (the risk part, the diagram) and missing_features.md
+  ("What CLAUDE.md already lists (risk, …)"); CLAUDE.md doesn't record the decision. User:
+  dropped for good? Then a line in CLAUDE.md and those fixed.
+- [ ] 4.2 CLAUDE.md, stale: the signing secrets "no release has used them yet" (0.1.0 and 0.2.0
+  did); the fdroiddata commit "not pushed yet" (the fork's branch is at `afaac5d23`).
+- [ ] 4.3 CLAUDE.md quotes UI texts again (pass 2's 4.3): "Delays as of 23:07", "! 1 min",
+  "−2 min", "3 min late", "track 14 instead of 12", "4 min, below the official 5".
+- [ ] 4.4 CLAUDE.md, finished work: the 0.1.0 and 0.2.0 release lines (apksigcopier, the
+  changelogs, the screenshot) → the current state only; "Tried live once" repeats open
+  question 1 → into it.
+- [ ] 4.5 CLAUDE.md, small: `spokenAs` also covers − and +; the changelogs are in all four
+  locales, not only `en-US/`.
+- [ ] 4.6 missing_features.md: the struck-through items and the all-done "Suggested order" go.
+- [ ] 4.7 This file, pass 2's 4.4b (the new screenshot): done in 47b2ced.
+
+### Repo, build and CI
+- [ ] 5.1 `git gc`: 365 loose objects (1.9 MB).
+- Nothing else: the latest versions, reproducible, CI green.

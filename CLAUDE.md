@@ -349,11 +349,12 @@ list (user, 2026-10-06: "focus on the core utility").
 Released as 0.1.0 (tag `v0.1.0`, 2026-10-06): the workflow's APK is the tag's unsigned build plus
 the signature (`apksigcopier compare`). The F-Droid merge request is open (user, 2026-10-06),
 from the branch `io.github.buerlino.gleiswechsel` in `../fdroiddata`. Its `NonFreeNet` text names
-sbb.ch too (user, 2026-10-06: the ticket link), edited there, not committed yet.
+sbb.ch too (user, 2026-10-06: the ticket link); it has 0.2.0 too (`6cad67402`). Before every
+push to the fork: the skill's checks (user, 2026-10-06: the pipeline failed twice without them).
 
-0.2.0 is committed and tagged locally, `v0.2.0`, not pushed (user, 2026-10-06): versionCode 2,
-`changelogs/2.txt` in all four, the new phone screenshot (the test case's find and Luzern's row).
-README's "Soon on F-Droid" stays until F-Droid has it.
+0.2.0 pushed (tag `v0.2.0` on `47b2ced`, 2026-10-06): versionCode 2, `changelogs/2.txt` in all
+four, the new phone screenshot (the test case's find and Luzern's row, demo mode). README's "Soon
+on F-Droid" stays until F-Droid has it.
 
 ## The full search (decided 2026-10-06, being built)
 

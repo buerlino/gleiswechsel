@@ -202,27 +202,59 @@ Everything else was tried on the phone with the R8 release build signed with the
    GitHub Release for Obtainium.
 4. F-Droid rebuilds the tag and must get a byte-identical APK apart from the signature. For
    build-only changes, compare the unsigned release APK's sha256 before and after.
-5. Push order: `master`, then the tag.
+5. Push order: `master`, then the tag. While the F-Droid merge request is open, then the
+   recipe too: [Before every push to the fork](#before-every-push-to-the-fork).
 6. After the workflow: its APK against an unsigned build of the tag from a fresh clone, e.g.
    `apksigcopier compare gleiswechsel-vX.Y.Z.apk --unsigned app-release-unsigned.apk` (pip, in a
    venv; it needs build-tools' `apksigner` on PATH). Done for 0.1.0.
 
 ## F-Droid
 
-The merge request for 0.1.0 is open (user, 2026-10-06): the recipe
+The merge request is open (user, 2026-10-06), now with 0.1.0 and 0.2.0: the recipe
 `metadata/io.github.buerlino.gleiswechsel.yml`, made like APODroid's and gridload's (`Binaries` +
 `AllowedAPKSigningKeys`, `UpdateCheckMode: Tags`, `AutoUpdateMode: Version`), on the branch
-`io.github.buerlino.gleiswechsel` (commit "New app: Gleiswechsel") off upstream `master`,
-checked with `fdroid lint` and `fdroid rewritemeta`. `../fdroiddata` is the user's fork clone
-(`origin` gitlab.com/buerlino/fdroiddata, `upstream` fdroid/fdroiddata); the user makes merge
-requests. If a push is rejected with "shallow update not allowed":
+`io.github.buerlino.gleiswechsel` off upstream `master`. `../fdroiddata` is the user's fork clone
+(`origin` gitlab.com/buerlino/fdroiddata, `upstream` fdroid/fdroiddata); the user commits there,
+pushes and makes merge requests. If a push is rejected with "shallow update not allowed":
 `git fetch --shallow-since=<date before the fork> upstream master`.
 `AllowedAPKSigningKeys` is the release APK's certificate SHA-256 (`apksigner verify
---print-certs`), lowercase without colons.
-Anti-feature `NonFreeNet` (user, 2026-10-06: as APODroid's, naming the host), `en-US: Loads the
-connections from transport.opendata.ch and links to sbb.ch for the ticket.` (sbb.ch added
-2026-10-06, not committed in `../fdroiddata` yet; `fdroid` isn't installed here, so not linted); category `Public Transport` (in fdroiddata's
-`config/categories.yml`). Reviewer comments: Claude drafts, the user posts.
+--print-certs`), lowercase without colons. Anti-feature `NonFreeNet` (user, 2026-10-06: as
+APODroid's, naming the hosts: transport.opendata.ch and sbb.ch); category `Public Transport`
+(in fdroiddata's `config/categories.yml`). Reviewer comments: Claude drafts, the user posts.
+
+### Before every push to the fork
+
+The pipeline failed twice on 2026-10-06 for want of this (user: document it): the sbb.ch text
+was pushed without `rewritemeta` (a line over about 80 characters), then `v0.2.0` was tagged
+while the recipe still ended at 0.1.0 (`checkupdates`). gridload's skill already knew the first.
+
+1. **A new tag since the recipe's `CurrentVersion`** (while the merge request is open, every
+   release): add its build block (a copy of the last; `commit` is `git rev-parse
+   vX.Y.Z^{commit}`, not the annotated tag object's hash) and raise `CurrentVersion` and
+   `CurrentVersionCode`. Step 2's `checkupdates` writes exactly that, too.
+2. **Run the pipeline's checks**, from `../fdroiddata`, with what the pipeline uses: fdroidserver
+   from git `master` and Debian trixie's `ruamel.yaml` 0.18.10. pip's fdroidserver 2.4.5 brings
+   0.17.21, which moves the `Binaries:` URL up onto its key's line, a change the pipeline
+   doesn't want. Set up once, in the scratchpad (pip warns that fdroidserver wants an older
+   `ruamel.yaml`: ignore it):
+   ```
+   python3 -m venv fdroid-venv && fdroid-venv/bin/pip install fdroidserver
+   fdroid-venv/bin/pip install 'ruamel.yaml==0.18.10'
+   git clone --depth 1 https://gitlab.com/fdroid/fdroidserver.git
+   ```
+   Then, with `FS` the clone and `V` the venv:
+   ```
+   export PATH="$FS:$PATH" PYTHONPATH="$FS:$FS/examples"
+   $V/bin/python $FS/fdroid checkupdates --auto --allow-dirty io.github.buerlino.gleiswechsel
+   $V/bin/python $FS/fdroid rewritemeta io.github.buerlino.gleiswechsel
+   $V/bin/python $FS/fdroid lint io.github.buerlino.gleiswechsel
+   git diff
+   ```
+   `lint` must exit 0; whatever `checkupdates` and `rewritemeta` changed goes into the commit
+   (`git diff` shows it). Checked 2026-10-06: this flags the pushed sbb.ch commit's line exactly
+   as the pipeline did, and leaves the fixed recipe (`6cad67402`) unchanged. `fdroid build` isn't
+   run locally; the pipeline does it and compares with the GitHub APK.
+3. Then the user commits and pushes.
 
 ## Store listing
 
