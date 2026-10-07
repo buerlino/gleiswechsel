@@ -349,7 +349,7 @@ kotlinx.serialization 1.11.0, Gradle 9.8.0, `checkout@v7`, `setup-java@v6`,
   User: delete both once step 2 has been checked on the phone (git keeps them; move question 3
   first, 2.1), or add a status line at the top of each? Done 2026-10-07: both deleted (user),
   the links to them repointed to CLAUDE.md, One model.
-- [ ] 4.3 CLAUDE.md, finished work (its own rule: git keeps it):
+- [x] 4.3 CLAUDE.md, finished work (its own rule: git keeps it):
   - Official minimums: "Until 2026-10-07 each search lowered the station's time to it, …".
   - One model, step 1: the "Gone: …" list and the live check, which step 2's phone check
     repeats.
@@ -359,16 +359,21 @@ kotlinx.serialization 1.11.0, Gradle 9.8.0, `checkout@v7`, `setup-java@v6`,
   - "Measured (2026-10-06, a Python prototype, not kept)": steps 1 and 2 have the real numbers
     (453 KB, not 0.9 MB; 10–21 ms). Its "377 random trips … 13 through stations today's search
     can't reach" is the reason for the full search: into research/architecture.md?
-- [ ] 4.4 Skill, out of date: "Trying the API by hand" lists three answers in `private/`; there
+  Done 2026-10-07, before the 0.3.0 commit (user): the four cut; the reason was already in
+  research/architecture.md (Phase 2); the file's size in "Decided" and the Pages estimate now
+  0.5 MB, as measured.
+- [x] 4.4 Skill, out of date: "Trying the API by hand" lists three answers in `private/`; there
   are eight (also Horw → Sursee now and tomorrow and Zürich → Bern now, 6 Oct 23:07, and the
   arrival boards of Zürich HB and Luzern). Still untested, "The fixes after that test pass":
   "the search asking again where a time fell (gone since …)" is about code that no longer
-  exists.
-- [ ] 4.5 Lines over 100 characters: CLAUDE.md 175, 245, 315, 339, 362, 363, 405, 480;
+  exists. Done 2026-10-07: the eight listed, the item gone.
+- [x] 4.5 Lines over 100 characters: CLAUDE.md 175, 245, 315, 339, 362, 363, 405, 480;
   research/data_sources.md 66, hidden_connections.md 41, harmonize.md 90, 145 (the commands
-  left as they are).
+  left as they are). Done 2026-10-07: the prose rewrapped (harmonize.md was deleted); tables,
+  commands, the skill's frontmatter and README's `<img>` left.
 
 ### Repo, build and CI
-- [ ] 5.1 `git gc`: 231 loose objects (1.1 MB), 2 packs.
+- [x] 5.1 `git gc`: 231 loose objects (1.1 MB), 2 packs. Done 2026-10-07: 0 loose, a pack and
+  a cruft pack.
 - Nothing else: the latest versions, reproducible, CI green, no unused files, changelogs only
   for 1 and 2 (both in the F-Droid recipe).

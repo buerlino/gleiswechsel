@@ -144,9 +144,17 @@ is in `research/`.
   `~/Android/Sdk/platform-tools/adb install -r app/build/outputs/apk/debug/app-debug.apk`. If
   `adb devices` is empty, USB debugging is off or not authorised, or the phone is in "Charging
   only" mode: ask the user. With two phones connected pass `-s <serial>`.
-- Debug and release builds are signed with different keys, so switching needs an uninstall.
+- A release build signed with the release key and a debug build have different keys, so
+  switching needs an uninstall.
 - Release build on the phone (R8 isn't covered by unit tests): sign the unsigned release APK with
-  `~/.android/debug.keystore` via `zipalign -p 4` + `apksigner`; that installs over debug builds.
+  `~/.android/debug.keystore` via `zipalign -p 4` + `apksigner`; that installs over debug builds
+  and back (`install -r`, data and cache kept; 2026-10-07). So the debug build's `run-as` can
+  look at or change the files between two R8 runs, e.g. `run-as io.github.buerlino.gleiswechsel
+  touch -d 2026-09-29T12:00:00 cache/timetable.bin.gz` (toybox's `touch` takes no "8 days ago").
+- Bytes an app received, e.g. to see whether a search downloaded the timetable (a download
+  isn't logged): `dumpsys netstats --poll`, then sum the `rb=` of `dumpsys netstats detail`'s
+  entries with the app's `uid=` (`dumpsys package` gives it) and `tag=0x0`; the file is about
+  450 KB, a search's answers 10–50 KB.
 - A new install may have its network blocked (`UnknownHostException` in the app); the user allows
   it in App info → Mobile data & Wi-Fi.
 - Don't pipe Gradle into `tail` before `&& adb install`: the pipe hides a failed build and the old
@@ -186,11 +194,13 @@ curl -s 'https://transport.opendata.ch/v1/stationboard?station=8500218&type=arri
 
 On an arrival board the arrival time is in `stop.departure` (research/data_sources.md). Keep
 real responses for tests' shape in `private/`; tests themselves use made-up data. `private/` has
-Horw → Sursee 08:50, Luzern → Sursee 09:05 (the onward request) and one with a walk, all for
-Wed 7 Oct 2026. `private/gtfs/` has the GTFS export of 30 Sep 2026 (289 MB; `curl -L` the
+eight: Horw → Sursee 08:50, Luzern → Sursee 09:05 (the onward request) and Horw → Bern,
+Bundesplatz (with a walk), all for Wed 7 Oct 2026; Horw → Sursee now and tomorrow 08:50 and
+Zürich → Bern now, asked 6 Oct 23:07 (with delays); the arrival boards of Zürich HB and Luzern
+a minute later. `private/gtfs/` has the GTFS export of 30 Sep 2026 (289 MB; `curl -L` the
 dataset's `/permalink` with a browser User-Agent, 5 s), `timetable.bin.gz` made from it for
-7–20 Oct (before the names of step 4.2; nothing reads it now), and the 2027 export of 3 Oct 2026 (`gtfs_fp2027_20261003.zip`, 90 MB, from
-`timetable-2027-gtfs2020`).
+7–20 Oct (before the names of step 4.2; nothing reads it now), and the 2027 export of 3 Oct
+2026 (`gtfs_fp2027_20261003.zip`, 90 MB, from `timetable-2027-gtfs2020`).
 
 ## Still untested
 
@@ -242,39 +252,43 @@ Everything else was tried on the phone with the R8 release build signed with the
   real changed track or too-short change seen (`prognosis.platform` was null everywhere). Not
   seen: English, French, Italian; a delay of 10 or more next to the time; a negative delay;
   a cancelled train; the new Help texts on the phone; TalkBack reading the delay words.
-- The debug build on the phone.
 - Declutter pass 3's fixes (2026-10-07): seen on the phone the same day, except Destination's
   first frame back from Help or Settings and after the language switch (only a cold start
   recorded), the page after a change in Settings with Optimization off (only Cancel), and the
   titles as headings in TalkBack.
-- The fixes after that test pass (2026-10-07), seen on the phone the same day (R8 release): the
-  search asking again where a time fell (gone since, with One model); one station per change (Luzern
-  → Zürich, Central 08:00: nothing faster, the tram from Bahnhofstrasse/HB gone); the keyboard's
-  next keys (From → To → the time, past ⇅) and the number keyboard's search key (searches, closes
-  the keyboard); the plain blue ⇅ between the borders; the no-break spaces in Help (German, English,
-  French) and the cards; the French day line ("jeu. 8 oct. :"). Not seen: Italian.
+- The fixes after that test pass (2026-10-07), seen on the phone the same day (R8 release): one
+  station per change (Luzern → Zürich, Central 08:00: nothing faster, the tram from
+  Bahnhofstrasse/HB gone); the keyboard's next keys (From → To → the time, past ⇅) and the number
+  keyboard's search key (searches, closes the keyboard); the plain blue ⇅ between the borders; the
+  no-break spaces in Help (German, English, French) and the cards; the French day line ("jeu. 8
+  oct. :"). Not seen: Italian.
 - The themed icon in a launcher that shows themed icons (Niagara doesn't); only checked as a
   render.
 - The timetable job (2026-10-07): run once by hand on GitHub (2 min 4 s; the file and page
   1 min 38 s), deployed. Not checked: the schedule (first run Thu 8 Oct, 03:23 UTC), the
   December run with two years' GTFS on GitHub (only on the desktop).
 - The full search (2026-10-07): `FullSearchTest`, `FoundTest` and on the phone (CLAUDE.md,
-  step 4.3: the download once, the test case, Uster → Horw's find only it has, the read time,
-  the line with a 404 URL). Not checked: an hour skipped (28 Mar 2027), a find through an
-  in-seat continuation, a find from it identical to today's on real data (only `FoundTest`; the
-  test case's comes from both, shown once), the line from a copy without the day, Cancel during
-  the download, the file on Pages with step 4.2's names on the phone, the 16 s download on
-  another network (Wi-Fi, without the VPN). `pm clear --cache-only` hangs on the test phone
-  (Android 16): empty the cache in App info → Storage & cache → Clear cache.
-  Its texts (step 4.4: Help's 🚆, ⚠️ and 📡 in all four): lint only, not seen on the phone.
+  steps 4.3 and 4.5: the download, the test case, Uster → Horw's find only it has, the read
+  time, the line with a 404 URL, ICE000273 in a card, Help's 🚆, ⚠️ and 📡 in all four, Cancel
+  1.5 s after Search with the download finished and kept). Not checked: an hour skipped (28 Mar
+  2027), a find through an in-seat continuation, a find from it identical to today's on real
+  data (only `FoundTest`; the test case's comes from both, shown once), a newly named train in
+  a find only it has (none in 15 commutes tried; ICE000273's change is an official one's), the
+  line from a copy without the day, whether that Cancel hit the download itself or the API's
+  requests before it, a search started while a cancelled one still downloads (waits,
+  `@Synchronized`), a download on Wi-Fi without the VPN (user, 2026-10-07: later, at home; on
+  LTE through Tailscale 3.5 s for a whole search with it, the 16 s of step 4.3 not seen again).
+  `pm clear --cache-only` hangs on the test phone (Android 16): empty the cache in App info →
+  Storage & cache → Clear cache, or with the debug build `run-as io.github.buerlino.gleiswechsel
+  rm cache/timetable.bin.gz` and then the R8 build over it (`install -r`; 2026-10-07).
 - The train names (2026-10-07, step 4.2): `TimetableTest` and 48 trains of a file made from
-  `private/gtfs/` checked against the API's boards by hand. Not in the published file until the
-  job runs (still the 7 Oct file on 7 Oct, 16:00).
+  `private/gtfs/` checked against the API's boards by hand; on Pages since the job's run of
+  7 Oct, 14:36 UTC (`LiveTest`), ICE000273 seen on the phone (step 4.5).
 - The local copy (2026-10-07, `localTimetable`): `TimetableTest` and the live download from
   Pages on the desktop (once, then from the copy); on the phone (step 4.3) Android's
   `HttpURLConnection` on Pages, once and then from the copy, and a copy cleared in App info.
-  Not checked: a real Wi-Fi login page, a copy the system cleared itself, one older than 7 days
-  (step 4.5).
+  A copy older than 7 days downloaded again (step 4.5, the debug build). Not checked: a real
+  Wi-Fi login page, a copy the system cleared itself.
 
 ## Releasing (as in gridload and APODroid)
 

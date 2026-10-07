@@ -1,0 +1,7 @@
+- La recherche complète : aussi des trajets par d'autres gares, à partir de deux semaines de trains suisses téléchargées environ une fois par semaine (environ 0,5 Mo).
+- Le temps officiel d'une gare est le même à chaque recherche.
+- Optimisation : les gares hors des trajets affichés sont estompées.
+- Correspondances dans une même gare seulement.
+- Un nouveau temps estompe les trouvailles jusqu'à la prochaine recherche.
+- Le clavier va De → À → Départ, puis recherche.
+- Le bleu du logo.

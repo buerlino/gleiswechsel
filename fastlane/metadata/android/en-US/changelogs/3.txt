@@ -1,0 +1,7 @@
+- The full search: also routes through other stations, from two weeks of Swiss trains downloaded about once a week (about 0.5 MB).
+- A station's official time is the same in every search.
+- Optimization: stations not on the trips shown are faded.
+- Changes only within one station.
+- A new time fades the finds until the next search.
+- The keyboard goes From → To → time, then searches.
+- The logo's blue.

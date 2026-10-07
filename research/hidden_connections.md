@@ -38,8 +38,8 @@ most 4 minutes. `UMSTEIGB` says 5, and the tables per operator, line and train p
 `UMSTEIGL`, `UMSTEIGZ`, export of 29 Sep 2026) have nothing that gives 4: Olten's only lines there
 are "999" (no connection) pairs, Luzern has none. So the planner behind transport.opendata.ch
 uses finer times, probably per track, that aren't published (checked again 2026-10-06, Wed 7 Oct
-14:05 and 15:05). The app counts such a change as official for those trains only (CLAUDE.md, Official
-minimums). Big hubs are where the official minimums are longest, so that's where to look.
+14:05 and 15:05). The app counts such a change as official for those trains only (CLAUDE.md,
+Official minimums). Big hubs are where the official minimums are longest, so that's where to look.
 
 ## What to expect
 

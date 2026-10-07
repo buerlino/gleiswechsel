@@ -1,0 +1,7 @@
+- Die vollständige Suche: auch Wege über andere Bahnhöfe, aus zwei Wochen Schweizer Zügen, etwa einmal pro Woche geladen (etwa 0,5 MB).
+- Die offizielle Zeit eines Bahnhofs ist in jeder Suche dieselbe.
+- Optimierung: Bahnhöfe, die auf keiner gezeigten Reise liegen, sind blasser.
+- Umstiege nur innerhalb eines Bahnhofs.
+- Eine neue Zeit macht die Funde bis zur nächsten Suche blasser.
+- Die Tastatur geht Von → Nach → Abfahrt, dann sucht sie.
+- Das Blau des Logos.

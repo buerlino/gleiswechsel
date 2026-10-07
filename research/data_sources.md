@@ -63,8 +63,9 @@ window of days, moved weekly: 27 Sep 2026 to 25 Feb 2027 on 7 Oct (a time outsid
   5 hours ahead, tomorrow 08:50: its answer was byte-identical to the afternoon's); on time is
   `delay: 0` with `prognosis` = planned; trains up to 2 hours ahead had values (the exact window
   not checked by day). Values seen 0, 1, 2, 5, none negative. `prognosis.platform` was null in
-  every answer and on the Zürich HB and Luzern boards (no changed track at hand). No field for a cancelled train or a disruption anywhere in
-  the answer; how a cancelled train shows (left out, or as planned) is untested. `from`/`to` with
+  every answer and on the Zürich HB and Luzern boards (no changed track at hand). No field for a
+  cancelled train or a disruption anywhere in the answer; how a cancelled train shows (left out,
+  or as planned) is untested. `from`/`to` with
   a raw "ü" got "Invalid HTTP request": encode it.
 - Station ids are the national ids (`8505000` Luzern, `8507000` Bern, `8500218` Olten).
 - CORS is open (`access-control-allow-origin: *`), responses are plain JSON.

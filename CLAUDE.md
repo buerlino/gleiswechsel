@@ -170,17 +170,16 @@ file that can't be read (e.g. an older format after an update) is ignored quietl
 
 Destination (user, 2026-10-06): before a search it sits in the middle of the page (of the
 space above the keyboard while typing); Search moves it to the top and folds the three fields
-into one line (from → to, time ▾), a tap on which opens them again. Opened after a search, a ▴ on the Search button's row
-folds them again (user, 2026-10-06: once opened they couldn't be hidden; one mark each way,
-none on the title). A ✕ on the right of Journey's title (plain text, as the fold marks,
-2026-10-07: a button made the title taller) closes the result and the Optimization rows (and
-deletes the saved file), so Destination is back in the middle, as on start (user,
-2026-10-06); while a search runs it isn't there (Search is Cancel). The Search button stays in
-view, folded or not (to search again after editing a time); while a search runs it reads Cancel
-(user, 2026-10-06: a slow API meant a long, locked wait), which unlocks the fields at once and
-drops the late answer (the requests themselves can't be stopped). With no result and no rows
-shown (editing the commute clears both; Optimization off hides the rows) it goes back to the
-middle. A screen reader says whether a
+into one line (from → to, time ▾), a tap on which opens them again. Opened after a search, a ▴ on
+the Search button's row folds them again (user, 2026-10-06: once opened they couldn't be hidden; one
+mark each way, none on the title). A ✕ on the right of Journey's title (plain text, as the fold
+marks, 2026-10-07: a button made the title taller) closes the result and the Optimization rows (and
+deletes the saved file), so Destination is back in the middle, as on start (user, 2026-10-06); while
+a search runs it isn't there (Search is Cancel). The Search button stays in view, folded or not (to
+search again after editing a time); while a search runs it reads Cancel (user, 2026-10-06: a slow
+API meant a long, locked wait), which unlocks the fields at once and drops the late answer (the
+requests themselves can't be stopped). With no result and no rows shown (editing the commute clears
+both; Optimization off hides the rows) it goes back to the middle. A screen reader says whether a
 fold (this line, Optimization, a card's official connection) is open or folded, not the ▾ or ▸
 (`folding`, `FoldMark`).
 
@@ -240,14 +239,14 @@ at every station the rider hasn't set.
   timetable: a row per stop (time, station, track), the train in between, and at each change its
   minutes in the box. Stations underlined, the train (RE24) in a black outline without fill, the
   track's number as a platform sign: white on the logo's blue `00179B`, square corners, with a
-  rounded white line inside, a bit bigger (user, 2026-10-06). A walk between two trains is part of the change (the box, then
-  the walk's minutes); one before the first train or after the last is a row of its own. Under
-  the trip, a small grey line (▸) opens the official connection it beats, the same timetable at
-  60% (user, 2026-10-06: there but not in the way). With nothing faster, Journey shows the
-  official connection leaving first in a card of its own, so the rider sees where it changes.
-  A find that passes a station twice (`Connection.doublesBack`, from the API's `passList`) says
-  under its efficiency to check the ticket (user, 2026-10-06): a route going back over itself may
-  need another one (research/hidden_connections.md).
+  rounded white line inside, a bit bigger (user, 2026-10-06). A walk between two trains is part of
+  the change (the box, then the walk's minutes); one before the first train or after the last is a
+  row of its own. Under the trip, a small grey line (▸) opens the official connection it beats, the
+  same timetable at 60% (user, 2026-10-06: there but not in the way). With nothing faster, Journey
+  shows the official connection leaving first in a card of its own, so the rider sees where it
+  changes. A find that passes a station twice (`Connection.doublesBack`, from the API's `passList`)
+  says under its efficiency to check the ticket (user, 2026-10-06): a route going back over itself
+  may need another one (research/hidden_connections.md).
 - **Delays and changed tracks** (user, 2026-10-06), from the same answers, no extra request
   (`Stop.delay`, `Stop.newPlatform`): in every card's timetable (the finds, the folded official
   connection, the official one alone), a delay of a minute or more as a red "+3" after the
@@ -311,35 +310,33 @@ at every station the rider hasn't set.
   first, so it can tell "no connections" from "nothing faster"); for each change station X on
   them (where a ride ends and the next begins; a walk belongs to the change), the connections
   X → B from the arrival at X plus the rider's transfer time at X; of the rides leaving X itself
-  no earlier, the one arriving first (a tie goes to the later one: more time to change); then the same at
-  that onward connection's own changes, and so on (`shortened`; user, 2026-10-06: the API keeps
-  the official minimum at every later change, so two short changes on one trip, e.g. Luzern and
-  Olten, were never combined). Each question goes to the API once per search (two official
-  connections on the same train to the same change asked it twice; the API answers too many
-  with 429). A find if it reaches B earlier than the official one, unless the planner already
-  offers it: an official connection leaves no earlier and arrives no later (user, 2026-10-06;
-  Horw → Bern, Bundesplatz showed the same trains as a bus instead of a walk, 4 minutes
-  "earlier"). The same rule between the finds (2026-10-06): a card another find beats goes, an
-  identical trip shows once, against the official connection arriving first (the smaller saving).
-  A change whose request fails gives nothing and the others go on; `search` returns the finds,
-  the errors and the stations it changed at (`Searched`).
-  **Changes within one station only** (user, 2026-10-07, as the full search): an onward
-  connection that starts with a walk or at another stop isn't one. Before, the search asked again
-  from the stop the API walked to, and the API also offered stops nearby: Zürich HB → a tram at
-  Bahnhofstrasse/HB counted as a 5-minute track switch at Zürich HB, no walk shown (an open question
-  until then).
-  `search` also returns the changes the planner makes in all its answers (`Searched.offered`:
-  station, arrival, departure), kept in `Found.offered` (D4). `find()` in `:core` (the next such
-  time, the official connections, `search`, the `Found`; the request passed in) and
-  `parseTime()` are tested in `FoundTest` (2026-10-07, from the app).
+  no earlier, the one arriving first (a tie goes to the later one: more time to change); then the
+  same at that onward connection's own changes, and so on (`shortened`; user, 2026-10-06: the API
+  keeps the official minimum at every later change, so two short changes on one trip, e.g. Luzern
+  and Olten, were never combined). Each question goes to the API once per search (two official
+  connections on the same train to the same change asked it twice; the API answers too many with
+  429). A find if it reaches B earlier than the official one, unless the planner already offers it:
+  an official connection leaves no earlier and arrives no later (user, 2026-10-06; Horw → Bern,
+  Bundesplatz showed the same trains as a bus instead of a walk, 4 minutes "earlier"). The same rule
+  between the finds (2026-10-06): a card another find beats goes, an identical trip shows once,
+  against the official connection arriving first (the smaller saving). A change whose request fails
+  gives nothing and the others go on; `search` returns the finds, the errors and the stations it
+  changed at (`Searched`). **Changes within one station only** (user, 2026-10-07, as the full
+  search): an onward connection that starts with a walk or at another stop isn't one. Before, the
+  search asked again from the stop the API walked to, and the API also offered stops nearby: Zürich
+  HB → a tram at Bahnhofstrasse/HB counted as a 5-minute track switch at Zürich HB, no walk shown
+  (an open question until then). `search` also returns the changes the planner makes in all its
+  answers (`Searched.offered`: station, arrival, departure), kept in `Found.offered` (D4). `find()`
+  in `:core` (the next such time, the official connections, `search`, the `Found`; the request
+  passed in) and `parseTime()` are tested in `FoundTest` (2026-10-07, from the app).
 - **Transfer time per station, covering the whole change, walks included** (user, 2026-10-06:
   "a fixed estimated time we need for a specific trainstation"). `search` takes it as a function
   of the station; `TrackSwitchTimes` in `:core` gives it (D2), and the official time and the
-  default to the cards and the rows. **At a station the rider hasn't set: the official minimum there minus the
-  offset in Settings, at least 0** (user, 2026-10-06: "the defaults are a fixed amount lower than
-  the official ones"; a flat 5 was too high: riders who don't know their times would find nothing
-  and think the app doesn't work). With the offset at 1, Horw → Sursee finds the test case with
-  nothing set (Luzern 5 − 1 = 4).
+  default to the cards and the rows. **At a station the rider hasn't set: the official minimum there
+  minus the offset in Settings, at least 0** (user, 2026-10-06: "the defaults are a fixed amount
+  lower than the official ones"; a flat 5 was too high: riders who don't know their times would find
+  nothing and think the app doesn't work). With the offset at 1, Horw → Sursee finds the test case
+  with nothing set (Luzern 5 − 1 = 4).
 - **Official minimums** (2026-10-06): HRDF `UMSTEIGB` from opentransportdata.swiss (timetable
   2026, export of 29 Sep 2026), the Swiss stations (`85…`) and the standard (`9999999`, 2
   minutes, everywhere else) as `app/src/main/res/raw/umsteigb.txt` (2,971 lines, 106 KB), read
@@ -351,30 +348,29 @@ at every station the rider hasn't set.
   (track 11 → 8), S1 → S41 at Luzern in 4; the table says 5 and `UMSTEIGV`/`L`/`Z` have nothing
   there (checked 2026-10-07). Such a change is official for those trains only (D4,
   `TrackSwitchTimes.official(change, offered)`); the station's time stays the table's (D1).
-  Until 2026-10-07 each search lowered the station's time to it, so colours and defaults moved
-  between searches.
 - **Requests:** 1 + one per change searched (those of the onward connections too, each question
   once): 5 for Horw → Sursee 08:50, 9 for Sursee → Zürich Oerlikon 07:45 (8 Oct, live).
 - **Proven live** 2026-10-06 for Wed 7 Oct (`LiveTest`): 08:50 with 4 minutes finds the
   [test case](#test-case-horw--sursee-user-2026-10-06) (14 minutes saved, RE24 track 9), with 6
   minutes nothing; 14:50 finds the same change from the 14:53 (it repeats every hour).
-- **Limits, known:** the search uses planned times only (delays are shown, not searched with); today's
-  search only stations the official connections or the onward ones touch, the full search trains only and
-  only when the file has the day and A and B; changes only within a station; the live check doesn't skip public holidays; the official
-  minimums are a copy of one timetable year's, the planner's finer times only for its own changes;
-  `doublesBack` sees only stations by id (a train station and its bus stop differ).
+- **Limits, known:** the search uses planned times only (delays are shown, not searched with);
+  today's search only stations the official connections or the onward ones touch, the full search
+  trains only and only when the file has the day and A and B; changes only within a station; the
+  live check doesn't skip public holidays; the official minimums are a copy of one timetable year's,
+  the planner's finer times only for its own changes; `doublesBack` sees only stations by id (a
+  train station and its bus stop differ).
 
 ## The first version (user, 2026-10-06)
 
 The scope: one saved commute, the rider's transfer time per station, the local search, one result
 list (user, 2026-10-06: "focus on the core utility").
 
-Released: 0.2.0 (tag `v0.2.0`, versionCode 2), after 0.1.0. The F-Droid merge request is open
-(user, 2026-10-06), from the branch `io.github.buerlino.gleiswechsel` in `../fdroiddata`, with
-0.2.0 (`6cad67402`, pushed); its `NonFreeNet` text names sbb.ch too (user, 2026-10-06: the
-ticket link) and buerlino.github.io (user, 2026-10-07: the timetable file; edited in the fork,
-checked, not yet committed there). Before every push to the fork: the skill's checks (user,
-2026-10-06: the pipeline failed twice without them). README's "Soon on F-Droid" stays until
+Released: 0.3.0 (tag `v0.3.0`, versionCode 3: the full search), after 0.1.0 and 0.2.0. The F-Droid
+merge request is open (user, 2026-10-06), from the branch `io.github.buerlino.gleiswechsel` in
+`../fdroiddata`, with 0.2.0 (`6cad67402`, pushed); its `NonFreeNet` text names sbb.ch too (user,
+2026-10-06: the ticket link) and buerlino.github.io (user, 2026-10-07: the timetable file; edited in
+the fork, checked, not yet committed there). Before every push to the fork: the skill's checks
+(user, 2026-10-06: the pipeline failed twice without them). README's "Soon on F-Droid" stays until
 F-Droid has it.
 
 ## The full search (decided 2026-10-06, being built)
@@ -388,7 +384,7 @@ research/architecture.md, phase 2.
 Decided (user, 2026-10-06, after a research session):
 
 - **A GitHub Actions job**, weekly and by hand, downloads the Swiss GTFS, keeps the trains of the
-  next 14 days, writes a compact file (about 1 MB) and deploys it to GitHub Pages. The same file
+  next 14 days, writes a compact file (about 0.5 MB) and deploys it to GitHub Pages. The same file
   for everyone, so the commute never leaves the phone; no server. Not a release or a tag: those
   would show up in Obtainium and in F-Droid's tag check.
 - **Trains only** (GTFS `route_type` 100–117): buses are 12× the data.
@@ -404,16 +400,8 @@ Decided (user, 2026-10-06, after a research session):
 
 Allowed (opentransportdata.swiss's terms, checked 2026-10-06, research/data_sources.md): the
 data may be processed and published; the published file must name opentransportdata.swiss as its
-source (§5.1) and be published under the project's name (§5.3). GitHub Pages: 1 GB a site, 100 GB a month (soft), so about
-100,000 downloads of 1 MB.
-
-Measured (2026-10-06, a Python prototype, not kept): the trains of 14 days are 51,382 trips,
-544k stop events and 5,010 platforms; a plain binary (u16 platform, u16 arrival minutes, u8
-dwell per stop) 3.0 MB, 0.9 MB gzipped; reading the GTFS about a minute. A CSA over one day's
-trains took 3–10 ms per search and found the test case with Luzern at 4 minutes. 377 random
-trips between the 150 busiest stations, offset 1: 33 faster, 13 of them through stations today's
-search can't reach (overcounted: it compared against `UMSTEIGB`, and the planner has finer
-times, e.g. 6 minutes at Zürich HB where the table says 7).
+source (§5.1) and be published under the project's name (§5.3). GitHub Pages: 1 GB a site, 100 GB a
+month (soft), so about 200,000 downloads of 0.5 MB.
 
 Steps (user, 2026-10-06), one at a time, each shown working:
 
@@ -464,12 +452,8 @@ Steps (user, 2026-10-06), one at a time, each shown working:
    from 13 Dec. A file for 6–19 Dec from both: 62,802 trips, 572 KB, 31 s; the test case found
    on 11–14 Dec. Then `timetable.bin.gz` and `index.html`, which names opentransportdata.swiss
    as the source and Gleiswechsel as the publisher (§5.1, §5.3), to Pages
-   (`upload-pages-artifact@v5`, `deploy-pages@v5`). Its two scripts run on the desktop: 22 s
-   download, 38 s file and page. First run on GitHub, by hand 2026-10-07: 2 minutes (5 s
-   download, 1 min 38 s file and page); https://buerlino.github.io/gleiswechsel/timetable.bin.gz,
-   453,334 bytes, the same bytes as the desktop's from the same GTFS and day; Pages sends it as
-   `application/gzip` without `Content-Encoding`, so the app reads it as is. Read with
-   `timetable()`: 7–20 Oct, 51,382 trips, 55–140 ms, about 18 MB of heap (desktop JVM).
+   (`upload-pages-artifact@v5`, `deploy-pages@v5`), at
+   https://buerlino.github.io/gleiswechsel/timetable.bin.gz (about 2 minutes on GitHub).
    **GitHub switches off scheduled workflows in a public repo after 60 days without activity**
    (a commit counts): the file then runs out of days within 14. Switch it on again in the
    Actions tab, or commit.
@@ -492,15 +476,16 @@ Steps (user, 2026-10-06), one at a time, each shown working:
       could count a day twice). Checked on a file from `private/gtfs/` (7–20 Oct, the same
       51,382 trips, 457,619 bytes): 48 trains of the new kinds (EC, ICE, TGV, TER, CC, PE, RB,
       NJ, RJX, EXT, and IC, IR, S, RE, R without a line, IRVAE) on 8 Oct, each named as on the
-      API's board at its first station and minute. The API's own rule as seen 2026-10-07: 5,102 trains from the boards of 40 stations,
-      joined to the GTFS trips by train number and departure time: the rule names 4,958 as the
-      API does; 31 match two routes at that time, the API's name one of them; none differ.
-      `route_short_name` alone differed for about 680 (every EC, ICE, TGV, TER, CC, PE, RB, NJ,
-      RJX, and IC, IR, S without a line). Every train trip has a numeric `trip_short_name`
-      (2026 and 2027 exports). Not on the boards: `REN1`, `SEV`, `ZUG`. The file's format
-      stays; the job's next file has the names. `LiveTest`'s full search reads the published
-      file through `localTimetable` (a copy in `core/build/`; user, 2026-10-07), so it no
-      longer needs a file made with `-Pfrom`.
+      API's board at its first station and minute. The API's own rule as seen 2026-10-07: 5,102
+      trains from the boards of 40 stations, joined to the GTFS trips by train number and departure
+      time: the rule names 4,958 as the API does; 31 match two routes at that time, the API's name
+      one of them; none differ. `route_short_name` alone differed for about 680 (every EC, ICE, TGV,
+      TER, CC, PE, RB, NJ, RJX, and IC, IR, S without a line). Every train trip has a numeric
+      `trip_short_name` (2026 and 2027 exports). Not on the boards: `REN1`, `SEV`, `ZUG`. The file's
+      format stays; Pages has the names since the job's run of 7 Oct, 14:36 UTC (457,619 bytes;
+      543 EC, IC, ICE and TGV named so). `LiveTest`'s full search reads the published
+      file through `localTimetable` (a copy in `core/build/`; user, 2026-10-07), so it no longer
+      needs a file made with `-Pfrom`.
    3. **Both searches, and the rows** (done 2026-10-07, `find()` takes the timetable):
       `best(today's finds + the full search's, officials)`, today's first: of two the same, the
       first stays, and it has the API's names and delays (`best` compares times only, so names
@@ -531,8 +516,19 @@ Steps (user, 2026-10-06), one at a time, each shown working:
       host on the data line. `NonFreeNet` names buerlino.github.io (GitHub Pages is only the
       host, but the text lists every host the app contacts). The French description's spaces
       before : and ; are no-break now, as in `strings.xml`.
-   5. **The version and the phone check** (0.3.0, versionCode 3; user, 2026-10-07): changelogs; the R8
-      build end to end, a copy older than 7 days, no network.
+   5. **The version and the phone check** (done 2026-10-07; 0.3.0, versionCode 3): changelogs
+      in all four; declutter pass 4's open items before the release commit (user). Pages has
+      the names since the job's run that day (14:36 UTC, 457,619 bytes; `LiveTest` green on
+      it). On the phone (R8 release, LTE through Tailscale, live for Thu 8 Oct, offset 1,
+      Luzern and Zürich HB at 2): the first search from an empty cache downloaded (509 KB in
+      all, about 11 s with the API's answers); Uster → Horw 06:30 the S9 → IR75 → S4 find;
+      Basel SBB → Chur 09:00 ICE000273 → IC3 at Zürich HB in 2, 26 minutes earlier (the change
+      is also an official one's, so today's search may have it too; the name is the API's
+      either way); Help's 🚆, ⚠️ and 📡 in all four; no network: `search_failed`; a copy dated
+      29 Sep downloaded again (the debug build, `run-as touch -d`; 3.5 s for the whole search);
+      Cancel 1.5 s after Search: the page free at once, the download finished and kept (the
+      next search 13 KB). Measuring a download without logs: the uid's received bytes from
+      `dumpsys netstats` (the skill).
 
 ### One model for the track switch times (decided 2026-10-07, being built)
 
@@ -568,17 +564,8 @@ Steps, one at a time:
 
 1. **The model in `:core`** (done 2026-10-07): `TrackSwitchTimes` (D1, D2; `official(change,
    offered)` for D4), `Change`, `Searched.offered` and `Found.offered`, `Found.trips` and
-   `onTrips` (D3). Gone: `Minimums.lowered`, `shortestChanges`, the re-run loop in `search`
-   (each change asked once), `Found.shortest`, the page's `official` state; `result.json` has
-   the new shape, an older one is ignored and logged. `find()` and `parseTime()` in `:core`
-   (declutter pass 3, 3.1). The page uses `TrackSwitchTimes` for the rows and the cards (the
-   table's time at every change, D4 not shown yet, no faded rows yet). Checked live for Thu 8
-   Oct through `find()` (a one-off test, not kept), Luzern set to 4, offset 1: Sursee → Horw
-   07:45 Luzern's row 4 against 5, the S1 → S41 in 4 the planner's (against 4); Sursee → Zürich
-   Oerlikon 07:45 nothing faster with the defaults (Zürich HB 7 − 1 = 6; the IR75 → S8 needs
-   3), so the official connection via Olten shown: Olten, Zürich HB full, Brugg AG, Luzern
-   faded; with Zürich HB set to 3 the S8 find (09:29, 9 minutes) and Luzern, Zürich HB full,
-   Olten, Brugg AG faded.
+   `onTrips` (D3); `result.json` has the new shape, an older one is ignored and logged.
+   `find()` and `parseTime()` in `:core` (declutter pass 3, 3.1).
 2. **The page on it** (done 2026-10-07): the box rule (D4, `offered` into `FindCard` and
    `Trip`, the `Change` built as `Connection.transfers` does), the rows off `onTrips` faded
    (`MinutesStepper`'s `modifier`), Help's 🎨 and ⏱️ in all four languages (🎨's old "or less

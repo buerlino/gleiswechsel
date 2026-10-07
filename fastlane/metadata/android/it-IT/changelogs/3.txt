@@ -1,0 +1,7 @@
+- La ricerca completa: anche percorsi attraverso altre stazioni, da due settimane di treni svizzeri scaricate circa una volta alla settimana (circa 0,5 MB).
+- Il tempo ufficiale di una stazione è lo stesso in ogni ricerca.
+- Ottimizzazione: le stazioni fuori dai viaggi mostrati sono sbiadite.
+- Cambi solo all'interno di una stazione.
+- Un nuovo tempo sbiadisce i risultati fino alla prossima ricerca.
+- La tastiera va Da → A → Partenza, poi cerca.
+- Il blu del logo.
