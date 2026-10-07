@@ -37,6 +37,7 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import io.github.buerlino.gleiswechsel.core.Change
 import io.github.buerlino.gleiswechsel.core.Connection
 import io.github.buerlino.gleiswechsel.core.Find
 import io.github.buerlino.gleiswechsel.core.Leg
@@ -49,7 +50,7 @@ import java.time.format.DateTimeFormatter
 import kotlin.math.roundToInt
 
 @Composable
-internal fun FindCard(find: Find, times: TrackSwitchTimes) {
+internal fun FindCard(find: Find, times: TrackSwitchTimes, offered: Set<Change>) {
     Card(Modifier.fillMaxWidth()) {
         Column(Modifier.padding(12.dp), verticalArrangement = Arrangement.spacedBy(4.dp)) {
             Text(
@@ -77,7 +78,7 @@ internal fun FindCard(find: Find, times: TrackSwitchTimes) {
                 style = MaterialTheme.typography.bodySmall,
             )
             Spacer(Modifier.height(4.dp))
-            Trip(find.faster, times)
+            Trip(find.faster, times, offered)
             // The official connection, folded and quiet (user, 2026-10-06); on the same line the
             // ticket on sbb.ch, for the official connection's from, to and departure (user, 2026-10-06).
             var officialOpen by remember { mutableStateOf(false) }
@@ -104,7 +105,7 @@ internal fun FindCard(find: Find, times: TrackSwitchTimes) {
                 }) { Text(stringResource(R.string.ticket)) }
             }
             AnimatedVisibility(officialOpen) {
-                Column(Modifier.alpha(FADED), verticalArrangement = Arrangement.spacedBy(4.dp)) { Trip(find.official, times) }
+                Column(Modifier.alpha(FADED), verticalArrangement = Arrangement.spacedBy(4.dp)) { Trip(find.official, times, offered) }
             }
         }
     }
@@ -112,12 +113,13 @@ internal fun FindCard(find: Find, times: TrackSwitchTimes) {
 
 /**
  * [trip] as a timetable: a row per stop, the train in between, and at each change its minutes in a
- * box, coloured against the station's official time, or a [LateBox] where the delays make it shorter
- * than the rider's time there ([times]). A walk between two trains is part of the change; one before the first
- * train or after the last is shown on its own.
+ * box, coloured against the official time ([TrackSwitchTimes.official]: the station's, or where the
+ * planner itself makes the change, its own, [offered], D4), or a [LateBox] where the delays make it
+ * shorter than the rider's time there ([times]). A walk between two trains is part of the change; one
+ * before the first train or after the last is shown on its own.
  */
 @Composable
-internal fun Trip(trip: Connection, times: TrackSwitchTimes) {
+internal fun Trip(trip: Connection, times: TrackSwitchTimes, offered: Set<Change>) {
     val legs = trip.legs
     val rides = legs.indices.filter { legs[it].train != null }
     legs.forEachIndexed { i, leg ->
@@ -137,10 +139,8 @@ internal fun Trip(trip: Connection, times: TrackSwitchTimes) {
                 if (next != null) Indented {
                     val needed = times.rider(leg.arrival.id)
                     val late = tooShort(leg.arrival, legs[next].departure, Duration.ofMinutes(needed))
-                    if (late != null) LateBox(late.toMinutes(), needed) else MinutesBox(
-                        Duration.between(leg.arrival.time, legs[next].departure.time).toMinutes(),
-                        times.official(leg.arrival.id),
-                    )
+                    val change = Change(leg.arrival, legs[next].departure)
+                    if (late != null) LateBox(late.toMinutes(), needed) else MinutesBox(change.minutes, times.official(change, offered))
                     val walk = legs.subList(i + 1, next).sumOf { it.minutes }
                     Text(
                         if (walk > 0) stringResource(R.string.track_switch_walk, walk) else stringResource(R.string.track_switch),

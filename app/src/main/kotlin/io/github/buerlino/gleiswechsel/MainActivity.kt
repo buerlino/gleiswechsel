@@ -308,12 +308,12 @@ private fun App(prefs: SharedPreferences, minimums: Minimums, saved: File, last:
                                 style = MaterialTheme.typography.bodySmall,
                             )
                             if (f.incomplete) Text(stringResource(R.string.not_all_checked), color = MaterialTheme.colorScheme.error)
-                            f.finds.forEach { FindCard(it, times) }
+                            f.finds.forEach { FindCard(it, times, f.offered) }
                             // Nothing faster: the official connection leaving first, to see where it changes (user, 2026-10-06).
                             if (f.finds.isEmpty() && first != null) Card(Modifier.fillMaxWidth()) {
                                 Column(Modifier.padding(12.dp), verticalArrangement = Arrangement.spacedBy(4.dp)) {
                                     Text(stringResource(R.string.official_connection), style = MaterialTheme.typography.titleMedium)
-                                    Trip(first, times)
+                                    Trip(first, times, f.offered)
                                 }
                             }
                         }
@@ -323,11 +323,15 @@ private fun App(prefs: SharedPreferences, minimums: Minimums, saved: File, last:
                         AnimatedVisibility(optimizationOpen) {
                             Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
                                 Text(stringResource(R.string.optimization_text), style = MaterialTheme.typography.bodySmall)
+                                // A station on none of the trips shown is faded, still changeable (D3); with no
+                                // result shown (searching, cancelled) none is.
+                                val found = (result as? Result.Done)?.found
                                 changes.forEach { stop ->
                                     key(stop.id) {
                                         var minutes by remember { mutableStateOf(prefs.getString(stop.id, null)?.toLongOrNull()) }
                                         MinutesStepper(
-                                            stop.station, minutes, times.default(stop.id), times.official(stop.id), !searching, station = true,
+                                            stop.station, minutes, times.default(stop.id), times.official(stop.id), !searching,
+                                            Modifier.alpha(if (found?.onTrips(stop.id) == false) FADED else 1f), station = true,
                                         ) {
                                             minutes = it; save(stop.id, it?.toString() ?: "")
                                         }
@@ -450,11 +454,12 @@ internal fun MinutesStepper(
     default: Long,
     official: Long,
     enabled: Boolean,
+    modifier: Modifier = Modifier,
     station: Boolean = false,
     range: LongRange = 0L..99,
     arrows: Boolean = true,
     onChange: (Long?) -> Unit,
-) = Row(verticalAlignment = Alignment.CenterVertically) {
+) = Row(modifier, verticalAlignment = Alignment.CenterVertically) {
     val value = minutes ?: default
     fun step(by: Long) = (value + by).let { onChange(it.takeIf { it != default }) }
     Text(label, Modifier.weight(1f), textDecoration = if (station) TextDecoration.Underline else null)

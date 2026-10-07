@@ -212,6 +212,10 @@ Everything else was tried on the phone with the R8 release build signed with the
   a phone-to-phone transfer, a result with a walk or a second change read back on the phone.
   `run-as` doesn't work on the release build, so the file itself wasn't looked at.
 - Split screen.
+- One model, the page (2026-10-07): the D4 box rule (a change the planner itself makes never
+  green), the faded Optimization rows (`onTrips`) and Help's new 🎨 and ⏱️ texts: only built
+  (`:core:test`, lint, `assembleDebug`), not on the phone yet. The check is in CLAUDE.md, One
+  model, step 2. Not looked at: whether the faded − and + read as disabled.
 - Delays (2026-10-06, R8 release build, German only): real "+1"s and the "as of" line seen live
   (Horw → Sursee at 23:22 and 23:30), kept after a force-stop, absent for tomorrow's 08:50. The
   red "! 1 min", the grey "−2 min" and a changed track (14 instead of 12) only from a made-up

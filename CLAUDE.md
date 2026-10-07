@@ -214,7 +214,10 @@ at every station the rider hasn't set.
   2026-10-07: removing the finds moved the rows, so a second tap on − or + missed); editing the
   commute clears both. The rows come only with a search that has connections (user, 2026-10-06:
   without one they don't help) and are kept with its result, so after a failed search, or a restart
-  once the result was cleared, they're back with the next one.
+  once the result was cleared, they're back with the next one. A row whose station is on none of
+  the trips shown (`Found.onTrips`: each find and the official connection it beats; with nothing
+  faster, the official connection shown) is faded to 60%, − and + included, and still changeable
+  (D3); while a search runs or after Cancel, no result is shown, so none is faded.
 - **− and +** (`MinutesStepper`, user, 2026-10-06) set every track switch time the rider sets, in
   Optimization and the offset in Settings: a box to type in didn't look changeable. Plain − and
   +, no circle around them (user, 2026-10-06). A step is a minute (0 to 99). Unset shows the
@@ -225,8 +228,12 @@ at every station the rider hasn't set.
   one at that station (user, 2026-10-06): green below, orange the same, red above, gridload's
   three with its text colours (green `2E7D32` and red `C62828` with white, orange `FFA000` with
   black), no border (user, 2026-10-06). A row's colour follows its value or its default; the
-  offset in Settings is coloured against 0 (−1 green, 0 orange). A find's own change is so green,
-  the official ones in its card orange or red. Not by colour alone (user, 2026-10-06, for
+  offset in Settings is coloured against 0 (−1 green, 0 orange). In a card, each change is
+  coloured against `TrackSwitchTimes.official(change, offered)` (D4): the station's time, but a
+  change the planner itself makes (station, arrival, departure in `Found.offered`) against at
+  most its own minutes, so it's never green (orange at or below the station's time, red above),
+  in the official connection's timetable and at a find's change the answers also make. A find's
+  own change is so green. Not by colour alone (user, 2026-10-06, for
   colour-blind riders): ↓ before the minutes below the official one, ↑ above, none the same, and a
   screen reader says it (`box_below`, `box_same`, `box_above`); the offset has its sign instead
   (`arrows = false`).
@@ -275,8 +282,10 @@ at every station the rider hasn't set.
   fades the finds and keeps the rows, as a time does; locked while a search runs.
 - **Help** (user, 2026-10-06: by topic, foldable, an emoji each, short texts without fluff but
   nothing crucial left out): seven titles, all folded until tapped (`Heading`, as the panels'):
-  🚆 what the app does, ⏱️ the track switch time (where it's set, the offset), 🎨 the colours and
-  arrows, what official means and the red ! and grey boxes, 📈 how much more efficient, 🎫 which ticket covers a find (a
+  🚆 what the app does, ⏱️ the track switch time (where it's set, the offset, that the planner
+  sometimes allows less for particular trains), 🎨 the colours and arrows, what official means
+  (the station's time; a change the planner itself makes is official, never green) and the red !
+  and grey boxes, 📈 how much more efficient, 🎫 which ticket covers a find (a
   normal one, a supersaver only the official train, maybe not one passing a station twice), ⚠️
   delays and changed tracks as known at the search (cancellations not) and that the last result
   stays (check its day and its delays' time), 📡 the data sources
@@ -517,9 +526,15 @@ Steps, one at a time:
    3), so the official connection via Olten shown: Olten, Zürich HB full, Brugg AG, Luzern
    faded; with Zürich HB set to 3 the S8 find (09:29, 9 minutes) and Luzern, Zürich HB full,
    Olten, Brugg AG faded.
-2. **The page on it:** the box rule (D4, `offered` into the cards), the rows off `onTrips`
-   faded, Help's 🎨 and ⏱️ in all four languages; on the phone the two surprises again
-   (Luzern 4 green in both, Brugg AG faded).
+2. **The page on it** (built 2026-10-07, not yet on the phone): the box rule (D4, `offered`
+   into `FindCard` and `Trip`, the `Change` built as `Connection.transfers` does), the rows off
+   `onTrips` faded (`MinutesStepper`'s `modifier`), Help's 🎨 and ⏱️ in all four languages
+   (🎨's old "or less where the planner itself changes faster" gone). Checked: `:core:test`,
+   lint, `assembleDebug`. To check on the phone (the user's call), offset 1, Luzern set to 4:
+   Sursee → Horw 07:45, Luzern 4 green in two searches in a row, the S1 → S41 in 4 orange;
+   Sursee → Zürich Oerlikon 07:45, Brugg AG faded; with the defaults the official connection via
+   Olten, Olten and Zürich HB full, Brugg AG and Luzern faded; with Zürich HB set to 3 the S8 find
+   (09:29, 9 minutes saved), Luzern and Zürich HB full, Olten and Brugg AG faded.
 3. Then step 4 of the full search.
 
 ## After the first release

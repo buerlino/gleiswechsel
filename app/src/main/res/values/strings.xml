@@ -63,9 +63,9 @@
     <string name="help_what">What it does</string>
     <string name="help_what_text">Finds trips faster than the official planner shows. The planner only offers a change that takes at least the official track switch time, e.g. 5\u00A0min at Luzern. If you\'re quicker, an earlier train may still be yours.</string>
     <string name="help_switch">Track switch time</string>
-    <string name="help_switch_text">The minutes in a box: from one train to the next, walk included. Set your own per station under Optimization (− and +). Otherwise: the official time minus the offset in Settings (⚙), e.g. 5\u00A0−\u00A01\u00A0=\u00A04\u00A0min at Luzern.</string>
+    <string name="help_switch_text">The minutes in a box: from one train to the next, walk included. Set your own per station under Optimization (− and +). Otherwise: the official time minus the offset in Settings (⚙), e.g. 5\u00A0−\u00A01\u00A0=\u00A04\u00A0min at Luzern. For particular trains the planner sometimes allows less than the station\'s time.</string>
     <string name="help_colours">Colours and arrows</string>
-    <string name="help_colours_text">Green ↓: below the official time, orange: the same, red ↑: above. Official: the timetable\'s, or less where the planner itself changes faster. Red !: a delay leaves less than your time, grey: the next train is gone.</string>
+    <string name="help_colours_text">Green ↓: below the official time, orange: the same, red ↑: above. Official: the station\'s time in the timetable. A change the planner itself makes is official, so it\'s never green. Red !: a delay leaves less than your time, grey: the next train is gone.</string>
     <string name="help_efficient">More efficient</string>
     <string name="help_efficient_text" formatted="false">How much faster than the official trip, first departure to last arrival: 33 instead of 47\u00A0min is 42% (47\u00A0/\u00A033\u00A0=\u00A01.42).</string>
     <string name="help_tickets">Tickets</string>

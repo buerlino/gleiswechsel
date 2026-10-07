@@ -94,8 +94,9 @@ What it costs:
    Found live (8 Oct): with the defaults, Sursee → Oerlikon has nothing faster (the IR75 → S8
    needs Zürich HB at 3, the default is 6), so the page shows the official connection via Olten
    and Olten is full; with Zürich HB set to 3, as below.
-3. **The page on it**: the box rule (1 and 2), the rows faded off the page's trips, Help's 🎨
-   and ⏱️ in all four languages. On the phone: the two surprises again. Expected: Luzern 4
+3. **The page on it** (built 2026-10-07, CLAUDE.md, One model, step 2; not yet on the phone):
+   the box rule (1 and 2), the rows faded off the page's trips, Help's 🎨 and ⏱️ in all four
+   languages. On the phone: the two surprises again. Expected: Luzern 4
    green in both searches; for Sursee → Oerlikon, Luzern and Zürich HB full, Brugg AG faded.
 4. **Step 4, the full search in the app**, now smaller: the download, `fullSearch` with the same
    rider function, `best` of both, the rows follow by themselves; Help 🚆 and 📡, a new version,
@@ -140,5 +141,6 @@ As asked:
 
 - Tested: the API's docs (read 2026-10-07); `transfers.txt` of the 30 Sep 2026 export against
   `UMSTEIGB`, in Python, not kept; the code paths above, read.
-- Not tested: nothing of the proposal is built. Not known: why MOTIS changes in 4 at Olten and
+- Not tested (2026-10-07): steps 2 and 3 are built; step 2 checked live through `find()`, step 3
+  only by the build (`:core:test`, lint, `assembleDebug`), not on the phone. Not known: why MOTIS changes in 4 at Olten and
   Luzern, and whether sbb.ch offers those changes.
