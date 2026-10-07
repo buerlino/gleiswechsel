@@ -279,16 +279,17 @@ at every station the rider hasn't set.
   find more, e.g. 5-minute changes at Zürich HB), and the Optimization switch. Changing either
   fades the finds and keeps the rows, as a time does; locked while a search runs.
 - **Help** (user, 2026-10-06: by topic, foldable, an emoji each, short texts without fluff but
-  nothing crucial left out): seven titles, all folded until tapped (`Heading`, as the panels'):
-  🚆 what the app does, ⏱️ the track switch time (where it's set, the offset, that the planner
-  sometimes allows less for particular trains), 🎨 the colours and arrows, what official means
-  (the station's time; a change the planner itself makes is official, never green) and the red !
-  and grey boxes, 📈 how much more efficient, 🎫 which ticket covers a find (a
-  normal one, a supersaver only the official train, maybe not one passing a station twice), ⚠️
-  delays and changed tracks as known at the search (cancellations not) and that the last result
-  stays (check its day and its delays' time), 📡 the data sources
-  (opentransportdata.swiss wants to be named). Each concept is explained there once. The emojis
-  are in the code, the texts in `strings.xml`.
+  nothing crucial left out): seven titles, all folded until tapped (`Heading`, as the panels'): 🚆
+  what the app does (and the full search, named so: routes through other stations), ⏱️ the track
+  switch time (where it's set, the offset, that the planner sometimes allows less for particular
+  trains), 🎨 the colours and arrows, what official means (the station's time; a change the planner
+  itself makes is official, never green) and the red ! and grey boxes, 📈 how much more efficient, 🎫
+  which ticket covers a find (a normal one, a supersaver only the official train, maybe not one
+  passing a station twice), ⚠️ delays and changed tracks as known at the search (cancellations not)
+  and that the last result stays (check its day and its delays' time), that the full search knows
+  neither and its timetable can be a week old, 📡 the data sources (opentransportdata.swiss wants to
+  be named; the full search's file from buerlino.github.io). Each concept is explained there once.
+  The emojis are in the code, the texts in `strings.xml`.
 - **How much more efficient** each find is than its official connection (user, 2026-10-06): the
   official time / the find's − 1, each from the first departure to the last arrival (the wait
   before the first train doesn't count). Efficiency is the fastest trip's time / a trip's, so the
@@ -371,8 +372,10 @@ list (user, 2026-10-06: "focus on the core utility").
 Released: 0.2.0 (tag `v0.2.0`, versionCode 2), after 0.1.0. The F-Droid merge request is open
 (user, 2026-10-06), from the branch `io.github.buerlino.gleiswechsel` in `../fdroiddata`, with
 0.2.0 (`6cad67402`, pushed); its `NonFreeNet` text names sbb.ch too (user, 2026-10-06: the
-ticket link). Before every push to the fork: the skill's checks (user, 2026-10-06: the pipeline
-failed twice without them). README's "Soon on F-Droid" stays until F-Droid has it.
+ticket link) and buerlino.github.io (user, 2026-10-07: the timetable file; edited in the fork,
+checked, not yet committed there). Before every push to the fork: the skill's checks (user,
+2026-10-06: the pipeline failed twice without them). README's "Soon on F-Droid" stays until
+F-Droid has it.
 
 ## The full search (decided 2026-10-06, being built)
 
@@ -519,9 +522,15 @@ Steps (user, 2026-10-06), one at a time, each shown working:
       (83–93 ms each); Uster → Horw 06:30 a find only the full search has (S9 → IR75 → S4, 15
       minutes); the test case, once; no network: `search_failed`, as before (the API comes
       first); the line, with no copy and a build whose file URL gave 404, today's find kept.
-   4. **The texts**, all four languages: Help (🚆; 📡 the file on buerlino.github.io; ⚠️ a find
-      from the timetable file shows no delays, user 2026-10-07), README, the store descriptions,
-      F-Droid's `NonFreeNet` (buerlino.github.io).
+   4. **The texts** (done 2026-10-07; user, the same day): the full search is a named concept,
+      defined once in Help's 🚆 (die vollständige Suche, la recherche complète, la ricerca
+      completa); ⚠️ says it knows no delays or changed tracks and its timetable can be a week
+      old, in text only (the page doesn't mark its finds: a new field and UI for one caveat);
+      📡 the file from buerlino.github.io. The store descriptions and README one sentence each,
+      with the download (two weeks of trains, about once a week, about 0.5 MB), and the file's
+      host on the data line. `NonFreeNet` names buerlino.github.io (GitHub Pages is only the
+      host, but the text lists every host the app contacts). The French description's spaces
+      before : and ; are no-break now, as in `strings.xml`.
    5. **The version and the phone check** (0.3.0, versionCode 3; user, 2026-10-07): changelogs; the R8
       build end to end, a copy older than 7 days, no network.
 

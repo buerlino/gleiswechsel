@@ -2,6 +2,8 @@ Gleiswechsel checks whether your daily train trip in Switzerland has a faster co
 
 The official planners only show a change of trains if it takes at least the station's official track switch time, which is generous at big stations. Gleiswechsel uses your own track switch time instead and looks for the connections that were left out.
 
+Its full search also tries routes through other stations, in a file of two weeks of Swiss trains that it downloads about once a week (about 0.5 MB).
+
 No account, no ads, no tracking. Your commutes stay on your phone.
 
-Data: Swiss public transport open data (opentransportdata.swiss, transport.opendata.ch). Not affiliated with SBB or any other transport company.
+Data: Swiss public transport open data (opentransportdata.swiss, transport.opendata.ch; the timetable file from buerlino.github.io). Not affiliated with SBB or any other transport company.

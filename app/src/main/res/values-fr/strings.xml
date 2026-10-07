@@ -58,7 +58,7 @@
     <string name="help">Aide</string>
     <string name="phone_language">Langue du téléphone</string>
     <string name="help_what">À quoi sert l\'app</string>
-    <string name="help_what_text">Elle trouve des trajets plus rapides que ceux de l\'horaire officiel. L\'horaire ne propose que des correspondances d\'au moins le temps de changement de voie officiel, p.\u00A0ex. 5\u00A0min à Lucerne. Si vous êtes plus rapide, un train plus tôt est peut-être à votre portée.</string>
+    <string name="help_what_text">Elle trouve des trajets plus rapides que ceux de l\'horaire officiel. L\'horaire ne propose que des correspondances d\'au moins le temps de changement de voie officiel, p.\u00A0ex. 5\u00A0min à Lucerne. Si vous êtes plus rapide, un train plus tôt est peut-être à votre portée. La recherche complète essaie aussi des trajets par d\'autres gares, avec votre temps à chaque correspondance.</string>
     <string name="help_switch">Temps de changement de voie</string>
     <string name="help_switch_text">Les minutes dans une case : d\'un train au suivant, à pied compris. Fixez le vôtre par gare sous Optimisation (− et +). Sinon : le temps officiel moins le décalage des paramètres (⚙), p.\u00A0ex. 5\u00A0−\u00A01\u00A0=\u00A04\u00A0min à Lucerne. Pour certains trains, l\'horaire admet parfois moins que le temps de la gare.</string>
     <string name="help_colours">Couleurs et flèches</string>
@@ -68,7 +68,7 @@
     <string name="help_tickets">Billets</string>
     <string name="help_tickets_text">Un billet normal vaut aussi pour le trajet plus rapide, un billet dégriffé seulement pour le train officiel. Un trajet qui passe deux fois par la même gare peut demander un autre billet.</string>
     <string name="help_careful">Attention</string>
-    <string name="help_careful_text">Retards (+3) et changements de voie tels que connus lors de la recherche, quelques heures à l\'avance seulement ; les trains supprimés non. À vous de juger si vous y arrivez. Le dernier résultat reste, même hors ligne : vérifiez son jour et l\'âge de ses retards.</string>
+    <string name="help_careful_text">Retards (+3) et changements de voie tels que connus lors de la recherche, quelques heures à l\'avance seulement ; les trains supprimés non. La recherche complète ne connaît ni l\'un ni l\'autre, et son horaire peut dater d\'une semaine. À vous de juger si vous y arrivez. Le dernier résultat reste, même hors ligne : vérifiez son jour et l\'âge de ses retards.</string>
     <string name="help_data">Données</string>
-    <string name="help_data_text">Trajets : transport.opendata.ch. Temps de changement de voie officiels : opentransportdata.swiss, horaire 2026. Sans lien avec les CFF.</string>
+    <string name="help_data_text">Trajets : transport.opendata.ch. Temps de changement de voie officiels : opentransportdata.swiss, horaire 2026. Recherche complète : deux semaines de trains suisses d\'opentransportdata.swiss, téléchargées de buerlino.github.io une fois par semaine. Sans lien avec les CFF.</string>
 </resources>

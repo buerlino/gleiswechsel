@@ -62,7 +62,7 @@
     <string name="help">Help</string>
     <string name="phone_language">Phone\'s language</string>
     <string name="help_what">What it does</string>
-    <string name="help_what_text">Finds trips faster than the official planner shows. The planner only offers a change that takes at least the official track switch time, e.g. 5\u00A0min at Luzern. If you\'re quicker, an earlier train may still be yours.</string>
+    <string name="help_what_text">Finds trips faster than the official planner shows. The planner only offers a change that takes at least the official track switch time, e.g. 5\u00A0min at Luzern. If you\'re quicker, an earlier train may still be yours. The full search also tries routes through other stations, with your time at every change.</string>
     <string name="help_switch">Track switch time</string>
     <string name="help_switch_text">The minutes in a box: from one train to the next, walk included. Set your own per station under Optimization (− and +). Otherwise: the official time minus the offset in Settings (⚙), e.g. 5\u00A0−\u00A01\u00A0=\u00A04\u00A0min at Luzern. For particular trains the planner sometimes allows less than the station\'s time.</string>
     <string name="help_colours">Colours and arrows</string>
@@ -72,7 +72,7 @@
     <string name="help_tickets">Tickets</string>
     <string name="help_tickets_text">A normal ticket covers the faster trip too, a supersaver ticket only the official train. A trip passing a station twice may need another ticket.</string>
     <string name="help_careful">Careful</string>
-    <string name="help_careful_text">Delays (+3) and changed tracks as known at the search, only a few hours ahead; cancelled trains not. Whether you make it is up to you. The last result stays, also offline: check its day and how old its delays are.</string>
+    <string name="help_careful_text">Delays (+3) and changed tracks as known at the search, only a few hours ahead; cancelled trains not. The full search knows neither, and its timetable can be a week old. Whether you make it is up to you. The last result stays, also offline: check its day and how old its delays are.</string>
     <string name="help_data">Data</string>
-    <string name="help_data_text">Connections: transport.opendata.ch. Official track switch times: opentransportdata.swiss, timetable 2026. Not affiliated with SBB.</string>
+    <string name="help_data_text">Connections: transport.opendata.ch. Official track switch times: opentransportdata.swiss, timetable 2026. Full search: two weeks of Swiss trains from opentransportdata.swiss, downloaded from buerlino.github.io once a week. Not affiliated with SBB.</string>
 </resources>

@@ -59,7 +59,7 @@
     <string name="help">Hilfe</string>
     <string name="phone_language">Sprache des Telefons</string>
     <string name="help_what">Was die App macht</string>
-    <string name="help_what_text">Sie findet schnellere Verbindungen, als der offizielle Fahrplan zeigt. Der Fahrplan bietet nur Umstiege an, die mindestens die offizielle Gleiswechselzeit dauern, z.\u00A0B. 5\u00A0Min. in Luzern. Sind Sie schneller, erreichen Sie vielleicht einen früheren Zug.</string>
+    <string name="help_what_text">Sie findet schnellere Verbindungen, als der offizielle Fahrplan zeigt. Der Fahrplan bietet nur Umstiege an, die mindestens die offizielle Gleiswechselzeit dauern, z.\u00A0B. 5\u00A0Min. in Luzern. Sind Sie schneller, erreichen Sie vielleicht einen früheren Zug. Die vollständige Suche probiert auch Wege über andere Bahnhöfe aus, mit Ihrer Zeit bei jedem Umstieg.</string>
     <string name="help_switch">Gleiswechselzeit</string>
     <string name="help_switch_text">Die Minuten im Kästchen: von einem Zug zum nächsten, Fussweg inbegriffen. Ihre eigene pro Bahnhof setzen Sie unter Optimierung (− und +). Sonst gilt die offizielle minus den Offset in den Einstellungen (⚙), z.\u00A0B. 5\u00A0−\u00A01\u00A0=\u00A04\u00A0Min. in Luzern. Für bestimmte Züge erlaubt der Fahrplan manchmal weniger als die Zeit des Bahnhofs.</string>
     <string name="help_colours">Farben und Pfeile</string>
@@ -69,7 +69,7 @@
     <string name="help_tickets">Billette</string>
     <string name="help_tickets_text">Ein normales Billett gilt auch für die schnellere Reise, ein Sparbillett nur für den offiziellen Zug. Eine Reise, die zweimal durch denselben Bahnhof fährt, braucht vielleicht ein anderes Billett.</string>
     <string name="help_careful">Vorsicht</string>
-    <string name="help_careful_text">Verspätungen (+3) und Gleisänderungen so, wie sie bei der Suche bekannt sind, nur wenige Stunden im Voraus; Ausfälle nicht. Ob Sie es schaffen, liegt bei Ihnen. Das letzte Ergebnis bleibt, auch offline: Prüfen Sie seinen Tag und wie alt seine Verspätungen sind.</string>
+    <string name="help_careful_text">Verspätungen (+3) und Gleisänderungen so, wie sie bei der Suche bekannt sind, nur wenige Stunden im Voraus; Ausfälle nicht. Die vollständige Suche kennt beides nicht, und ihr Fahrplan kann eine Woche alt sein. Ob Sie es schaffen, liegt bei Ihnen. Das letzte Ergebnis bleibt, auch offline: Prüfen Sie seinen Tag und wie alt seine Verspätungen sind.</string>
     <string name="help_data">Daten</string>
-    <string name="help_data_text">Verbindungen: transport.opendata.ch. Offizielle Gleiswechselzeiten: opentransportdata.swiss, Fahrplan 2026. Unabhängig von der SBB.</string>
+    <string name="help_data_text">Verbindungen: transport.opendata.ch. Offizielle Gleiswechselzeiten: opentransportdata.swiss, Fahrplan 2026. Vollständige Suche: zwei Wochen Schweizer Züge von opentransportdata.swiss, einmal pro Woche von buerlino.github.io geladen. Unabhängig von der SBB.</string>
 </resources>

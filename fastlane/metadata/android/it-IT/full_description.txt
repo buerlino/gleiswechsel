@@ -2,6 +2,8 @@ Gleiswechsel verifica se per il suo viaggio quotidiano in treno in Svizzera esis
 
 Gli orari ufficiali propongono un cambio solo se dura almeno il tempo di cambio binario ufficiale della stazione, che nelle grandi stazioni è generoso. Gleiswechsel usa invece il suo tempo di cambio binario e cerca i collegamenti tralasciati.
 
+La ricerca completa prova anche percorsi attraverso altre stazioni, in un file con due settimane di treni svizzeri che l'app scarica circa una volta alla settimana (circa 0,5 MB).
+
 Nessun account, nessuna pubblicità, nessun tracciamento. I suoi tragitti restano sul suo telefono.
 
-Dati: open data dei trasporti pubblici svizzeri (opentransportdata.swiss, transport.opendata.ch). Indipendente dalle FFS e da tutte le altre imprese di trasporto.
+Dati: open data dei trasporti pubblici svizzeri (opentransportdata.swiss, transport.opendata.ch; il file dell'orario da buerlino.github.io). Indipendente dalle FFS e da tutte le altre imprese di trasporto.

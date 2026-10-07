@@ -2,6 +2,8 @@ Gleiswechsel prüft, ob es für Ihre tägliche Zugfahrt in der Schweiz eine schn
 
 Die offiziellen Fahrpläne zeigen einen Umstieg nur, wenn er mindestens die offizielle Gleiswechselzeit des Bahnhofs dauert, und die ist an grossen Bahnhöfen grosszügig. Gleiswechsel nimmt stattdessen Ihre eigene Gleiswechselzeit und sucht die Verbindungen, die dabei wegfallen.
 
+Die vollständige Suche probiert auch Wege über andere Bahnhöfe aus, in einer Datei mit zwei Wochen Schweizer Zügen, die die App etwa einmal pro Woche lädt (etwa 0,5 MB).
+
 Kein Konto, keine Werbung, kein Tracking. Ihre Pendelstrecken bleiben auf Ihrem Handy.
 
-Daten: Open Data des öffentlichen Verkehrs der Schweiz (opentransportdata.swiss, transport.opendata.ch). Unabhängig von der SBB und allen anderen Transportunternehmen.
+Daten: Open Data des öffentlichen Verkehrs der Schweiz (opentransportdata.swiss, transport.opendata.ch; die Fahrplandatei von buerlino.github.io). Unabhängig von der SBB und allen anderen Transportunternehmen.

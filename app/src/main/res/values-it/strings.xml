@@ -58,7 +58,7 @@
     <string name="help">Aiuto</string>
     <string name="phone_language">Lingua del telefono</string>
     <string name="help_what">Cosa fa</string>
-    <string name="help_what_text">Trova viaggi più veloci di quelli dell\'orario ufficiale. L\'orario propone solo cambi che durano almeno il tempo di cambio binario ufficiale, p.\u00A0es. 5\u00A0min a Lucerna. Se lei è più veloce, forse fa ancora in tempo per un treno prima.</string>
+    <string name="help_what_text">Trova viaggi più veloci di quelli dell\'orario ufficiale. L\'orario propone solo cambi che durano almeno il tempo di cambio binario ufficiale, p.\u00A0es. 5\u00A0min a Lucerna. Se lei è più veloce, forse fa ancora in tempo per un treno prima. La ricerca completa prova anche percorsi attraverso altre stazioni, con il suo tempo a ogni cambio.</string>
     <string name="help_switch">Tempo di cambio binario</string>
     <string name="help_switch_text">I minuti nel riquadro: da un treno al successivo, a piedi compreso. Imposti il suo per ogni stazione in Ottimizzazione (− e +). Altrimenti vale quello ufficiale meno lo scostamento nelle impostazioni (⚙), p.\u00A0es. 5\u00A0−\u00A01\u00A0=\u00A04\u00A0min a Lucerna. Per certi treni l\'orario a volte concede meno del tempo della stazione.</string>
     <string name="help_colours">Colori e frecce</string>
@@ -68,7 +68,7 @@
     <string name="help_tickets">Biglietti</string>
     <string name="help_tickets_text">Un biglietto normale vale anche per il viaggio più veloce, un biglietto risparmio solo per il treno ufficiale. Un viaggio che passa due volte dalla stessa stazione può richiedere un altro biglietto.</string>
     <string name="help_careful">Attenzione</string>
-    <string name="help_careful_text">Ritardi (+3) e cambi di binario come noti al momento della ricerca, solo poche ore prima; i treni soppressi no. Sta a lei giudicare se ce la fa. L\'ultimo risultato resta, anche offline: ne controlli il giorno e quanto sono vecchi i ritardi.</string>
+    <string name="help_careful_text">Ritardi (+3) e cambi di binario come noti al momento della ricerca, solo poche ore prima; i treni soppressi no. La ricerca completa non conosce né gli uni né gli altri, e il suo orario può avere una settimana. Sta a lei giudicare se ce la fa. L\'ultimo risultato resta, anche offline: ne controlli il giorno e quanto sono vecchi i ritardi.</string>
     <string name="help_data">Dati</string>
-    <string name="help_data_text">Collegamenti: transport.opendata.ch. Tempi di cambio binario ufficiali: opentransportdata.swiss, orario 2026. Indipendente dalle FFS.</string>
+    <string name="help_data_text">Collegamenti: transport.opendata.ch. Tempi di cambio binario ufficiali: opentransportdata.swiss, orario 2026. Ricerca completa: due settimane di treni svizzeri da opentransportdata.swiss, scaricate da buerlino.github.io una volta alla settimana. Indipendente dalle FFS.</string>
 </resources>

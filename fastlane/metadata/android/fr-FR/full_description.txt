@@ -2,6 +2,8 @@ Gleiswechsel vérifie si votre trajet quotidien en train en Suisse a une liaison
 
 Les horaires officiels ne proposent une correspondance que si elle dure au moins le temps de changement de voie officiel de la gare, qui est généreux dans les grandes gares. Gleiswechsel utilise plutôt votre propre temps de changement de voie et cherche les liaisons laissées de côté.
 
+Sa recherche complète essaie aussi des trajets par d'autres gares, dans un fichier de deux semaines de trains suisses que l'application télécharge environ une fois par semaine (environ 0,5 Mo).
+
 Pas de compte, pas de publicité, pas de pistage. Vos trajets restent sur votre téléphone.
 
-Données : open data des transports publics suisses (opentransportdata.swiss, transport.opendata.ch). Sans lien avec les CFF ni aucune autre entreprise de transport.
+Données : open data des transports publics suisses (opentransportdata.swiss, transport.opendata.ch ; le fichier d'horaire de buerlino.github.io). Sans lien avec les CFF ni aucune autre entreprise de transport.

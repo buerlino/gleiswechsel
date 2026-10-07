@@ -22,13 +22,19 @@ Gleiswechsel takes your own track switch time instead and looks for connections 
 planner left out. 5 minutes a day add up to hours a year. And if your connection is already the
 best one, it tells you that too.
 
+The full search goes further: it looks for the fastest train route through any stations, with
+your track switch time at every change. It runs on the phone, over a file of two weeks of Swiss
+trains that the app downloads about once a week (about 0.5 MB).
+
 Background and sources: [research/](research/).
 
 ## Data
 
 Swiss public transport open data: [transport.opendata.ch](https://transport.opendata.ch/) for
 the connections; from [opentransportdata.swiss](https://opentransportdata.swiss/) the official
-track switch time at each station (the national timetable).
+track switch time at each station (the national timetable) and the timetable (GTFS) for the full
+search, which a [GitHub Actions job](.github/workflows/timetable.yml) turns into a compact file
+twice a week and publishes on [GitHub Pages](https://buerlino.github.io/gleiswechsel/).
 
 ## Privacy
 

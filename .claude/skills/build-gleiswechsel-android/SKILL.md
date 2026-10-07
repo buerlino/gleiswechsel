@@ -266,6 +266,7 @@ Everything else was tried on the phone with the R8 release build signed with the
   the download, the file on Pages with step 4.2's names on the phone, the 16 s download on
   another network (Wi-Fi, without the VPN). `pm clear --cache-only` hangs on the test phone
   (Android 16): empty the cache in App info → Storage & cache → Clear cache.
+  Its texts (step 4.4: Help's 🚆, ⚠️ and 📡 in all four): lint only, not seen on the phone.
 - The train names (2026-10-07, step 4.2): `TimetableTest` and 48 trains of a file made from
   `private/gtfs/` checked against the API's boards by hand. Not in the published file until the
   job runs (still the 7 Oct file on 7 Oct, 16:00).
@@ -301,7 +302,8 @@ pushes and makes merge requests. If a push is rejected with "shallow update not 
 `git fetch --shallow-since=<date before the fork> upstream master`.
 `AllowedAPKSigningKeys` is the release APK's certificate SHA-256 (`apksigner verify
 --print-certs`), lowercase without colons. Anti-feature `NonFreeNet` (user, 2026-10-06: as
-APODroid's, naming the hosts: transport.opendata.ch and sbb.ch); category `Public Transport`
+APODroid's, naming the hosts: transport.opendata.ch, sbb.ch and, since 2026-10-07,
+buerlino.github.io); category `Public Transport`
 (in fdroiddata's `config/categories.yml`). Reviewer comments: Claude drafts, the user posts.
 
 ### Before every push to the fork
