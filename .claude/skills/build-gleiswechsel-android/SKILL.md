@@ -34,7 +34,7 @@ is in `research/`.
   `SearchTest` runs it on a fake API with made-up connections.
 - `core/.../Found.kt`: `find()` (the next such time, Swiss; the official connections; `search`
   with `TrackSwitchTimes`; the request passed in, a failed onward one to `skipped`),
-  `parseTime()` (`FoundTest`, also the two surprises of research/optimization_rows.md on a fake
+  `parseTime()` (`FoundTest`, also the two surprises of CLAUDE.md, One model, on a fake
   API); `Found`, a search's result as the page shows it (`offered`; `trips`, what the page
   shows, and `onTrips`, a row's station on one of them) (`asOf`: when it searched,
   shown as the delays' time while `delaysKnown`), and its JSON
@@ -49,7 +49,7 @@ is in `research/`.
   `core/.../Gtfs.kt`: `trains()`,
   the GTFS zips → `Timetable` (JDK only; its own CSV reader for the BOM and the quotes; each zip
   for the days from its `feed_start_date` to its `feed_end_date`, a zip without any skipped, a
-  day none has throws), and the `main` of
+  day none has throws; `name`, a train's name as the API's, CLAUDE.md step 4.2), and the `main` of
   `./gradlew :core:timetable -Pgtfs=<zip>[,<zip>…] -Pout=<file> [-Pfrom=yyyy-MM-dd]` (paths from
   the repo's root). `TimetableTest`: a made-up GTFS in the Swiss export's shape, read, written and
   read back, and a next year's from 13 Dec; `localTimetable` with a fake download in a temp file.
@@ -73,8 +73,9 @@ is in `research/`.
 - `core/.../LiveTest.kt`: the Horw → Sursee test case, live. Excluded from `:core:test` (and so
   from CI); run it with `./gradlew :core:test -Plive`, which also prints the finds and the number
   of requests. It asks for the next weekday, so a public holiday or a timetable change can fail it.
-  Its full search runs on `private/gtfs/timetable.bin.gz` with the officials from the API: the
-  file must have that weekday (make a new one with `-Pfrom=<today>`), and it prints the times.
+  Its full search runs on the published file with the officials from the API, through
+  `localTimetable` into `core/build/timetable.bin.gz` (downloaded again once older than 7 days,
+  or after `clean`), and it prints the times.
   `thePublishedTimetableIsDownloadedOnce`: the file on Pages through `localTimetable`; one test
   alone: `--tests '*LiveTest.thePublished*'`.
 - `app/.../MainActivity.kt`: `App` holds all state and shows the search page, Help or Settings
@@ -183,7 +184,7 @@ real responses for tests' shape in `private/`; tests themselves use made-up data
 Horw → Sursee 08:50, Luzern → Sursee 09:05 (the onward request) and one with a walk, all for
 Wed 7 Oct 2026. `private/gtfs/` has the GTFS export of 30 Sep 2026 (289 MB; `curl -L` the
 dataset's `/permalink` with a browser User-Agent, 5 s), `timetable.bin.gz` made from it for
-7–20 Oct, and the 2027 export of 3 Oct 2026 (`gtfs_fp2027_20261003.zip`, 90 MB, from
+7–20 Oct (before the names of step 4.2; nothing reads it now), and the 2027 export of 3 Oct 2026 (`gtfs_fp2027_20261003.zip`, 90 MB, from
 `timetable-2027-gtfs2020`).
 
 ## Still untested
@@ -257,6 +258,9 @@ Everything else was tried on the phone with the R8 release build signed with the
   finds among them, so no full-search find through other stations seen on real data). Not in
   the app, not on the phone. Not checked: an hour skipped (28 Mar 2027), a find through an
   in-seat continuation, `best` on finds of both searches together.
+- The train names (2026-10-07, step 4.2): `TimetableTest` and 48 trains of a file made from
+  `private/gtfs/` checked against the API's boards by hand. Not in the published file until the
+  job runs; not in the app.
 - The local copy (2026-10-07, `localTimetable`): `TimetableTest` and the live download from
   Pages on the desktop (once, then from the copy). Not in the app, not on the phone; Android's
   `HttpURLConnection` on Pages, a real Wi-Fi login page, a copy the system cleared.

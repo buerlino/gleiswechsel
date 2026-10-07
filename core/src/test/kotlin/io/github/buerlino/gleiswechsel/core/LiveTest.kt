@@ -11,8 +11,9 @@ import kotlin.test.assertEquals
 
 /**
  * The test case in CLAUDE.md (Horw → Sursee), asked live from transport.opendata.ch for the next
- * weekday; the full search on the timetable file in `private/gtfs/`, which must have that day. Not
- * in CI: runs only with `./gradlew :core:test -Plive` (core/build.gradle.kts).
+ * weekday; the full search on the published timetable file, kept in `core/build/` as the app keeps
+ * its copy (downloaded again once older than 7 days). Not in CI: runs only with
+ * `./gradlew :core:test -Plive` (core/build.gradle.kts).
  */
 class LiveTest {
     private val day = generateSequence(LocalDate.now(ZoneId.of("Europe/Zurich")).plusDays(1)) { it.plusDays(1) }
@@ -42,7 +43,7 @@ class LiveTest {
     // The full search with the app's defaults (the official minimums minus 1) or [luzern] minutes there.
     private val timetable by lazy {
         val start = System.nanoTime()
-        File("../private/gtfs/timetable.bin.gz").inputStream().use { timetable(it) }
+        localTimetable(File("build/timetable.bin.gz"), { download(TIMETABLE_URL, "test") }) { throw it }!!
             .also { println("${it.source}, from ${it.first}: read in ${(System.nanoTime() - start) / 1_000_000} ms") }
     }
 

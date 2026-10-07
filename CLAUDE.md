@@ -22,8 +22,9 @@ Gleiswechsel. applicationId and namespace `io.github.buerlino.gleiswechsel`; Kot
 `io.github.buerlino.gleiswechsel` (app) and `io.github.buerlino.gleiswechsel.core`. Repo
 https://github.com/buerlino/gleiswechsel (GPLv3, as the user's other apps). Release APKs are
 named `gleiswechsel-vX.Y.Z.apk`. Not affiliated with SBB: no SBB name, logo or colours in the
-app or the listing; the one exception is sbb.ch, named as the ticket link's target (user,
-2026-10-06).
+app or the listing. Two exceptions: sbb.ch, named as the ticket link's target (user,
+2026-10-06), and the disclaimer itself, "Not affiliated with SBB", in Help's 📡 and the store
+descriptions (user, 2026-10-07: there since the first version; it says whom it means).
 
 - How-tos, phone testing and what's still untested: the
   [build skill](.claude/skills/build-gleiswechsel-android/SKILL.md). Where it and this file
@@ -35,9 +36,6 @@ app or the listing; the one exception is sbb.ch, named as the ticket link's targ
   [existing_tools.md](research/existing_tools.md) (what to reuse, what not),
   [architecture.md](research/architecture.md) (the proposal, not decided),
   [missing_features.md](research/missing_features.md) (what the app can't do yet, ideas only).
-- [research/harmonize.md](research/harmonize.md) (2026-10-07): one model for the track switch
-  times, the plan before step 4 of the full search; decided 2026-10-07, see
-  [One model](#one-model-for-the-track-switch-times-decided-2026-10-07-being-built).
 
 ## How the user works (2026-10-06)
 
@@ -350,7 +348,7 @@ at every station the rider hasn't set.
   hand at each timetable change (next: 13 Dec 2026), see the skill.
   **The planner sometimes changes faster** than the table: RE24 → IR16 at Olten in 4 minutes
   (track 11 → 8), S1 → S41 at Luzern in 4; the table says 5 and `UMSTEIGV`/`L`/`Z` have nothing
-  there (research/harmonize.md). Such a change is official for those trains only (D4,
+  there (checked 2026-10-07). Such a change is official for those trains only (D4,
   `TrackSwitchTimes.official(change, offered)`); the station's time stays the table's (D1).
   Until 2026-10-07 each search lowered the station's time to it, so colours and defaults moved
   between searches.
@@ -480,37 +478,51 @@ Steps (user, 2026-10-06), one at a time, each shown working:
       each error to `failed`. `TimetableTest` (a fake download); `LiveTest` from Pages on the
       desktop: 453,334 bytes downloaded and read in 682 ms, then 83 ms from the copy. Not in the
       app yet.
-   2. **Train names as the API's** (user, 2026-10-07: now, not later; was an open question;
-      the rule proposed the same day, waiting for the user's go): `trains()` names a trip
-      `route_short_name` where it starts with `route_desc` (S4, IR35, SN1); `route_desc` + the
-      train number (`trip_short_name`) in six digits where it's only the category (IC000484,
-      EC000150, ICE000276, TGV009213); else `route_desc` + it (CC64, PEGEX, IRVAE, TERC12,
-      RB30). The API's own rule as seen 2026-10-07: 5,102 trains from the boards of 40 stations,
+   2. **Train names as the API's** (done 2026-10-07; user, the same day: now, not later; was
+      an open question): `trains()` names a trip `route_short_name` where it starts with
+      `route_desc` (S4, IR35, SN1); `route_desc` + the train number (`trip_short_name`) in six
+      digits where it's only the category, i.e. the two are equal (IC000484, EC000150,
+      ICE000276, TGV009213); else `route_desc` + it (CC64, PEGEX, IRVAE, TERC12, RB30). With
+      it, a trip's days are limited to its zip's feed range (declutter pass 4, 3.1; user,
+      2026-10-07: no difference in the real exports, but a calendar running past its feed
+      could count a day twice). Checked on a file from `private/gtfs/` (7–20 Oct, the same
+      51,382 trips, 457,619 bytes): 48 trains of the new kinds (EC, ICE, TGV, TER, CC, PE, RB,
+      NJ, RJX, EXT, and IC, IR, S, RE, R without a line, IRVAE) on 8 Oct, each named as on the
+      API's board at its first station and minute. The API's own rule as seen 2026-10-07: 5,102 trains from the boards of 40 stations,
       joined to the GTFS trips by train number and departure time: the rule names 4,958 as the
       API does; 31 match two routes at that time, the API's name one of them; none differ.
       `route_short_name` alone differed for about 680 (every EC, ICE, TGV, TER, CC, PE, RB, NJ,
       RJX, and IC, IR, S without a line). Every train trip has a numeric `trip_short_name`
-      (2026 and 2027 exports). Not on the boards: `REN1`, `SEV`, `EXT`, `ZUG`. The file's format
-      stays; the job's next file has the names.
+      (2026 and 2027 exports). Not on the boards: `REN1`, `SEV`, `ZUG`. The file's format
+      stays; the job's next file has the names. `LiveTest`'s full search reads the published
+      file through `localTimetable` (a copy in `core/build/`; user, 2026-10-07), so it no
+      longer needs a file made with `-Pfrom`.
    3. **Both searches, and the rows:** `best(today's finds + the full search's, officials)`,
       today's first: of two the same, the first stays, and it has the API's names and delays.
       The full search runs after today's, with the same `TrackSwitchTimes`; its `transfer` is
       asked at every station it scans, so its rows are only its finds' change stations (today's
       are `Searched.changes`). Its `error` (should the two scans disagree) is caught and logged.
       No copy that reads, or one without the day: logged and a line on the page (user,
-      2026-10-07). On the phone: the first search downloads, the next doesn't; the test case; a
+      2026-10-07), the same line for both, under the day as `not_all_checked`: "Only the official
+      connections' changes were checked: the timetable file could not be loaded." (de "Nur die
+      Umstiege der offiziellen Verbindungen wurden geprüft: Der Fahrplan konnte nicht geladen
+      werden.", fr "Seules les correspondances des trajets officiels ont été vérifiées :
+      l'horaire n'a pas pu être chargé.", it "Sono stati verificati solo i cambi dei
+      collegamenti ufficiali: non è stato possibile caricare l'orario."). The copy in the cache
+      folder (user, 2026-10-07: it can be downloaded again and stays out of a phone-to-phone
+      transfer; if the system clears it, the next search downloads it). On the phone: the first search downloads, the next doesn't; the test case; a
       find only the full search has; how long reading the file takes there.
    4. **The texts**, all four languages: Help (🚆; 📡 the file on buerlino.github.io; ⚠️ a find
       from the timetable file shows no delays, user 2026-10-07), README, the store descriptions,
       F-Droid's `NonFreeNet` (buerlino.github.io).
-   5. **The version and the phone check** (0.3.0, versionCode 3, proposed): changelogs; the R8
+   5. **The version and the phone check** (0.3.0, versionCode 3; user, 2026-10-07): changelogs; the R8
       build end to end, a copy older than 7 days, no network.
 
 ### One model for the track switch times (decided 2026-10-07, being built)
 
-[research/harmonize.md](research/harmonize.md) traces the two surprises on the phone
-([research/optimization_rows.md](research/optimization_rows.md): Brugg AG a row no card goes
-through, Luzern at 4 orange in one search and green in the next) to one root: the official time
+Two surprises on the phone (Brugg AG a row no card goes through, Luzern at 4 orange in one
+search and green in the next) had one root (research/harmonize.md and optimization_rows.md,
+deleted 2026-10-07 once built, in git): the official time
 at a station was worked out anew in each search from the planner's answers. Decided (user,
 2026-10-07: "show the best option … precise, while always showing the fastest path"; the
 colours matter less):
@@ -588,4 +600,7 @@ instead.
 
 ## Open questions (for the user)
 
-None now (the train names became step 2 of the app's full search, 2026-10-07).
+- Should a set row be easier to tell from a default? Only its text tells them apart: 100% set,
+  60% default. 60% also fades a row off the trips (D3), the finds after a step and the folded
+  official connection, so a default in a faded row is at 36% (declutter pass 4, 2.1). Left as
+  it is for now (user, 2026-10-07).

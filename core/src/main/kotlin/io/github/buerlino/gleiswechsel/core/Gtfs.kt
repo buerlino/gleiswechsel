@@ -12,7 +12,8 @@ import java.util.zip.ZipFile
  * in the Swiss GTFS [zips] (research/data_sources.md): each timetable year has its own, for the
  * days from its `feed_start_date` to its `feed_end_date`, so around the timetable change in
  * December the days need two. A zip with none of the days is skipped; a day none has throws.
- * Reads each zip it uses whole, 4.5 GB unpacked.
+ * Reads each zip it uses whole, 4.5 GB unpacked. A trip is named as transport.opendata.ch names
+ * it ([name]).
  */
 fun trains(zips: List<File>, first: LocalDate, days: Int): Timetable {
     require(days in 1..31) { "$days days don't fit in a trip's 32 bits" }
@@ -53,20 +54,22 @@ fun trains(zips: List<File>, first: LocalDate, days: Int): Timetable {
             val mask = services[id] ?: 0
             services[id] = if (row["exception_type"] == "1") mask or (1 shl d) else mask and (1 shl d).inv()
         }
+        // Only this zip's days, so a calendar running past its feed can't count a day twice.
+        services.replaceAll { _, mask -> mask and feed }
 
-        val lines = HashMap<String, String>()
+        val lines = HashMap<String, Pair<String, String>>()
         gtfs.forEachRow("routes.txt") { row ->
-            if (row["route_type"].toInt() in 100..117) lines[row["route_id"]] = row["route_short_name"]
+            if (row["route_type"].toInt() in 100..117) lines[row["route_id"]] = row["route_short_name"] to row["route_desc"]
         }
 
         // This zip's trip ids: each year's are its own.
         val tripIndex = HashMap<String, Int>()
         gtfs.forEachRow("trips.txt") { row ->
-            val line = lines[row["route_id"]] ?: return@forEachRow
+            val (line, category) = lines[row["route_id"]] ?: return@forEachRow
             val tripDays = services[row["service_id"]] ?: 0
             if (tripDays != 0) {
                 tripIndex[row["trip_id"]] = kept.size
-                kept += Kept(line, tripDays)
+                kept += Kept(name(line, category, row["trip_short_name"]), tripDays)
             }
         }
         gtfs.forEachRow("stop_times.txt") { row ->
@@ -127,6 +130,18 @@ fun trains(zips: List<File>, first: LocalDate, days: Int): Timetable {
 }
 
 private val gtfsDate = DateTimeFormatter.BASIC_ISO_DATE
+
+/**
+ * A train's name as transport.opendata.ch gives it (CLAUDE.md, The full search, step 4.2), from
+ * the GTFS `route_short_name` [line], `route_desc` [category] and `trip_short_name` [number]:
+ * the line where it starts with the category (S4, IR35), the category and the number in six
+ * digits where the line is only the category (IC000484), else the category and the line (CC64).
+ */
+private fun name(line: String, category: String, number: String) = when {
+    line == category -> category + number.padStart(6, '0')
+    line.startsWith(category) -> line
+    else -> category + line
+}
 
 /** `08:53:00` → 533; past 24:00 after midnight. */
 private fun minutes(time: String): Int = time.split(':').let { it[0].toInt() * 60 + it[1].toInt() }

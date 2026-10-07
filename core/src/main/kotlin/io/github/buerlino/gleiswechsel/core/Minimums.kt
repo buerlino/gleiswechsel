@@ -15,7 +15,7 @@ class Minimums(umsteigb: String) {
 }
 
 /**
- * The track switch times, the same in every search and in both searches (research/harmonize.md,
+ * The track switch times, the same in every search and in both searches (CLAUDE.md, One model,
  * 2026-10-07), each by station id: the [official] one is the table's (D1); the [default], where the
  * rider hasn't set one, the official one minus the [offset], at least 0 (D2); the [rider]'s, the one
  * [set] there, else the default.

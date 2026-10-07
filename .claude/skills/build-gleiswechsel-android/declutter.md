@@ -315,36 +315,40 @@ kotlinx.serialization 1.11.0, Gradle 9.8.0, `checkout@v7`, `setup-java@v6`,
 - None found.
 
 ### UI
-- [ ] 2.1 60% opacity now means four things: a default (the box's text), a row whose station
+- [x] 2.1 60% opacity now means four things: a default (the box's text), a row whose station
   isn't on the trips shown (D3, the whole row with − and +), finds faded after a step, and the
   official connection under a find. A default in a faded row is at 36%. Question 3 of
   research/optimization_rows.md ("should a set row be easier to tell from a default?") is still
   open there, but missing from CLAUDE.md's Open questions. User: leave, or mark a default
-  another way? At least move the question into CLAUDE.md.
+  another way? At least move the question into CLAUDE.md. Done 2026-10-07: left as it is, the
+  question moved into CLAUDE.md (user).
 
 ### Code
-- [ ] 3.1 `trains()` takes each trip's days from the calendar and doesn't limit them to its
+- [x] 3.1 `trains()` takes each trip's days from the calendar and doesn't limit them to its
   zip's `feed_start_date`–`feed_end_date`, though its doc, the skill and CLAUDE.md (step 3) say
   it does. No difference with the real data: in both exports the `calendar.txt` and
   `calendar_dates.txt` ranges equal the feed range (2026: 14 Dec 2025–12 Dec 2026; 2027:
   13 Dec 2026–11 Dec 2027). Fix: `and feed` on the service masks (then a calendar running past
-  its feed can't count a day twice), or reword the three docs. Recommended: `and feed`.
+  its feed can't count a day twice), or reword the three docs. Recommended: `and feed`. Done
+  2026-10-07 with step 4.2 (user): `and feed`, and a test that fails without it.
 
 ### Docs
-- [ ] 4.1 CLAUDE.md says "no SBB name … in the app or the listing; the one exception is
+- [x] 4.1 CLAUDE.md says "no SBB name … in the app or the listing; the one exception is
   sbb.ch", but Help's 📡 ("Not affiliated with SBB", in all four) and the full descriptions ("Not
   affiliated with SBB or any other transport company") name SBB in a disclaimer, there since
   the first version. User: add the disclaimer as a second exception in CLAUDE.md, or leave SBB
   out of the texts ("not affiliated with any transport company")? README ("the SBB app") is
-  neither the app nor the listing.
-- [ ] 4.2 research/optimization_rows.md and harmonize.md are out of date since One model:
+  neither the app nor the listing. Done 2026-10-07: the disclaimer a second exception in
+  CLAUDE.md (user).
+- [x] 4.2 research/optimization_rows.md and harmonize.md are out of date since One model:
   optimization_rows.md says "Nothing is decided yet" and "as now" about the lowered minimum, and
   points to a CLAUDE.md heading that no longer exists ("Asked again where a time fell");
   harmonize.md says data_sources.md "still says search.ch" (fixed since), and its "Tested, not
   tested" numbers the steps differently from CLAUDE.md. Their findings are already in CLAUDE.md
   (D1–D5, the steps) and data_sources.md (the GTFS times equal `UMSTEIGB`, Winterthur, MOTIS).
   User: delete both once step 2 has been checked on the phone (git keeps them; move question 3
-  first, 2.1), or add a status line at the top of each?
+  first, 2.1), or add a status line at the top of each? Done 2026-10-07: both deleted (user),
+  the links to them repointed to CLAUDE.md, One model.
 - [ ] 4.3 CLAUDE.md, finished work (its own rule: git keeps it):
   - Official minimums: "Until 2026-10-07 each search lowered the station's time to it, …".
   - One model, step 1: the "Gone: …" list and the live check, which step 2's phone check

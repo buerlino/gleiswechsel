@@ -139,7 +139,7 @@ class FoundTest {
     @Test
     fun aRowNotOnThePagesTripsIsFaded() {
         // Sursee → Zürich Oerlikon 07:45, made up in the shape of the planner's answers for 8 Oct
-        // 2026 (research/optimization_rows.md), the rider's Zürich HB at 3.
+        // 2026 (CLAUDE.md, One model), the rider's Zürich HB at 3.
         val ids = mapOf(
             "Sursee" to "1", "Luzern" to "2", "Olten" to "3", "Zürich HB" to "4", "Brugg AG" to "5", "Zürich Oerlikon" to "6",
         )

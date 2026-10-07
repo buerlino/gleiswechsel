@@ -157,7 +157,7 @@ Every planned and actual arrival and departure of the day before, as CSV, one fi
     continues under another number is not a change; 1, guaranteed connections (292, since
     October 2025). An extra column `service_id`: every in-seat continuation has its own days.
     The 4,822 between trains of 7–20 Oct all go from a trip's last stop to the next one's first,
-    at the same station. Checked 2026-10-07 (research/harmonize.md): type 2 between the
+    at the same station. Checked 2026-10-07 (for CLAUDE.md, One model): type 2 between the
     platforms of one station has the same minutes for every pair, at each of its 8,962 stations,
     and equals `UMSTEIGB` at 2,948 of the 2,949 Swiss ones (Winterthur 0, the table 3); 702k
     rows of type 2 are per train pair (`UMSTEIGZ`: Zürich HB 5 for 6,595 pairs, Aarau 3; none

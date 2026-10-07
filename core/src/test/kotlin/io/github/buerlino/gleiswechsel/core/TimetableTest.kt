@@ -21,7 +21,8 @@ class TimetableTest {
         "﻿$header\r\n" + rows.joinToString("") { row -> row.joinToString(",") { "\"${it.replace("\"", "\"\"")}\"" } + "\r\n" }
 
     // Made-up stations and trains: an S1 Aach → Xberg every day, an RE3 Xberg → Bstadt on weekdays
-    // that goes on to Yfeld past midnight on one day, a bus, and an S1 whose service has ended.
+    // that goes on to Yfeld past midnight on one day, a bus, an S1 whose service has ended, and an
+    // IC and a CC on one day, named as the API names them.
     private val files = mapOf(
         "feed_info.txt" to file(
             "feed_publisher_name,feed_publisher_url,feed_lang,feed_start_date,feed_end_date,feed_version",
@@ -32,6 +33,8 @@ class TimetableTest {
             listOf("r1", "1", "S1", "", "S", "109"),
             listOf("r2", "1", "RE3", "", "RE", "106"),
             listOf("r3", "1", "B5", "", "B", "700"),
+            listOf("r4", "1", "IC", "", "IC", "102"),
+            listOf("r5", "1", "64", "", "CC", "106"),
         ),
         "calendar.txt" to file(
             "service_id,monday,tuesday,wednesday,thursday,friday,saturday,sunday,start_date,end_date",
@@ -62,6 +65,8 @@ class TimetableTest {
             listOf("r3", "daily", "t3", "Post", "5", "0", "", "", ""),
             listOf("r1", "past", "t4", "Xberg", "103", "0", "", "", ""),
             listOf("r2", "once", "t5", "Yfeld", "204", "0", "", "", ""),
+            listOf("r4", "once", "t6", "Xberg", "484", "0", "", "", ""),
+            listOf("r5", "once", "t7", "Xberg", "6401", "0", "", "", ""),
         ),
         "stop_times.txt" to file(
             "trip_id,arrival_time,departure_time,stop_id,stop_sequence,pickup_type,drop_off_type",
@@ -75,6 +80,10 @@ class TimetableTest {
             listOf("t4", "10:10:00", "10:10:00", "x:1", "2", "0", "0"),
             listOf("t5", "23:58:00", "23:59:00", "b", "1", "0", "0"),
             listOf("t5", "24:20:00", "24:20:00", "y:3", "2", "0", "0"),
+            listOf("t6", "12:00:00", "12:00:00", "a:1", "1", "0", "0"),
+            listOf("t6", "12:15:00", "12:15:00", "x:1", "2", "0", "0"),
+            listOf("t7", "13:00:00", "13:00:00", "a:1", "1", "0", "0"),
+            listOf("t7", "13:20:00", "13:20:00", "x:1", "2", "0", "0"),
         ),
         "transfers.txt" to file(
             "from_stop_id,to_stop_id,from_route_id,to_route_id,from_trip_id,to_trip_id,transfer_type,min_transfer_time,service_id",
@@ -146,6 +155,9 @@ class TimetableTest {
             "RE3 0,1,2,3,7,8,9,10,11,12: Xberg, Bahnhof 9 23:40/23:40, Bstadt - 23:58/23:58",
             // A service only in calendar_dates.txt, past midnight; the bus and the ended S1 are left out.
             "RE3 8: Bstadt - 23:58/23:59, Yfeld \"See\" 3 24:20/24:20",
+            // The line only the category: the train number in six digits; the line without it: the category first.
+            "IC000484 8: Aach 1 12:00/12:00, Xberg, Bahnhof 1 12:15/12:15",
+            "CC64 8: Aach 1 13:00/13:00, Xberg, Bahnhof 1 13:20/13:20",
             // On its own service's days; the one on to the bus is left out.
             "trip 1 goes on as trip 2 on 8",
         ),
@@ -167,6 +179,13 @@ class TimetableTest {
         assertEquals("opentransportdata.swiss, GTFS 20260301 + 20261003", change.source)
         // A file without any of the days is skipped.
         assertEquals(timetable.source, trains(listOf(gtfs, zip(nextYear)), LocalDate.of(2026, 3, 2), 14).source)
+        // A calendar running past its feed's last day doesn't count the next year's days.
+        val longer = files + ("calendar.txt" to file(
+            "service_id,monday,tuesday,wednesday,thursday,friday,saturday,sunday,start_date,end_date",
+            listOf("daily", "1", "1", "1", "1", "1", "1", "1", "20251214", "20271211"),
+            listOf("weekdays", "1", "1", "1", "1", "1", "0", "0", "20251214", "20271211"),
+        ))
+        assertEquals(change.text(), trains(listOf(zip(longer), zip(nextYear)), LocalDate.of(2026, 12, 6), 14).text())
     }
 
     @Test
