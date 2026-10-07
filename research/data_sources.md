@@ -150,6 +150,20 @@ Every planned and actual arrival and departure of the day before, as CSV, one fi
     October 2025). An extra column `service_id`: every in-seat continuation has its own days.
     The 4,822 between trains of 7–20 Oct all go from a trip's last stop to the next one's first,
     at the same station.
+- **Times on the clock** (checked 2026-10-07): not from noon minus 12 hours as GTFS says. On
+  25 Oct 2026 (the clocks go back) the night trains have the same times as on 1 Nov (SN1
+  Winterthur 00:35 … 02:35, 03:35), and the API shows them on the clock (02:35 +02:00, 03:35
+  +01:00), the hour that comes twice taken as the first. 28 Mar 2027 not checked.
+- **Trips by days:** one train is often several trips with the same times, each on some of the
+  days (the RE24 Luzern 09:05: five trips over 7–20 Oct).
+- **Names:** `route_desc` is the category (`S`, `IC`, `ICE`, `TER`, `CC`, `PE`). Swiss lines'
+  `route_short_name` starts with it (`S4`, `IC21`, `IRLEX`) and matches the API. Foreign ones
+  don't: ICE `651A` (API `ICE651A`), TER `C10`/`K23` (`TERK23`), Jungfraubahn `65` (`CC65`), and
+  EC, TGV, NJ only the category (the API adds the train number: `EC000015`, `TGV009210`). A few
+  Swiss ones don't either: PE `GEX`, RE `N1`, IR `VAE`, S `EV`.
+- **In-seat continuations** cross midnight 12 times of 4,822 (7–20 Oct: S50 and S from Italy
+  into the S10 at Mendrisio, 00:34, on the next service day). The API sends a continuation as one
+  section under the first train's name (checked 2026-10-07 on six).
 - **Size** (the prototype, 2026-10-06): one weekday's trains are 20,007 trips and 206k stop
   events, all modes 3.05M (buses 2.5M, so 12× the trains). The trains of 14 days: 51,382 trips,
   544k stop events, 5,010 platforms; a plain binary (u16 platform, u16 arrival minutes, u8 dwell

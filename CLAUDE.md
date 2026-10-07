@@ -403,20 +403,41 @@ Steps (user, 2026-10-06), one at a time, each shown working:
    in 25 s; read in 80–120 ms on a desktop JVM, about 18 MB of heap. The test case's S4 and
    RE24 are in it with their tracks. Each stop's times as the step from the previous departure
    plus a dwell byte: plain times made it 1.38 MB.
-2. `:core`, the CSA: the search's day (and the next day's early trips for a late search); the
-   rider's time where they change trains, none for staying on (in-seat continuations count as
-   staying); the pickup and drop-off flags; of two trips arriving together, the one leaving
-   later. Its result as `Connection`/`Leg`/`Stop` (didok ids, Swiss time, `via`), through the
-   same filters as `search`. The transfer function is called very often: compute the lowered
-   minimums once per search. Tests on made-up data; a live check behind `-Plive`. Also check
-   live whether the API gives a train that only changes its number as two rides with a 0–1-minute
-   change: `shortestChanges` would then lower that station's minimum (declutter pass 3, 1.3).
+2. `:core`, the CSA (done 2026-10-07, `fullSearch`, the skill): for each official connection
+   whose A and B are in the file, the earliest arrival at B leaving A no earlier, then a scan
+   backwards for the latest departure from A arriving then. It scans only the rides between the
+   first official departure and the last official arrival (a find arrives before its official
+   one), of the trips of the day before (past 24:00) to the last day. An in-seat continuation is
+   one ride under the first train's name, as the API sends it. The finds go through `best`, now
+   shared with `search`. `transfer` is asked once per station, so per-call work doesn't matter.
+   On the real file (7–20 Oct; live officials for Thu 8 Oct): the test case with the app's
+   defaults (Luzern 5 − 1), nothing with 5 there. 10 ms for Horw → Sursee, 16–21 ms for long
+   trips and overnight windows, on a desktop JVM, warm; the first search about 200 ms (JIT).
+   Checked on the way (2026-10-07):
+   - **The Swiss GTFS counts on the clock**, not from noon minus 12 hours as GTFS says: on
+     25 Oct 2026 (clocks back) it has the same night trains as on 1 Nov, and the API reads them on
+     the clock (SN1 Winterthur 02:35 +02:00, 03:35 +01:00). The scan does the same; Java takes an
+     hour that comes twice as the first, as the API does. 28 Mar 2027 (an hour skipped) not
+     checked: it's in the 2027 dataset.
+   - **In-seat continuations in the API:** one section each (6 tried: IR70 → IR13 at Zürich HB,
+     RE6 → R20, S7 → RE7, RE3 → RE13, RhB RE24 → RE4, S17 → S4), so they never lower a minimum
+     through `shortestChanges`.
+   - **12 of 4,822 continuations** go on into the next service day (Italian S50 and S into the
+     S10 at Mendrisio, 00:34): not modelled, so a change there.
+   - **Trips are split by days**: the RE24 Luzern 09:05 is five trips over 7–20 Oct, every day
+     between them.
+   - **Train names** (`route_short_name`): Swiss lines as the API's (S, SN, R, RE, IR, IC,
+     IRLEX); foreign ones not: ICE `651A` (API `ICE651A`), TER `K23` (`TERK23`), Jungfraubahn
+     `65` (`CC65`), EC and TGV without a number (API `EC000015`, `TGV009210`): open question 3.
 3. `.github/workflows/timetable.yml`: download, step 1's task, `upload-pages-artifact` +
    `deploy-pages`; the two GTFS datasets around the timetable change.
 4. The app: the download, both searches, Optimization rows (today's plus the finds' change
    stations), Help and README in all four languages, F-Droid's `NonFreeNet`, which version; on
-   the phone, and how long loading the file takes there. `find()` and `parseTime()` move to
-   `:core` with tests (declutter pass 3, 3.1).
+   the phone, and how long loading the file takes there. `best(today's finds + the full
+   search's, officials)`, today's first: of two the same, the first stays, and it has the API's
+   names and delays. The full search's `transfer` must not add to `changes` (it asks at every
+   station it changes at), and its `error` (should the two scans disagree) is caught and logged.
+   `find()` and `parseTime()` move to `:core` with tests (declutter pass 3, 3.1).
 
 ## After the first release
 
@@ -455,3 +476,9 @@ instead.
    (the dataset page; files mostly from Wednesdays and Saturdays), and the terms (§5.2) ask that
    data be updated "at the same frequency as the underlying raw data". That section's heading
    says raw data, and the file is processed data, so weekly may be enough.
+3. **Foreign train names in the full search** (2026-10-07): GTFS `route_desc` is the category
+   (ICE, TER, CC, TGV). Putting it before a `route_short_name` that doesn't start with it would
+   match the API for ICE, TGV, TER and the Jungfraubahn (`ICE651A`, `TERK23`, `CC65`), but make
+   `PEGEX`, `REN1`, `IRVAE`, `SEV` of the Glacier Express, the Nachtnetz, the Voralpen-Express and
+   rail replacement. EC and TGV the API names by train number, which needs `trip_short_name`.
+   Swiss lines match already; a find shows the API's name where today's search found it too.

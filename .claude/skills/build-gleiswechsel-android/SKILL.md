@@ -23,8 +23,9 @@ is in `research/`.
   API's answers of a search, where the planner changes faster than the table. The real file is the app's
   `res/raw/umsteigb.txt`, see [Official minimums](#official-minimums-each-timetable-change).
 - `core/.../Search.kt`: `Find` (with `saved` and `moreEfficient`), `ticketUrl` (the sbb.ch
-  link), the local search `search()` (each question once) and `shortened` (the onward
-  connections' changes too, recursively).
+  link), the local search `search()` (each question once), `shortened` (the onward
+  connections' changes too, recursively) and `best`, the rules between the finds and the
+  official connections, for both searches.
   It takes the official connections, the transfer time per station and the request as a
   function, so `SearchTest` runs it on a fake API with made-up connections.
 - `core/.../Found.kt`: `Found`, a search's result as the page shows it (`asOf`: when it searched,
@@ -39,9 +40,16 @@ is in `research/`.
   `main` of `./gradlew :core:timetable -Pgtfs=<zip> -Pout=<file> [-Pfrom=yyyy-MM-dd]` (paths from
   the repo's root). `TimetableTest`: a made-up GTFS in the Swiss export's shape, read, written and
   read back. Not used by the app yet, so R8 strips it from the release APK.
+- `core/.../FullSearch.kt`: the full search `fullSearch(timetable, officials, transfer)`, a
+  connection scan (`Scan`: the rides of the window by departure, `earliest` forwards, `latest`
+  backwards for the trip leaving last, `connection` builds the result). Times are minutes on the
+  clock from the file's first day (the Swiss GTFS counts so, CLAUDE.md). `FullSearchTest`: a
+  made-up `Timetable`, built directly. Not used by the app yet.
 - `core/.../LiveTest.kt`: the Horw → Sursee test case, live. Excluded from `:core:test` (and so
   from CI); run it with `./gradlew :core:test -Plive`, which also prints the finds and the number
   of requests. It asks for the next weekday, so a public holiday or a timetable change can fail it.
+  Its full search runs on `private/gtfs/timetable.bin.gz` with the officials from the API: the
+  file must have that weekday (make a new one with `-Pfrom=<today>`), and it prints the times.
 - `app/.../MainActivity.kt`: `App` holds all state and shows the search page, Help or Settings
   (`Screen`); the search page (`Heading` for each panel's title, foldable with `open`, also
   Help's topics; `Folded` for the folded Destination, ▴ on the Search row to fold it again, ✕
@@ -202,6 +210,12 @@ Everything else was tried on the phone with the R8 release build signed with the
   the French no-break spaces.
 - The themed icon in a launcher that shows themed icons (Niagara doesn't); only checked as a
   render.
+
+- The full search (2026-10-07): only `FullSearchTest` and the live check on Horw → Sursee
+  (8 Oct, the test case with the defaults, nothing with 5 at Luzern; four long trips timed, no
+  finds among them, so no full-search find through other stations seen on real data). Not in
+  the app, not on the phone. Not checked: an hour skipped (28 Mar 2027), a find through an
+  in-seat continuation, `best` on finds of both searches together.
 
 ## Releasing (as in gridload and APODroid)
 

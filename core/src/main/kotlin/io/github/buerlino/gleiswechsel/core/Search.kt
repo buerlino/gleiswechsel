@@ -9,7 +9,8 @@ import java.time.format.DateTimeFormatter
 /**
  * A connection that reaches B before [official]: [faster] rides the official connection to a
  * change station and changes there, quicker than the official minimum transfer time but long
- * enough for the rider, and maybe again at a later change.
+ * enough for the rider, and maybe again at a later change ([search]); or takes any trains, leaving
+ * no earlier ([fullSearch]).
  */
 @Serializable
 data class Find(val official: Connection, val faster: Connection) {
@@ -40,10 +41,7 @@ typealias Connections = (from: String, to: String, time: LocalDateTime) -> List<
 /**
  * The local search (research/architecture.md). For each of the [officials] (the official A → B),
  * the trips that change faster at one or more of its changes ([shortened]); a find if it reaches B
- * earlier. A find the planner already offers (an official connection leaves no earlier and arrives
- * no later) isn't one, nor is a find another find beats the same way; of identical trips, the one
- * against the official connection arriving first, so the saving isn't overstated. The finds come
- * in the order they leave (none beats another, so a later one also arrives later).
+ * earlier. Then [best].
  *
  * [connections] is asked each question once: two official connections on the same train to the
  * same change would ask it twice, and the API answers too many questions with HTTP 429. A change
@@ -59,11 +57,21 @@ fun search(
     val failures = mutableListOf<Exception>()
     val finds = officials.flatMap { official ->
         shortened(official, transfer, ask, failures).filter { it.arrival.time.isBefore(official.arrival.time) }.map { Find(official, it) }
-    }.filter { find -> officials.none { it.noWorseThan(find.faster) } }
-        .sortedWith(compareBy<Find> { it.faster.arrival.time }.thenByDescending { it.faster.departure.time }.thenBy { it.official.arrival.time })
-        .fold(emptyList<Find>()) { kept, find -> if (kept.any { it.faster.noWorseThan(find.faster) }) kept else kept + find }
-    return Searched(finds, failures)
+    }
+    return Searched(best(finds, officials), failures)
 }
+
+/**
+ * The [finds] worth showing, of either search: not one the planner already offers (an official
+ * connection leaves no earlier and arrives no later), nor one another find beats the same way; of
+ * identical trips, the one against the official connection arriving first, so the saving isn't
+ * overstated, and of two the same against it, the first given. In the order they leave (none beats
+ * another, so a later one also arrives later).
+ */
+fun best(finds: List<Find>, officials: List<Connection>): List<Find> =
+    finds.filter { find -> officials.none { it.noWorseThan(find.faster) } }
+        .sortedWith(compareBy<Find> { it.faster.arrival.time }.thenByDescending { it.faster.departure.time }.thenBy { it.official.arrival.time })
+        .fold(emptyList()) { kept, find -> if (kept.any { it.faster.noWorseThan(find.faster) }) kept else kept + find }
 
 /** What [search] found, and the errors of the changes it couldn't check (e.g. HTTP 429). */
 class Searched(val finds: List<Find>, val failures: List<Exception>)

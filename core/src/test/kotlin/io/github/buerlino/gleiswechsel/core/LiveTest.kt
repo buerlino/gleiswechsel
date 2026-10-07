@@ -1,5 +1,6 @@
 package io.github.buerlino.gleiswechsel.core
 
+import java.io.File
 import java.time.DayOfWeek
 import java.time.Duration
 import java.time.LocalDate
@@ -10,7 +11,8 @@ import kotlin.test.assertEquals
 
 /**
  * The test case in CLAUDE.md (Horw → Sursee), asked live from transport.opendata.ch for the next
- * weekday. Not in CI: runs only with `./gradlew :core:test -Plive` (core/build.gradle.kts).
+ * weekday; the full search on the timetable file in `private/gtfs/`, which must have that day. Not
+ * in CI: runs only with `./gradlew :core:test -Plive` (core/build.gradle.kts).
  */
 class LiveTest {
     private val day = generateSequence(LocalDate.now(ZoneId.of("Europe/Zurich")).plusDays(1)) { it.plusDays(1) }
@@ -37,8 +39,28 @@ class LiveTest {
 
     private fun Stop.text() = "$station ${time.toLocalTime()}" + (platform?.let { " ($it)" } ?: "")
 
-    private fun findsTheHiddenChange(hour: Int) {
-        val find = search(hour, 4).single { it.official.departure.time.toLocalTime() == LocalTime.of(hour, 53) }
+    // The full search with the app's defaults (the official minimums, lowered by the planner's
+    // answers, minus 1) or [luzern] minutes there.
+    private val timetable by lazy {
+        val start = System.nanoTime()
+        File("../private/gtfs/timetable.bin.gz").inputStream().use { timetable(it) }
+            .also { println("${it.source}, from ${it.first}: read in ${(System.nanoTime() - start) / 1_000_000} ms") }
+    }
+
+    private fun fullSearch(hour: Int, luzern: Long? = null): List<Find> {
+        val official = connections("Horw", "Sursee", day.atTime(hour, 50), "test")
+        val minimums = Minimums(File("../app/src/main/res/raw/umsteigb.txt").readText()).lowered(shortestChanges(official))
+        val start = System.nanoTime()
+        val finds = fullSearch(timetable, official) { stop ->
+            Duration.ofMinutes(luzern?.takeIf { stop.id == "8505000" } ?: maxOf(minimums.at(stop).toMinutes() - 1, 0))
+        }
+        println("$day $hour:50, full search, Luzern ${luzern ?: "default"}: ${finds.size} found in ${(System.nanoTime() - start) / 1_000_000} ms")
+        finds.forEach { println("  official ${it.official.text()}\n  faster   ${it.faster.text()}\n  saved ${it.saved.toMinutes()} min") }
+        return finds
+    }
+
+    private fun findsTheHiddenChange(hour: Int, finds: List<Find> = search(hour, 4)) {
+        val find = finds.single { it.official.departure.time.toLocalTime() == LocalTime.of(hour, 53) }
         val (s4, re24) = find.faster.legs
         assertEquals(listOf("S4", "RE24"), find.faster.legs.map { it.train })
         assertEquals("Horw", s4.departure.station)
@@ -59,4 +81,11 @@ class LiveTest {
 
     @Test
     fun itRepeatsEveryHour() = findsTheHiddenChange(14)
+
+    @Test
+    fun theFullSearchFindsItWithTheDefaults() = findsTheHiddenChange(8, fullSearch(8))
+
+    @Test
+    fun theFullSearchWithFiveMinutesAtLuzernMissesIt() =
+        assertEquals(false, fullSearch(8, luzern = 5).any { find -> find.faster.legs.any { it.train == "RE24" && it.departure.id == "8505000" } })
 }

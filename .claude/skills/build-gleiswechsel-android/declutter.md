@@ -190,7 +190,8 @@ Release v0.2.0 green, both releases have their APK. AGP 9.4.1, Kotlin 2.4.20, Co
 - [x] 1.3 To check: a train that only changes its number at a station could come as two rides
   with a 0–1-minute "change"; `shortestChanges` would then lower that station's official
   minimum for the search (defaults near 0, false finds, colours off). Not in the 8 saved
-  answers; a live check with such a train decides.
+  answers; a live check with such a train decides. Checked 2026-10-07: the API sends each of six
+  in-seat continuations as one section (CLAUDE.md, the full search, step 2), so no.
   Moved to the full search's step 2 (CLAUDE.md), which handles in-seat continuations anyway.
 
 ### UI and movements
