@@ -385,16 +385,16 @@ at every station the rider hasn't set.
 The scope: one saved commute, the rider's transfer time per station, the local search, one result
 list (user, 2026-10-06: "focus on the core utility").
 
-Released: 0.3.0 (tag `v0.3.0`, versionCode 3: the full search), after 0.1.0 and 0.2.0. Next: 0.4.0
-(versionCode 4: the fastest of the day, an empty time for now), ready, not committed or tagged yet
-(2026-10-08: tests, lint, the R8 build and `-Plive` green; the phone as in The fastest of the day;
-the changelogs 224–269 characters; `3.png` added). 0.3.0's GitHub APK equals an unsigned build of
-the tag from a fresh clone (`apksigcopier compare`, 2026-10-07). The F-Droid merge request is open
-(user, 2026-10-06), from the branch `io.github.buerlino.gleiswechsel` in `../fdroiddata`, with 0.3.0
-(`c099eb3d5`, pushed; the pipeline green, `fdroid build` included, 2026-10-07); its `NonFreeNet`
-text names sbb.ch too (user, 2026-10-06: the ticket link) and buerlino.github.io (user, 2026-10-07:
-the timetable file). Before every push to the fork: the skill's checks (user, 2026-10-06: the
-pipeline failed twice without them). README's "Soon on F-Droid" stays until F-Droid has it.
+Released: 0.4.0 (tag `v0.4.0`, versionCode 4: the fastest of the day, an empty time for now;
+2026-10-08), after 0.1.0, 0.2.0 and 0.3.0 (the full search). Its GitHub APK equals an unsigned build
+of the tag from a fresh clone (`apksigcopier compare`, 2026-10-08), as 0.1.0's and 0.3.0's did. The
+F-Droid merge request is open (user, 2026-10-06), from the branch `io.github.buerlino.gleiswechsel`
+in `../fdroiddata`, with 0.3.0 (`c099eb3d5`, pushed; the pipeline green, `fdroid build` included,
+2026-10-07) and 0.4.0 (`57dc72efa`, pushed 2026-10-08; `checkupdates`, `rewritemeta` and `lint`
+green locally with the tag on GitHub; the pipeline not seen yet); its `NonFreeNet` text names sbb.ch
+too (user, 2026-10-06: the ticket link) and buerlino.github.io (user, 2026-10-07: the timetable
+file). Before every push to the fork: the skill's checks (user, 2026-10-06: the pipeline failed
+twice without them). README's "Soon on F-Droid" stays until F-Droid has it.
 
 ## The full search (decided 2026-10-06, in 0.3.0)
 

@@ -381,12 +381,13 @@ Everything else was tried on the phone with the R8 release build signed with the
    recipe too: [Before every push to the fork](#before-every-push-to-the-fork).
 6. After the workflow: its APK against an unsigned build of the tag from a fresh clone, e.g.
    `apksigcopier compare gleiswechsel-vX.Y.Z.apk --unsigned app-release-unsigned.apk` (pip, in a
-   venv; it needs build-tools' `apksigner` on PATH). Done for 0.1.0 and 0.3.0 (identical).
+   venv; it needs build-tools' `apksigner` on PATH). Done for 0.1.0, 0.3.0 and 0.4.0 (identical).
 
 ## F-Droid
 
-The merge request is open (user, 2026-10-06), now with 0.1.0, 0.2.0 and 0.3.0 (`c099eb3d5`,
-the pipeline green with `fdroid build`, 2026-10-07): the recipe
+The merge request is open (user, 2026-10-06), with 0.1.0, 0.2.0 and 0.3.0 (`c099eb3d5`, the
+pipeline green with `fdroid build`, 2026-10-07), and 0.4.0 (`57dc72efa`, the local
+checks green, 2026-10-08): the recipe
 `metadata/io.github.buerlino.gleiswechsel.yml`, made like APODroid's and gridload's (`Binaries` +
 `AllowedAPKSigningKeys`, `UpdateCheckMode: Tags`, `AutoUpdateMode: Version`), on the branch
 `io.github.buerlino.gleiswechsel` off upstream `master`. `../fdroiddata` is the user's fork clone
