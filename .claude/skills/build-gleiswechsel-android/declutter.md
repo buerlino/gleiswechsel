@@ -377,3 +377,26 @@ kotlinx.serialization 1.11.0, Gradle 9.8.0, `checkout@v7`, `setup-java@v6`,
   a cruft pack.
 - Nothing else: the latest versions, reproducible, CI green, no unused files, changelogs only
   for 1 and 2 (both in the F-Droid recipe).
+
+## Pass 2026-10-08 (5)
+
+A short pass over `git diff v0.3.0` and the new files (the fastest of the day, 0.4.0), before the
+release commit. Ran: `:core:test :app:lintDebug :app:assembleRelease --warning-mode all`: green,
+no `w:` lines, the only deprecation `Configuration.setVisible`.
+
+### Checked, no change needed
+- **An empty answer at a card's first run:** `minWith` throws and the search shows
+  `search_failed`. The API answers with the next 4 from any time, so it's rare, and it fits "any
+  of them failing fails the search". Left (user).
+
+### Code
+- [x] 5.1 `Found(…)` in `find()` and `fastestOfTheDay` with named arguments: three `false` and
+  three empty lists in a row said nothing.
+
+### Docs
+- [x] 5.2 Stale: the Swiss GTFS "not in the app yet" (and its link), "being built" on the full
+  search and One model (both in 0.3.0; also research/architecture.md), One model's "Then step 4".
+- [x] 5.3 CLAUDE.md, the fastest of the day: the steps' measurement narratives (646 → 846 lines)
+  condensed into the decisions, what was built and one "Checked" paragraph (753 lines); the
+  intro's "the fastest official connection of the day" (rejected 2026-10-08) corrected. The
+  references to its steps in CLAUDE.md and the skill reworded; the long lines rewrapped.

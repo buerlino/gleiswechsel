@@ -114,7 +114,7 @@ private fun shortened(
     }
 
 /** Leaves no earlier and arrives no later than [other], so [other] says nothing new. */
-private fun Connection.noWorseThan(other: Connection) =
+internal fun Connection.noWorseThan(other: Connection) =
     !departure.time.isBefore(other.departure.time) && !arrival.time.isAfter(other.arrival.time)
 
 /**

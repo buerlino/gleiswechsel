@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!-- English; German, French and Italian in values-de, -fr and -it. Station names come from the API as they are.
      The minutes from one train to the next are the "track switch time" in every text (user, 2026-10-06). -->
-<resources>
+<resources xmlns:tools="http://schemas.android.com/tools">
     <!-- The language of these texts (a locale tag) and the day of a search in it: Wed 7 Oct. -->
     <string name="language">en</string>
     <string name="day_pattern">EEE d MMM</string>
@@ -16,6 +16,9 @@
     <string name="to">To</string>
     <string name="swap">Swap from and to</string>
     <string name="leaving_at">Leaving at</string>
+    <string name="now">now</string>
+    <!-- The fastest of the day (CLAUDE.md): a button at the right of the time. -->
+    <string name="all_day">all day</string>
     <string name="change_trip">Change from, to and time</string>
     <string name="hide_trip">Hide from, to and time</string>
     <string name="search">Search</string>
@@ -28,6 +31,8 @@
     <string name="nothing_faster">%1$s: nothing faster.</string>
     <string name="not_all_checked">Not every change could be checked: transport.opendata.ch did not answer. Try again in a minute.</string>
     <string name="timetable_missing">Only the official connections\' changes were checked: the timetable file could not be loaded.</string>
+    <string name="timetable_missing_all_day">The timetable file could not be loaded. Try again in a minute.</string>
+    <string name="not_in_timetable">All day searches trains only: from and to must be train stations.</string>
     <string name="delays_as_of">Delays as of %1$s</string>
     <string name="optimization_text">Your track switch time at each station. Lower it and search again to find more.</string>
     <string name="less">One minute less</string>
@@ -42,6 +47,12 @@
     <string name="earlier">%1$d\u00A0min earlier</string>
     <string name="instead_of">%1$s %2$s instead of %3$s</string>
     <string name="more_efficient">%1$d%% more efficient</string>
+    <string name="trip_minutes">%1$d\u00A0min trip</string>
+    <!-- How often the fastest of the day runs: never once here (runs_once), so no plurals. -->
+    <string name="runs_every" tools:ignore="PluralsCandidate">Every %1$d\u00A0min, %2$s–%3$s, %4$d times</string>
+    <string name="runs_irregular" tools:ignore="PluralsCandidate">Irregular, %1$s–%2$s, %3$d times</string>
+    <string name="runs_once">Once a day, %1$s</string>
+    <string name="offered_too">The official planner offers this trip too.</string>
     <string name="track_switch">track switch</string>
     <string name="track_switch_walk">track switch, %1$d\u00A0min walk</string>
     <string name="walk">Walk, %1$d\u00A0min</string>
@@ -62,7 +73,7 @@
     <string name="help">Help</string>
     <string name="phone_language">Phone\'s language</string>
     <string name="help_what">What it does</string>
-    <string name="help_what_text">Finds trips faster than the official planner shows. The planner only offers a change that takes at least the official track switch time, e.g. 5\u00A0min at Luzern. If you\'re quicker, an earlier train may still be yours. The full search also tries routes through other stations, with your time at every change.</string>
+    <string name="help_what_text">Finds trips faster than the official planner shows. The planner only offers a change that takes at least the official track switch time, e.g. 5\u00A0min at Luzern. If you\'re quicker, an earlier train may still be yours. The full search also tries routes through other stations, with your time at every change. The fastest of the day (all day, beside the time): the fastest trip of today or the next weekday with your times and how often it runs, against the planner\'s trip at its first run. Public holidays aren\'t skipped.</string>
     <string name="help_switch">Track switch time</string>
     <string name="help_switch_text">The minutes in a box: from one train to the next, walk included. Set your own per station under Optimization (− and +). Otherwise: the official time minus the offset in Settings (⚙), e.g. 5\u00A0−\u00A01\u00A0=\u00A04\u00A0min at Luzern. For particular trains the planner sometimes allows less than the station\'s time.</string>
     <string name="help_colours">Colours and arrows</string>
@@ -72,7 +83,7 @@
     <string name="help_tickets">Tickets</string>
     <string name="help_tickets_text">A normal ticket covers the faster trip too, a supersaver ticket only the official train. A trip passing a station twice may need another ticket.</string>
     <string name="help_careful">Careful</string>
-    <string name="help_careful_text">Delays (+3) and changed tracks as known at the search, only a few hours ahead; cancelled trains not. The full search knows neither, and its timetable can be a week old. Whether you make it is up to you. The last result stays, also offline: check its day and how old its delays are.</string>
+    <string name="help_careful_text">Delays (+3) and changed tracks as known at the search, only a few hours ahead; cancelled trains not. The full search and the fastest of the day know neither, and their timetable can be a week old. Whether you make it is up to you. The last result stays, also offline: check its day and how old its delays are.</string>
     <string name="help_data">Data</string>
     <string name="help_data_text">Connections: transport.opendata.ch. Official track switch times: opentransportdata.swiss, timetable 2026. Full search: two weeks of Swiss trains from opentransportdata.swiss, downloaded from buerlino.github.io once a week. Not affiliated with SBB.</string>
 </resources>

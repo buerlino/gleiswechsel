@@ -4,6 +4,8 @@ The official planners only show a change of trains if it takes at least the stat
 
 Its full search also tries routes through other stations, in a file of two weeks of Swiss trains that it downloads about once a week (about 0.5 MB).
 
+The fastest of the day (the all day button) shows the fastest connection of a weekday with your track switch times, and how often it runs.
+
 No account, no ads, no tracking. Your commutes stay on your phone.
 
 Data: Swiss public transport open data (opentransportdata.swiss, transport.opendata.ch; the timetable file from buerlino.github.io). Not affiliated with SBB or any other transport company.

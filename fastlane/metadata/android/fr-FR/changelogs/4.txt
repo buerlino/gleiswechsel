@@ -1,0 +1,2 @@
+- La plus rapide du jour : « toute la journée » à côté du départ montre la liaison la plus rapide d'un jour de semaine avec vos temps de changement de voie, sa fréquence et de combien elle est plus efficace que celle de l'horaire.
+- Un départ vide signifie maintenant.

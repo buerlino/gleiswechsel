@@ -1,7 +1,7 @@
 # Architecture (proposed 2026-10-06)
 
 A proposal from the first research session. Nothing here is decided until `CLAUDE.md` says so.
-Decided so far: the local search (built) and phase 2, the full search (2026-10-06, being built).
+Decided so far: the local search (built) and phase 2, the full search (2026-10-06, in 0.3.0).
 Dropped (0.2.0; user, 2026-10-07): the risk of each change from Ist-Daten, with its nightly
 statistics job; the app shows delays as known at the search instead.
 

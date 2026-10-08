@@ -32,16 +32,18 @@ is in `research/`.
   itself) and `best`, the rules between the finds and the official connections, for both searches.
   It takes the official connections, the transfer time per station and the request as a function, so
   `SearchTest` runs it on a fake API with made-up connections.
-- `core/.../Found.kt`: `find()` (the next such time, Swiss; the official connections; `search`
+- `core/.../Found.kt`: `find()` (the next such time, Swiss, or now for a null time; the official connections; `search`
   with `TrackSwitchTimes`, then `fullSearch` on the timetable passed in when it has the day,
   `best` over both, today's first; the request passed in; a failed onward one, a timetable
   without the day and an error of the full search to `failed`; `noTimetable` for the line),
   `parseTime()` (`FoundTest`, also the two surprises of CLAUDE.md, One model, on a fake
-  API); `Found`, a search's result as the page shows it (`offered`; `trips`, what the page
+  API); `fastestOfTheDay()` (the fastest of the day: the first weekday's 08:00 for the ids,
+  `daySearch`, `runs`, `fastest`, a request at each card's first run for its official connection;
+  `FoundTest`, a fake API on a made-up timetable); `Found`, a search's result as the page shows it (`offered`; `trips`, what the page
   shows, and `onTrips`, a row's station on one of them) (`asOf`: when it searched,
   shown as the delays' time while `delaysKnown`), and its JSON
   (`toJson`, `found`; `FoundTest`: written and read back, made-up data). `Stop`, `Leg`,
-  `Connection`, `Change` and `Find` are `@Serializable` for it; times as ISO text (`IsoText`).
+  `Connection`, `Change`, `Find`, `Runs` and `Fastest` are `@Serializable` for it; times as ISO text (`IsoText`).
 - `core/.../Timetable.kt`: `Timetable`, the trains of 14 days for the full search (stations by
   didok, platforms, trips with a bit per day, in-seat `Continuation`s), its gzipped binary
   (`write`; times as steps from the previous departure plus a dwell byte) and the reader
@@ -72,16 +74,29 @@ is in `research/`.
   them with `RUNNER_TEMP` and `GITHUB_ENV` set (done 2026-10-07).
 - `core/.../FullSearch.kt`: the full search `fullSearch(timetable, officials, transfer)`, a
   connection scan (`Scan`: the rides of the window by departure, `earliest` forwards, `latest`
-  backwards for the trip leaving last, `connection` builds the result). Times are minutes on the
-  clock from the file's first day (the Swiss GTFS counts so, CLAUDE.md). `FullSearchTest`: a
-  made-up `Timetable`, built directly. `FoundTest` runs it through `find()` on small made-up
+  backwards for the trip leaving last, `connection` builds the result; `leavingAt` finds a scan's
+  first ride by binary search, and the scans' arrays are reused). Times are minutes on the
+  clock from the file's first day (the Swiss GTFS counts so, CLAUDE.md). `daySearch(timetable,
+  from, to, day, transfer)`, the day scan of the fastest of the day (CLAUDE.md): the
+  same `Scan` once per departure from A on the service day, from the last, until 04:00 the next
+  morning; the journeys no other beats. `FullSearchTest`: a made-up `Timetable`, built directly
+  (the day scan's tests at its end). `FoundTest` runs it through `find()` on small made-up
   timetables (a find only it has, the same trip as today's, no file or one without the day).
+- `core/.../Runs.kt`: how often the fastest of the day runs. `runs(journeys)` groups `daySearch`'s
+  journeys into `Runs` (the same lines, a train named by number by its category; the same change
+  stations; the same minutes), each with `duration` and `every` (the interval, null if irregular:
+  not 15, 30, 60 or 120, once, or under half of the gaps); `fastest(runs)` the cards (the fastest,
+  and the fastest regular one if it isn't); `Fastest`, a card in `Found` (its `trip`, the first run;
+  the official connection; `offered`; `moreEfficient`). `RunsTest`: made-up `Connection`s.
 - `core/.../LiveTest.kt`: the Horw → Sursee test case, live. Excluded from `:core:test` (and so
   from CI); run it with `./gradlew :core:test -Plive`, which also prints the finds and the number
   of requests. It asks for the next weekday, so a public holiday or a timetable change can fail it.
   Its full search runs on the published file with the officials from the API, through
   `localTimetable` into `core/build/timetable.bin.gz` (downloaded again once older than 7 days,
   or after `clean`), and it prints the times.
+  `theFastestOfTheDayIsTheHiddenChangeEveryHour`: `fastestOfTheDay` on the same file and the API,
+  Horw → Sursee with the defaults (one card: the S4 → RE24, 33 minutes, every 60, 05:53–22:53;
+  42% against the planner's S4 → S1 at 05:53; 2 requests).
   `thePublishedTimetableIsDownloadedOnce`: the file on Pages through `localTimetable`; one test
   alone: `--tests '*LiveTest.thePublished*'`.
 - `app/.../MainActivity.kt`: `App` holds all state and shows the search page, Help or Settings
@@ -89,11 +104,12 @@ is in `research/`.
   topics; `Folded` for the folded Destination, ▴ on the Search row to fold it again, ✕ on Journey's
   title to close the result), `MinutesStepper` (− and +, the rows and the offset in Settings;
   `arrows = false` for the offset), `folding` and `FoldMark` (a fold's state for a screen reader,
-  the ▾ or ▸ hidden from it) and `search` (core's `find` on the live API, a failure as
-  `Result.Failed`). `times` (`TrackSwitchTimes`) is made from the offset, the set times and
-  `optimize` at each composition. SharedPreferences `commute`: `from`, `to`, `leaving` as typed,
-  `offset` and the transfer times keyed by station id as numbers in strings (empty: unset),
-  `optimize`. The rows come from `Found.changes` (`Searched.changes`: the stations the search asked
+  the ▾ or ▸ hidden from it) and `search` (core's `find` on the live API, or `fastestOfTheDay`
+  with all day on; a failure as `Result.Failed`). `times` (`TrackSwitchTimes`) is made from the offset, the set times and
+  `optimize` at each composition. SharedPreferences `commute`: `from`, `to`, `leaving` as typed
+  (empty: now), `allDay` (the "all day" button at the time field's right; switching it clears the
+  result, so the page tells a fastest of the day's result by it), `offset` and the transfer times
+  keyed by station id as numbers in strings (empty: unset), `optimize`. The rows come from `Found.changes` (`Searched.changes`: the stations the search asked
   the transfer time at) and stay in `changes` while a time or the offset is edited; a row whose
   station isn't on a trip shown (`Found.onTrips`) is faded through `MinutesStepper`'s `modifier`
   (D3). The result is set only through `show`, which writes `files/result.json` (a result with
@@ -101,7 +117,8 @@ is in `research/`.
   Optimization changed) deletes the file but keeps the result on the page at 60% (`stale`) until the
   next Search. While a search runs, the Search button is Cancel (`job`). The keyboard's key goes to
   the next field, in the time field it searches (`Field`'s `onSearch`, `startSearch`).
-  `app/.../Cards.kt`: the cards (`FindCard`, `Trip`, `StopRow` with the delay and a changed track,
+  `app/.../Cards.kt`: the cards (`TripCard`, a card's body under a header: the trip, the folded
+  official connection and the ticket link; `FindCard` and `FastestCard` on it; `Trip`, `StopRow` with the delay and a changed track,
   `TrackSign`), `MinutesBox`, `LateBox` (a change the delays make too short) and the colours.
   `FindCard` and `Trip` take `Found.offered` and colour each change against `times.official(change,
   offered)` (D4). `app/.../Pages.kt`: Settings, Help (`help`: emoji, title, text; folded until
@@ -185,7 +202,18 @@ is in `research/`.
   way with `exec-in … sh -c 'cat > shared_prefs/commute.xml'`.
 - `input keyevent 66` is a hardware Enter, not the keyboard's action key, but it does the same:
   From → To → the time → Search (2026-10-07, since ⇅ left the focus order).
+- Typing into the fields: with the keyboard up, Destination moves up (centred in the space above
+  it), so take the fields' bounds from a `uiautomator dump` after the first tap, not before
+  (2026-10-08: a second tap at the old place typed To's text into From).
 - If the phone is locked, ask the user; don't try to unlock it.
+- Timing `:core` on the phone without the app or code left in the repo (2026-10-07, the day
+  scan): a Java `main` in the scratchpad against `core/build/libs/core.jar` (`./gradlew
+  :core:jar`) and the Gradle cache's kotlin-stdlib and kotlinx-serialization core and json jars
+  (`Leg` needs them); `javac --release 17`; `build-tools/37.0.0/d8 --release --min-api 26` over
+  it and the jars; `classes.dex` zipped, pushed with the timetable and `umsteigb.txt` to
+  `/data/local/tmp/<dir>`, then `adb shell 'cd … && dalvikvm -cp <zip> <Main> …'`, and the
+  dir removed. No AOT, so close to the app's first search. Pushing to the phone needs the
+  user's go (the auto mode blocks it); they ran it themselves.
 
 ## Official minimums: each timetable change
 
@@ -263,6 +291,18 @@ Everything else was tried on the phone with the R8 release build signed with the
   during a search: the page opens without a result.
   `run-as` doesn't work on the release build, so the file itself wasn't looked at.
 - Split screen.
+- The fastest of the day's page (2026-10-08): seen on the phone (R8 release) in English for the
+  commutes in CLAUDE.md's "Checked" there, Uster → Winterthur (every 30) and Bern → Thun (the
+  irregular line and a second card); the texts in German, French and Italian, Help's 🚆 and ⚠️ in all
+  four. Switching all day with To focused keeps the keyboard down. Not seen:
+  `timetable_missing_all_day` (no copy that reads), a card with a walk or a delay, a result kept
+  over a restart (only the language switch, which kept the page on Help), a public holiday, TalkBack
+  on the button's state (`uiautomator dump` doesn't show a Compose button's `selected`; the time
+  field's `enabled="false"` shows all day is on). Routes for it, found with `daySearch` on the
+  published file (a throwaway test against `localTimetable`, as `LiveTest`): every 30 Uster →
+  Winterthur, Zürich HB → Uster, → Effretikon, → Meilen, Bern → Biel/Bienne; every 15 Bern →
+  Solothurn (RE5); irregular Bern → Thun. Found before the rule of half of all gaps (2026-10-08);
+  since, only Uster → Winterthur and Bern → Thun rechecked (live, desktop).
 - One model (2026-10-07): `:core` by `MinimumsTest`, `SearchTest`, `FoundTest` (the two
   surprises on a fake API) and `find()` live for Thu 8 Oct in a one-off test (CLAUDE.md, One
   model, step 1). The page on the phone the same day (CLAUDE.md, One model, step 2), in
@@ -396,26 +436,28 @@ while the recipe still ended at 0.1.0 (`checkupdates`). gridload's skill already
 ## Store listing
 
 `fastlane/metadata/android/en-US/`: title, short (max 80 characters) and full description, drafted
-2026-10-06; `de-DE`, `fr-FR`, `it-IT`: short and full description (the title falls back to
-en-US), same day. `images/icon.png`: both logo SVGs at 512 px (`rsvg-convert -w 512 -h 512` each,
-`magick back.png front.png -composite -strip`). `images/featureGraphic.png` (1024×500): source
-`logo/featureGraphic.svg` (the signs, cropped, on the back's grey, "Gleiswechsel" in Inter Bold
-and the subtitle in Inter Medium, dark text: white on this grey is too faint), render command in
-its header comment. `images/phoneScreenshots/`, in English, both
-embedded in `README.md`, retaken for 0.3.0 (user, 2026-10-07; the R8 build of the tag, offset 1):
-`1.png` the test case's find and the green Luzern row (unset, the faded default), the page
-scrolled to the end (since 0.2.0 it's longer than the screen; user, 2026-10-06); `2.png` (user,
-2026-10-07: one for the full search) Uster → Horw 06:30 with Zürich HB and Luzern set to 2, the
-top of the page: S9 → IR75 → S4, 15 minutes earlier (with the defaults nothing faster). Commute
-and times typed on the page, after backing up `commute.xml` with the debug build's `run-as` (put
-back the same way afterwards, `result.json` deleted). Taken
-with SystemUI demo mode: `settings put global sysui_demo_allowed 1`, then broadcasts
+2026-10-06; `de-DE`, `fr-FR`, `it-IT`: short and full description (the title falls back to en-US),
+same day. `images/icon.png`: both logo SVGs at 512 px (`rsvg-convert -w 512 -h 512` each, `magick
+back.png front.png -composite -strip`). `images/featureGraphic.png` (1024×500): source
+`logo/featureGraphic.svg` (the signs, cropped, on the back's grey, "Gleiswechsel" in Inter Bold and
+the subtitle in Inter Medium, dark text: white on this grey is too faint), render command in its
+header comment. `images/phoneScreenshots/`, in English, all embedded in `README.md`, 1 and 2 retaken
+for 0.3.0 (user, 2026-10-07; the R8 build of the tag, offset 1): `1.png` the test case's find and
+the green Luzern row (unset, the faded default), the page scrolled to the end (since 0.2.0 it's
+longer than the screen; user, 2026-10-06); `2.png` (user, 2026-10-07: one for the full search) Uster
+→ Horw 06:30 with Zürich HB and Luzern set to 2, the top of the page: S9 → IR75 → S4, 15 minutes
+earlier (with the defaults nothing faster); `3.png` (user, 2026-10-08: one for the fastest of the
+day, 0.4.0's R8 build before the tag) Horw → Sursee all day, Luzern unset, scrolled to the end as 1:
+the S4 → RE24, 33 min, every 60, 18 times, 42%. The time search's page didn't change in 0.4.0 (1 and
+2 show the folded line), so 1 and 2 stayed. Commute and times typed on the page, after backing up
+`commute.xml` with the debug build's `run-as` (put back the same way afterwards, `result.json`
+deleted). Taken with SystemUI demo mode: `settings put global sysui_demo_allowed 1`, then broadcasts
 (`am broadcast -a com.android.systemui.demo -e command …`) `enter`, `clock -e hhmm 1200`,
-`notifications -e visible false`, `network -e mobile hide` and `network -e wifi show -e level 4
--e fully true` as two broadcasts (in one, Android 16 showed two Wi-Fi icons; 2026-10-07),
-`battery -e level 100 -e plugged false`, `status -e volume hide -e bluetooth hide -e location
-hide -e alarm hide -e sync hide -e mute hide -e speakerphone hide` (the VPN key goes with
-them); after the shot `exit` and the setting back to 0. `magick … -strip` for the PNG.
+`notifications -e visible false`, `network -e mobile hide` and `network -e wifi show -e level 4 -e
+fully true` as two broadcasts (in one, Android 16 showed two Wi-Fi icons; 2026-10-07), `battery -e
+level 100 -e plugged false`, `status -e volume hide -e bluetooth hide -e location hide -e alarm hide
+-e sync hide -e mute hide -e speakerphone hide` (the VPN key goes with them); after the shot `exit`
+and the setting back to 0. `magick … -strip` for the PNG.
 
 ## Icon
 

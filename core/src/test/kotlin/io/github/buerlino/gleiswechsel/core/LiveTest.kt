@@ -88,6 +88,33 @@ class LiveTest {
         assertEquals(false, fullSearch(8, luzern = 5).any { find -> find.faster.legs.any { it.train == "RE24" && it.departure.id == "8505000" } })
 
     @Test
+    fun theFastestOfTheDayIsTheHiddenChangeEveryHour() {
+        val times = TrackSwitchTimes(Minimums(File("../app/src/main/res/raw/umsteigb.txt").readText()), 1) { null }
+        timetable
+        var calls = 0
+        val start = System.nanoTime()
+        val found = fastestOfTheDay("Horw", "Sursee", times, { from, to, time -> calls++; connections(from, to, time, "test") }, { timetable }, day.atStartOfDay())
+        println("${found.day} Horw → Sursee, the fastest of the day: $calls requests, ${(System.nanoTime() - start) / 1_000_000} ms")
+        found.fastest.forEach {
+            println("  ${it.trip.text()}\n  every ${it.runs.every?.toMinutes()}, ${it.runs.journeys.size} times\n  official ${it.official.text()}")
+            println("  ${"%.0f".format(it.moreEfficient * 100)}% more efficient, offered ${it.offered}")
+        }
+        println("  rows ${found.changes.map { it.station }}")
+        // The S4 :53 → RE24 :05 (4 minutes at Luzern), 33 minutes, every hour; as fast as the S4 05:14 → IR27, once.
+        val card = found.fastest.single()
+        val hidden = card.runs
+        // Against the planner's S4 → S1 at the first run, 47 minutes, as the find (CLAUDE.md, the test case).
+        assertEquals(listOf("S4", "S1"), card.official.legs.map { it.train })
+        assertEquals(47.0 / 33 - 1, card.moreEfficient, 1e-9)
+        assertEquals(false, card.offered)
+        assertEquals(2, calls)
+        assertEquals(listOf("S4", "RE24"), hidden.journeys.first().legs.map { it.train })
+        assertEquals(Duration.ofMinutes(33), hidden.duration)
+        assertEquals(Duration.ofMinutes(60), hidden.every)
+        assertEquals((5..22).map { LocalTime.of(it, 53) }, hidden.journeys.map { it.departure.time.toLocalTime() })
+    }
+
+    @Test
     fun thePublishedTimetableIsDownloadedOnce() {
         val copy = File.createTempFile("timetable", ".bin.gz").apply { delete(); deleteOnExit() }
         var downloads = 0

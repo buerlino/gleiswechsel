@@ -164,4 +164,65 @@ class FullSearchTest {
         val official = Connection(listOf(Leg("IR2", stops(0, "2027-03-28T01:45:00+01:00"), stops(2, "2027-03-28T03:10:00+02:00"))))
         assertEquals(emptyList(), fullSearch(timetable(sn1, first = LocalDate.of(2027, 3, 22)), listOf(official), minutes(4)))
     }
+
+    // The day scan, Aach → Bstadt on Tuesday 3 March.
+    private fun day(vararg trips: Timetable.Trip, transfer: Long = 4) =
+        daySearch(timetable(*trips), "1", "3", monday.plusDays(1), minutes(transfer)).map { it.text() }
+
+    // Aach 07:00 → Bstadt 07:50 without a change: 50 minutes.
+    private val r5 = trip("R5", at(aach, "07:00"), at(bstadt, "07:50"))
+
+    @Test
+    fun theFastestOfSeveralDepartures() {
+        val kept = daySearch(timetable(r5, s1, re3, ir2), "1", "3", monday.plusDays(1), minutes(4))
+        assertEquals(
+            listOf(
+                "R5 Aach 07:00+01:00 (1) → Bstadt 07:50+01:00",
+                "S1 Aach 08:00+01:00 (1) → Xberg 08:10+01:00 (1) | RE3 Xberg 08:14+01:00 (9) → Bstadt 08:30+01:00",
+            ),
+            kept.map { it.text() },
+        )
+        assertEquals(Duration.ofMinutes(30), kept.minOf { it.duration })
+        // With 5 minutes at Xberg the IR2: the 08:00 takes 40.
+        assertEquals("S1 Aach 08:00+01:00 (1) → Xberg 08:10+01:00 (1) | IR2 Xberg 08:20+01:00 (1) → Bstadt 08:40+01:00", day(r5, s1, re3, ir2, transfer = 5)[1])
+    }
+
+    @Test
+    fun aBeatenJourneyIsDropped() {
+        // The S9 at 07:30 also reaches the RE3, but the S1 leaves later; the R8 at 07:40 arrives later.
+        val s9 = trip("S9", at(aach, "07:30"), at(xberg9, "07:45"))
+        val r8 = trip("R8", at(aach, "07:40"), at(bstadt, "08:45"))
+        assertEquals(listOf("R5", "S1"), day(r5, s9, r8, s1, re3).map { it.substringBefore(' ') })
+    }
+
+    @Test
+    fun aDepartureWithNothingToB() {
+        // The S1 at 22:00 has no train on from Xberg; the S7 goes the other way.
+        val late = trip("S1", at(aach, "22:00"), at(xberg1, "22:10"))
+        val s7 = trip("S7", at(bstadt, "06:00"), at(aach, "06:30"))
+        assertEquals(listOf("R5"), day(s7, r5, late).map { it.substringBefore(' ') })
+        assertEquals(emptyList(), day(s7))
+        assertEquals(emptyList(), daySearch(timetable(r5), "1", "3", monday.plusDays(14), minutes(4)))
+    }
+
+    @Test
+    fun tripsPastMidnight() {
+        // Tuesday's last trains at 24:10 and 24:24 (Wednesday 00:10 and 00:24) count; Monday's at
+        // 24:05 (Tuesday 00:05) doesn't: it leaves on Monday's service day.
+        val tuesday = trip("S1", at(aach, "24:10"), at(xberg1, "24:20"), days = 1 shl 1)
+        val on = trip("RE3", at(xberg9, "24:24"), at(bstadt, "24:40"), days = 1 shl 1)
+        val mondays = trip("R5", at(aach, "24:05"), at(bstadt, "24:50"), days = 1 shl 0)
+        assertEquals(
+            listOf("S1 Aach 00:10+01:00 (1) → Xberg 00:20+01:00 (1) | RE3 Xberg 00:24+01:00 (9) → Bstadt 00:40+01:00"),
+            day(mondays, tuesday, on),
+        )
+        assertEquals(
+            "2026-03-04T00:10+01:00",
+            daySearch(timetable(mondays, tuesday, on), "1", "3", monday.plusDays(1), minutes(4)).single().departure.time.toString(),
+        )
+        // Tuesday's 25:00 would go on only with Wednesday's first train, after 04:00: nothing.
+        val last = trip("S1", at(aach, "25:00"), at(xberg1, "25:10"), days = 1 shl 1)
+        val first = trip("RE3", at(xberg9, "05:14"), at(bstadt, "05:30"), days = 1 shl 2)
+        assertEquals(emptyList(), day(last, first))
+    }
 }

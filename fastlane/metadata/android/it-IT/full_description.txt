@@ -4,6 +4,8 @@ Gli orari ufficiali propongono un cambio solo se dura almeno il tempo di cambio 
 
 La ricerca completa prova anche percorsi attraverso altre stazioni, in un file con due settimane di treni svizzeri che l'app scarica circa una volta alla settimana (circa 0,5 MB).
 
+La più veloce del giorno (il pulsante «tutto il giorno») mostra il collegamento più veloce di un giorno feriale con i suoi tempi di cambio binario e quanto spesso circola.
+
 Nessun account, nessuna pubblicità, nessun tracciamento. I suoi tragitti restano sul suo telefono.
 
 Dati: open data dei trasporti pubblici svizzeri (opentransportdata.swiss, transport.opendata.ch; il file dell'orario da buerlino.github.io). Indipendente dalle FFS e da tutte le altre imprese di trasporto.

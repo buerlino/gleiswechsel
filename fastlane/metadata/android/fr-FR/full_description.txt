@@ -4,6 +4,8 @@ Les horaires officiels ne proposent une correspondance que si elle dure au moins
 
 Sa recherche complète essaie aussi des trajets par d'autres gares, dans un fichier de deux semaines de trains suisses que l'application télécharge environ une fois par semaine (environ 0,5 Mo).
 
+La plus rapide du jour (le bouton « toute la journée ») montre la liaison la plus rapide d'un jour de semaine avec vos temps de changement de voie, et sa fréquence.
+
 Pas de compte, pas de publicité, pas de pistage. Vos trajets restent sur votre téléphone.
 
 Données : open data des transports publics suisses (opentransportdata.swiss, transport.opendata.ch ; le fichier d'horaire de buerlino.github.io). Sans lien avec les CFF ni aucune autre entreprise de transport.

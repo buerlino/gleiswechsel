@@ -13,6 +13,8 @@
     <string name="to">A</string>
     <string name="swap">Invertire partenza e arrivo</string>
     <string name="leaving_at">Partenza</string>
+    <string name="now">adesso</string>
+    <string name="all_day">tutto il giorno</string>
     <string name="change_trip">Modificare partenza, arrivo e ora</string>
     <string name="hide_trip">Chiudere partenza, arrivo e ora</string>
     <string name="search">Cerca</string>
@@ -24,6 +26,8 @@
     <string name="nothing_faster">%1$s: niente di più veloce.</string>
     <string name="not_all_checked">Non è stato possibile verificare tutti i cambi: transport.opendata.ch non ha risposto. Riprovi tra un minuto.</string>
     <string name="timetable_missing">Sono stati verificati solo i cambi dei collegamenti ufficiali: non è stato possibile caricare l\'orario.</string>
+    <string name="timetable_missing_all_day">Non è stato possibile caricare l\'orario. Riprovi tra un minuto.</string>
+    <string name="not_in_timetable">Tutto il giorno cerca solo treni: partenza e arrivo devono essere stazioni ferroviarie.</string>
     <string name="delays_as_of">Ritardi alle %1$s</string>
     <string name="optimization_text">Il suo tempo di cambio binario in ogni stazione. Lo abbassi e cerchi di nuovo per trovare di più.</string>
     <string name="less">Un minuto in meno</string>
@@ -38,6 +42,11 @@
     <string name="earlier">%1$d\u00A0min prima</string>
     <string name="instead_of">%1$s %2$s invece delle %3$s</string>
     <string name="more_efficient">%1$d%% più efficiente</string>
+    <string name="trip_minutes">%1$d\u00A0min di viaggio</string>
+    <string name="runs_every">Ogni %1$d\u00A0min, %2$s–%3$s, %4$d volte</string>
+    <string name="runs_irregular">Irregolare, %1$s–%2$s, %3$d volte</string>
+    <string name="runs_once">Una volta al giorno, %1$s</string>
+    <string name="offered_too">L\'orario propone anche questo collegamento.</string>
     <string name="track_switch">cambio binario</string>
     <string name="track_switch_walk">cambio binario, %1$d\u00A0min a piedi</string>
     <string name="walk">A piedi, %1$d\u00A0min</string>
@@ -58,7 +67,7 @@
     <string name="help">Aiuto</string>
     <string name="phone_language">Lingua del telefono</string>
     <string name="help_what">Cosa fa</string>
-    <string name="help_what_text">Trova viaggi più veloci di quelli dell\'orario ufficiale. L\'orario propone solo cambi che durano almeno il tempo di cambio binario ufficiale, p.\u00A0es. 5\u00A0min a Lucerna. Se lei è più veloce, forse fa ancora in tempo per un treno prima. La ricerca completa prova anche percorsi attraverso altre stazioni, con il suo tempo a ogni cambio.</string>
+    <string name="help_what_text">Trova viaggi più veloci di quelli dell\'orario ufficiale. L\'orario propone solo cambi che durano almeno il tempo di cambio binario ufficiale, p.\u00A0es. 5\u00A0min a Lucerna. Se lei è più veloce, forse fa ancora in tempo per un treno prima. La ricerca completa prova anche percorsi attraverso altre stazioni, con il suo tempo a ogni cambio. La più veloce del giorno (tutto il giorno, accanto alla partenza): il viaggio più veloce di oggi o del prossimo giorno feriale (lun–ven) con i suoi tempi e quanto spesso circola, confrontato con quello dell\'orario alla sua prima partenza. I giorni festivi non vengono saltati.</string>
     <string name="help_switch">Tempo di cambio binario</string>
     <string name="help_switch_text">I minuti nel riquadro: da un treno al successivo, a piedi compreso. Imposti il suo per ogni stazione in Ottimizzazione (− e +). Altrimenti vale quello ufficiale meno lo scostamento nelle impostazioni (⚙), p.\u00A0es. 5\u00A0−\u00A01\u00A0=\u00A04\u00A0min a Lucerna. Per certi treni l\'orario a volte concede meno del tempo della stazione.</string>
     <string name="help_colours">Colori e frecce</string>
@@ -68,7 +77,7 @@
     <string name="help_tickets">Biglietti</string>
     <string name="help_tickets_text">Un biglietto normale vale anche per il viaggio più veloce, un biglietto risparmio solo per il treno ufficiale. Un viaggio che passa due volte dalla stessa stazione può richiedere un altro biglietto.</string>
     <string name="help_careful">Attenzione</string>
-    <string name="help_careful_text">Ritardi (+3) e cambi di binario come noti al momento della ricerca, solo poche ore prima; i treni soppressi no. La ricerca completa non conosce né gli uni né gli altri, e il suo orario può avere una settimana. Sta a lei giudicare se ce la fa. L\'ultimo risultato resta, anche offline: ne controlli il giorno e quanto sono vecchi i ritardi.</string>
+    <string name="help_careful_text">Ritardi (+3) e cambi di binario come noti al momento della ricerca, solo poche ore prima; i treni soppressi no. La ricerca completa e la più veloce del giorno non conoscono né gli uni né gli altri, e il loro orario può avere una settimana. Sta a lei giudicare se ce la fa. L\'ultimo risultato resta, anche offline: ne controlli il giorno e quanto sono vecchi i ritardi.</string>
     <string name="help_data">Dati</string>
     <string name="help_data_text">Collegamenti: transport.opendata.ch. Tempi di cambio binario ufficiali: opentransportdata.swiss, orario 2026. Ricerca completa: due settimane di treni svizzeri da opentransportdata.swiss, scaricate da buerlino.github.io una volta alla settimana. Indipendente dalle FFS.</string>
 </resources>

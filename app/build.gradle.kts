@@ -21,8 +21,8 @@ android {
         applicationId = "io.github.buerlino.gleiswechsel"
         minSdk = 26
         targetSdk = 37
-        versionCode = 3
-        versionName = "0.3.0"
+        versionCode = 4
+        versionName = "0.4.0"
     }
 
     val releaseKeystore = signingValue("storeFile", "GLEISWECHSEL_KEYSTORE_FILE")

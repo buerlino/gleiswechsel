@@ -3,6 +3,8 @@ package io.github.buerlino.gleiswechsel.core
 import kotlinx.serialization.json.JsonObject
 import kotlinx.serialization.json.JsonPrimitive
 import kotlinx.serialization.json.jsonObject
+import java.io.IOException
+import java.time.Duration
 import java.time.LocalDate
 import java.time.LocalDateTime
 import java.time.LocalTime
@@ -31,9 +33,11 @@ class FoundTest {
         official,
         listOf(stop("Xberg", "08:10", "1"), stop("Yfeld", "08:30")),
         listOf(Find(official, faster)),
+        emptyList(),
         setOf(Change(s1.arrival, ir2.departure)),
         incomplete = true,
         noTimetable = false,
+        notInTimetable = false,
         asOf = LocalDateTime.parse("2026-03-03T07:41"),
     )
 
@@ -94,9 +98,9 @@ class FoundTest {
         officials: List<Connection>,
         times: TrackSwitchTimes,
         onward: Map<String, List<Connection>>,
-        leaving: String = "07:55",
+        leaving: String? = "07:55",
         timetable: () -> Timetable? = { null },
-    ) = find("Aach", "Bstadt", LocalTime.parse(leaving), times, { from, _, time ->
+    ) = find("Aach", "Bstadt", leaving?.let(LocalTime::parse), times, { from, _, time ->
         asked += "$from ${time.toLocalTime()}"
         if (from == "Aach") officials else onward[from].orEmpty()
     }, timetable, now) { failed += it }
@@ -154,6 +158,8 @@ class FoundTest {
         assertEquals(LocalDateTime.parse("2026-03-04T07:29"), tomorrow.day)
         assertNull(tomorrow.first)
         assertEquals(now, tomorrow.asOf)
+        // No time: now, not tomorrow (a LocalTime.now() from the app is past `now` by then).
+        assertEquals(now, find(emptyList(), times, emptyMap(), null).day)
     }
 
     @Test
@@ -259,6 +265,108 @@ class FoundTest {
         var asked = false
         assert(!find(emptyList(), times, emptyMap(), timetable = { asked = true; null }).noTimetable)
         assert(!asked)
+    }
+
+    // The fastest of the day, Tuesday 3 March: S1 Aach :00 → Xberg :10 → RE3 :14 (4 minutes, the
+    // rider's) → Bstadt :30 or IR2 :20 → :40 (the table's 5), 6 to 9 o'clock.
+    private val hourly = (6..9).flatMap { h ->
+        listOf(
+            "S1" to listOf("Aach" to "0$h:00", "Xberg" to "0$h:10"),
+            "RE3" to listOf("Xberg" to "0$h:14", "Bstadt" to "0$h:30"),
+            "IR2" to listOf("Xberg" to "0$h:20", "Bstadt" to "0$h:40"),
+        )
+    }.toTypedArray()
+
+    private fun ride(train: String, from: String, leaves: String, to: String, arrives: String, platform: String? = null) =
+        Leg(train, stop(from, leaves, platform), stop(to, arrives))
+
+    // The planner: S1 → IR2 every hour, the second on track 7 (so it's told from the other).
+    private fun planner(time: LocalDateTime) = (time.hour..time.hour + 1).map { h ->
+        Connection(listOf(ride("S1", "Aach", "0$h:00", "Xberg", "0$h:10", if (h == time.hour) null else "7"), ride("IR2", "Xberg", "0$h:20", "Bstadt", "0$h:40")))
+    }
+
+    private fun fastestOfTheDay(
+        planner: (LocalDateTime) -> List<Connection> = ::planner,
+        from: String = "Aach",
+        now: LocalDateTime = this.now,
+        timetable: () -> Timetable? = { timetable(*hourly) },
+    ) = fastestOfTheDay(from, "Bstadt", TrackSwitchTimes(minimums, 1) { null }, { a, _, time ->
+        asked += "$a ${time.toLocalTime()}"
+        planner(time)
+    }, timetable, now) { failed += it }
+
+    @Test
+    fun theFastestOfTheDay() {
+        val found = fastestOfTheDay()
+        val card = found.fastest.single()
+        assertEquals(listOf("S1", "RE3"), card.trip.legs.map { it.train })
+        assertEquals(Duration.ofMinutes(60), card.runs.every)
+        assertEquals((6..9).map { LocalTime.of(it, 0) }, card.runs.journeys.map { it.departure.time.toLocalTime() })
+        // At 08:00 for the ids, then at the card's first run: the planner's then, arriving first.
+        assertEquals(listOf("Aach 08:00", "Aach 06:00"), asked)
+        assertEquals(LocalTime.of(6, 40), card.official.arrival.time.toLocalTime())
+        assertNull(card.official.departure.platform)
+        assertEquals(40.0 / 30 - 1, card.moreEfficient, 1e-9)
+        assert(!card.offered)
+        assert(Change(stop("Xberg", "06:10"), stop("Xberg", "06:20")) in found.offered)
+        // The rows: the card's change and its official connection's.
+        assertEquals(listOf("Xberg"), found.changes.map { it.id })
+        assertEquals(listOf(card.trip, card.official), found.trips)
+        assertEquals(LocalDateTime.parse("2026-03-03T08:00"), found.day)
+        assert(!found.incomplete && !found.noTimetable && !found.notInTimetable)
+        assertEquals(found, found(found.toJson()))
+        assertEquals(emptyList(), failed)
+    }
+
+    @Test
+    fun theFastestOfTheDayInTwoCards() {
+        // An IC 05:30 → 05:55, once and faster, the planner offers: two cards, a request each.
+        val found = fastestOfTheDay({ time ->
+            if (time.hour == 5) listOf(Connection(listOf(ride("IC5", "Aach", "05:30", "Bstadt", "05:55", "4")))) else planner(time)
+        }, timetable = { timetable(*hourly, "IC5" to listOf("Aach" to "05:30", "Bstadt" to "05:55")) })
+        assertEquals(listOf("Aach 08:00", "Aach 05:30", "Aach 06:00"), asked)
+        val (once, regular) = found.fastest
+        assertEquals(listOf("IC5"), once.trip.legs.map { it.train })
+        assert(once.offered)
+        assertEquals("4", once.official.departure.platform)
+        assertEquals(0.0, once.moreEfficient)
+        assertEquals(listOf("S1", "RE3"), regular.trip.legs.map { it.train })
+        assert(!regular.offered)
+    }
+
+    @Test
+    fun theFastestOfTheDayThePlannerOffers() {
+        // The planner changes to the RE3 at 06:10 too: offered, and its change is official (D4).
+        val re3 = Connection(listOf(ride("S1", "Aach", "06:00", "Xberg", "06:10"), ride("RE3", "Xberg", "06:14", "Bstadt", "06:30")))
+        val found = fastestOfTheDay({ time -> if (time.hour == 6) planner(time) + re3 else planner(time) })
+        assert(found.fastest.single().offered)
+        assertEquals(re3, found.fastest.single().official)
+        assert(Change(stop("Xberg", "06:10"), stop("Xberg", "06:14")) in found.offered)
+    }
+
+    @Test
+    fun theFastestOfTheDayFailsWithoutAnAnswer() {
+        assertFailsWith<IOException> { fastestOfTheDay({ time -> if (time.hour == 6) throw IOException("HTTP 429") else planner(time) }) }
+    }
+
+    @Test
+    fun theFastestOfTheDaysDayAndStations() {
+        // Saturday: Monday's.
+        assertEquals(LocalDateTime.parse("2026-03-09T08:00"), fastestOfTheDay(now = LocalDateTime.parse("2026-03-07T12:00")).day)
+        // Leaving from a bus stop: not in the file, no more requests.
+        asked.clear()
+        val bus = fastestOfTheDay({ listOf(Connection(listOf(ride("B1", "Aach, Post", "08:00", "Bstadt", "08:50")))) }, from = "Aach, Post")
+        assert(bus.notInTimetable)
+        assertEquals(listOf("Aach, Post 08:00"), asked)
+        assertEquals(emptyList(), bus.fastest)
+        // No timetable with the day.
+        assert(fastestOfTheDay(timetable = { null }).noTimetable)
+        assert(fastestOfTheDay(now = LocalDateTime.parse("2026-03-14T07:30")).noTimetable)
+        // No connections: not asked.
+        var read = false
+        val none = fastestOfTheDay({ emptyList() }, timetable = { read = true; timetable(*hourly) })
+        assertNull(none.first)
+        assert(!read && !none.noTimetable)
     }
 
     @Test

@@ -1,6 +1,7 @@
 package io.github.buerlino.gleiswechsel.core
 
 import java.time.Duration
+import java.time.LocalDate
 import java.time.OffsetDateTime
 import java.time.ZoneId
 import java.time.temporal.ChronoUnit
@@ -33,6 +34,36 @@ fun fullSearch(timetable: Timetable, officials: List<Connection>, transfer: (sta
             ?.takeIf { it.faster.arrival.time.isBefore(official.arrival.time) }
     }
     return best(finds, officials)
+}
+
+/**
+ * The day scan of the fastest of the day (CLAUDE.md): for each departure from station [from] (its id)
+ * on the service [day] of the [timetable], the earliest arrival at [to], with the rider's [transfer]
+ * times as in [fullSearch]; the journeys no other beats (leaves no earlier, arrives no later), each
+ * the one leaving last, in the order they leave. Empty if a station or the day isn't in the file.
+ *
+ * The departures from the last of the day: one counts only if it arrives before the next one kept,
+ * so its scan stops there and a beaten journey isn't built. Arriving by 04:00 the next morning,
+ * after the night's last trains, before the next day's first: a night's wait isn't a commute, and
+ * the day's last departures (S4 Horw 25:08) don't reach the next day's 05:14. Not by the day's last
+ * arrival: night trains from abroad count from their first station's day (NJ Feldkirch 31:41 →
+ * Zürich HB 35:36; checked 2026-10-07).
+ */
+fun daySearch(timetable: Timetable, from: String, to: String, day: LocalDate, transfer: (station: Stop) -> Duration): List<Connection> {
+    val a = timetable.stations.indexOfFirst { it.id == from }
+    val b = timetable.stations.indexOfFirst { it.id == to }
+    val d = ChronoUnit.DAYS.between(timetable.first, day).toInt()
+    if (a < 0 || b < 0 || d !in 0 until timetable.days) return emptyList()
+    val zero = d * DAY
+    val departures = timetable.trips.filter { it.days shr d and 1 == 1 }.flatMap { trip ->
+        (0 until trip.platforms.size - 1).filter { trip.pickup[it] && timetable.platforms[trip.platforms[it]].station == a }
+            .map { zero + trip.departures[it] }
+    }.distinct().sortedDescending().ifEmpty { return emptyList() }
+    var before = zero + DAY + 4 * 60
+    val scan = Scan(timetable, zero, before, transfer)
+    return departures.mapNotNull { leaving ->
+        scan.earliest(a, leaving, b, before)?.let { before = it; scan.latest(a, leaving, b, it) }
+    }.reversed()
 }
 
 private val zurich = ZoneId.of("Europe/Zurich")
@@ -93,6 +124,24 @@ private class Scan(private val timetable: Timetable, from: Int, until: Int, priv
 
     private val instances = timetable.trips.size * days.size
 
+    // Reused by each scan: the day scan runs one per departure.
+    private val arrival = IntArray(timetable.stations.size)
+    private val on = BooleanArray(instances)
+    private val leave = IntArray(timetable.stations.size)
+    private val exit = IntArray(instances)
+    private val stay = IntArray(instances)
+
+    /** The first ride leaving at [minute] or later. */
+    private fun leavingAt(minute: Int): Int {
+        var low = 0
+        var high = dep.size
+        while (low < high) {
+            val mid = (low + high) ushr 1
+            if (dep[mid] < minute) low = mid + 1 else high = mid
+        }
+        return low
+    }
+
     private fun trip(x: Int) = timetable.trips[x / days.size]
 
     private fun station(x: Int, i: Int) = timetable.platforms[trip(x).platforms[i]].station
@@ -117,11 +166,10 @@ private class Scan(private val timetable: Timetable, from: Int, until: Int, priv
 
     /** The earliest arrival at station [b] from [a], leaving at [leaving] or later, if it's [before]. */
     fun earliest(a: Int, leaving: Int, b: Int, before: Int): Int? {
-        val arrival = IntArray(timetable.stations.size) { Int.MAX_VALUE }
-        val on = BooleanArray(instances)
+        arrival.fill(Int.MAX_VALUE)
+        on.fill(false)
         var first = before
-        for (j in dep.indices) {
-            if (dep[j] < leaving) continue
+        for (j in leavingAt(leaving) until dep.size) {
             if (dep[j] >= first) break
             val x = instance[j]
             if (!on[x]) {
@@ -143,10 +191,10 @@ private class Scan(private val timetable: Timetable, from: Int, until: Int, priv
      * station that still gets there.
      */
     fun latest(a: Int, leaving: Int, b: Int, by: Int): Connection {
-        val leave = IntArray(timetable.stations.size) { -1 }
-        val exit = IntArray(instances) { -1 }
-        val stay = IntArray(instances) { -1 }
-        for (j in dep.indices.reversed()) {
+        leave.fill(-1)
+        exit.fill(-1)
+        stay.fill(-1)
+        for (j in leavingAt(by + 1) - 1 downTo 0) {
             if (dep[j] < leaving) break
             if (arr[j] > by) continue
             val x = instance[j]
@@ -158,14 +206,14 @@ private class Scan(private val timetable: Timetable, from: Int, until: Int, priv
             if (stop[j] == 0) continued(x).forEach { if (exit[it] < 0 && stay[it] < 0) stay[it] = x }
             if (!pickup(j)) continue
             val s = station(x, stop[j])
-            if (s == a) return connection(j, b, leave, exit, stay)
+            if (s == a) return connection(j, b)
             if (leave[s] < 0) leave[s] = j
         }
         error("No trip by the earliest arrival")
     }
 
     /** The trip boarding ride [board] and following [leave], [exit] and [stay] to [b]. */
-    private fun connection(board: Int, b: Int, leave: IntArray, exit: IntArray, stay: IntArray): Connection {
+    private fun connection(board: Int, b: Int): Connection {
         val legs = ArrayList<Leg>()
         var j = board
         while (true) {

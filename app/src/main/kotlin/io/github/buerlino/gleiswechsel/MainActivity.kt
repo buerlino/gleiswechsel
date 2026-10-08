@@ -36,6 +36,7 @@ import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.Button
+import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Card
 import androidx.compose.material3.DropdownMenu
 import androidx.compose.material3.DropdownMenuItem
@@ -68,6 +69,7 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.semantics.clearAndSetSemantics
 import androidx.compose.ui.semantics.contentDescription
 import androidx.compose.ui.semantics.heading
+import androidx.compose.ui.semantics.selected
 import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.semantics.stateDescription
 import androidx.compose.ui.text.font.FontWeight
@@ -83,6 +85,7 @@ import io.github.buerlino.gleiswechsel.core.TIMETABLE_URL
 import io.github.buerlino.gleiswechsel.core.TrackSwitchTimes
 import io.github.buerlino.gleiswechsel.core.connections
 import io.github.buerlino.gleiswechsel.core.download
+import io.github.buerlino.gleiswechsel.core.fastestOfTheDay
 import io.github.buerlino.gleiswechsel.core.find
 import io.github.buerlino.gleiswechsel.core.found
 import io.github.buerlino.gleiswechsel.core.localTimetable
@@ -151,6 +154,7 @@ private fun App(prefs: SharedPreferences, minimums: Minimums, saved: File, last:
     var from by remember { mutableStateOf(prefs.getString("from", "")!!) }
     var to by remember { mutableStateOf(prefs.getString("to", "")!!) }
     var leaving by remember { mutableStateOf(prefs.getString("leaving", "")!!) }
+    var allDay by remember { mutableStateOf(prefs.getBoolean("allDay", false)) }
     var offset by remember { mutableStateOf(prefs.getString("offset", "")!!) }
     var optimize by remember { mutableStateOf(prefs.getBoolean("optimize", true)) }
     var result by remember { mutableStateOf<Result?>(last?.let { Result.Done(it) }) }
@@ -193,12 +197,13 @@ private fun App(prefs: SharedPreferences, minimums: Minimums, saved: File, last:
     }
     // With Optimization off, the times set at stations are kept but not used.
     val times = TrackSwitchTimes(minimums, offsetMinutes) { id -> prefs.getString(id, null)?.toLongOrNull()?.takeIf { optimize } }
-    val ready = from.isNotBlank() && to.isNotBlank() && time != null
+    // An empty time is now (user, 2026-10-07); with all day on, the time is ignored.
+    val ready = from.isNotBlank() && to.isNotBlank() && (allDay || leaving.isBlank() || time != null)
     fun startSearch() {
         open = false
         show(Result.Searching)
         job = scope.launch {
-            val r = withContext(Dispatchers.IO) { search(from.trim(), to.trim(), time!!, times, copy) }
+            val r = withContext(Dispatchers.IO) { search(from.trim(), to.trim(), time, allDay, times, copy) }
             show(r)
             changes = (r as? Result.Done)?.found?.changes.orEmpty()
         }
@@ -235,6 +240,11 @@ private fun App(prefs: SharedPreferences, minimums: Minimums, saved: File, last:
                         Heading(stringResource(R.string.destination))
                         AnimatedVisibility(open || centred) {
                             Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
+                                val focus = LocalFocusManager.current
+                                // Focus then goes to Search, Cancel while it runs: on a hardware keyboard,
+                                // clearing it alone gave it to ⚙ (2026-10-07). In touch mode a button
+                                // takes no focus, so nothing changes there.
+                                val onSearch = { focus.clearFocus(); if (ready) { startSearch(); searchButton.requestFocus() } }
                                 // The swap button hovers on the right, centred between From and To,
                                 // without moving them apart (user, 2026-10-06). Each field has its
                                 // label's 8 dp above its border, so the gap between the borders is
@@ -243,7 +253,9 @@ private fun App(prefs: SharedPreferences, minimums: Minimums, saved: File, last:
                                 Box(Modifier.fillMaxWidth()) {
                                     Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
                                         Field(stringResource(R.string.from), from, !searching) { from = it; saveCommute("from", it) }
-                                        Field(stringResource(R.string.to), to, !searching) { to = it; saveCommute("to", it) }
+                                        Field(stringResource(R.string.to), to, !searching, onSearch = onSearch.takeIf { allDay }) {
+                                            to = it; saveCommute("to", it)
+                                        }
                                     }
                                     // A blue ⇅ in a grey circle, white inside, over the fields' borders (user,
                                     // 2026-10-07: easier to see; before, plain, as ⚙ and ?). Not in the focus
@@ -259,21 +271,43 @@ private fun App(prefs: SharedPreferences, minimums: Minimums, saved: File, last:
                                         colors = IconButtonDefaults.iconButtonColors(contentColor = MaterialTheme.colorScheme.primary),
                                     ) { Text("⇅", Modifier.spokenAs(stringResource(R.string.swap)), fontSize = 20.sp) }
                                 }
-                                val focus = LocalFocusManager.current
-                                // Focus then goes to Search, Cancel while it runs: on a hardware keyboard,
-                                // clearing it alone gave it to ⚙ (2026-10-07). In touch mode a button
-                                // takes no focus, so nothing changes there.
-                                Field(
-                                    stringResource(R.string.leaving_at), leaving, !searching, "08:50",
-                                    isError = leaving.isNotEmpty() && time == null, number = true,
-                                    onSearch = { focus.clearFocus(); if (ready) { startSearch(); searchButton.requestFocus() } },
-                                ) {
-                                    leaving = it; saveCommute("leaving", it)
+                                // The fastest of the day (CLAUDE.md): "all day" on the time's right, blue when
+                                // on; the time is then greyed and ignored, its text kept. Not in the focus
+                                // order, as ⇅: To's key searches instead. A switch clears the focus: To's
+                                // key changes with it, which brought the keyboard back up (2026-10-08).
+                                Row(verticalAlignment = Alignment.CenterVertically) {
+                                    Box(Modifier.weight(1f)) {
+                                        Field(
+                                            stringResource(R.string.leaving_at), leaving, !searching && !allDay, stringResource(R.string.now),
+                                            isError = !allDay && leaving.isNotBlank() && time == null, number = true, onSearch = onSearch,
+                                        ) {
+                                            leaving = it; saveCommute("leaving", it)
+                                        }
+                                    }
+                                    TextButton(
+                                        {
+                                            focus.clearFocus()
+                                            allDay = !allDay
+                                            show(null)
+                                            changes = emptyList()
+                                            prefs.edit { putBoolean("allDay", allDay) }
+                                        },
+                                        Modifier.padding(start = 8.dp).focusProperties { canFocus = false }.semantics { selected = allDay },
+                                        enabled = !searching,
+                                        colors = ButtonDefaults.textButtonColors(
+                                            contentColor = if (allDay) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.onSurfaceVariant,
+                                        ),
+                                    ) { Text(stringResource(R.string.all_day)) }
                                 }
                             }
                         }
                         AnimatedVisibility(!open && !centred) {
-                            Folded("${from.trim()} → ${to.trim()}, ${time?.format(hourMinute) ?: leaving}") { open = true }
+                            val at = when {
+                                allDay -> stringResource(R.string.all_day)
+                                leaving.isBlank() -> stringResource(R.string.now)
+                                else -> time?.format(hourMinute) ?: leaving
+                            }
+                            Folded("${from.trim()} → ${to.trim()}, $at") { open = true }
                         }
                         // While it searches, Search is Cancel (user, 2026-10-06): the requests can't be
                         // stopped, so their late answer is dropped. Opened after a search, the fields fold
@@ -317,9 +351,13 @@ private fun App(prefs: SharedPreferences, minimums: Minimums, saved: File, last:
                             // The day in the language of the texts, not the phone's: a Spanish phone gets English.
                             val locale = Locale.forLanguageTag(stringResource(R.string.language))
                             val day = f.firstDay.format(DateTimeFormatter.ofPattern(stringResource(R.string.day_pattern), locale))
+                            // The result matches allDay: switching it clears the result. Without the file or
+                            // its stations the fastest of the day searched nothing, so no "nothing faster".
+                            val notSearched = allDay && (f.noTimetable || f.notInTimetable)
+                            val nothing = f.finds.isEmpty() && f.fastest.isEmpty() && !notSearched
                             Text(when {
                                 first == null -> stringResource(R.string.no_connections, day)
-                                f.finds.isEmpty() -> stringResource(R.string.nothing_faster, day)
+                                nothing -> stringResource(R.string.nothing_faster, day)
                                 else -> stringResource(R.string.day_line, day)
                             })
                             // Delays go stale: when they were read (user, 2026-10-06).
@@ -329,10 +367,15 @@ private fun App(prefs: SharedPreferences, minimums: Minimums, saved: File, last:
                                 style = MaterialTheme.typography.bodySmall,
                             )
                             if (f.incomplete) Text(stringResource(R.string.not_all_checked), color = MaterialTheme.colorScheme.error)
-                            if (f.noTimetable) Text(stringResource(R.string.timetable_missing), color = MaterialTheme.colorScheme.error)
+                            if (f.noTimetable) Text(
+                                stringResource(if (allDay) R.string.timetable_missing_all_day else R.string.timetable_missing),
+                                color = MaterialTheme.colorScheme.error,
+                            )
+                            if (f.notInTimetable) Text(stringResource(R.string.not_in_timetable), color = MaterialTheme.colorScheme.error)
                             f.finds.forEach { FindCard(it, times, f.offered) }
+                            f.fastest.forEach { FastestCard(it, times, f.offered) }
                             // Nothing faster: the official connection leaving first, to see where it changes (user, 2026-10-06).
-                            if (f.finds.isEmpty() && first != null) Card(Modifier.fillMaxWidth()) {
+                            if (nothing && first != null) Card(Modifier.fillMaxWidth()) {
                                 Column(Modifier.padding(12.dp), verticalArrangement = Arrangement.spacedBy(4.dp)) {
                                     Text(stringResource(R.string.official_connection), style = MaterialTheme.typography.titleMedium)
                                     Trip(first, times, f.offered)
@@ -495,16 +538,21 @@ internal fun MinutesStepper(
 }
 
 /**
- * [from] → [to] at the next [leaving], searched live with the rider's [times] ([find]), and in the
- * timetable, its [copy] downloaded when it's missing or old ([localTimetable]). Only the official
- * connections' request failing fails the search; a failed onward request skips its change. Blocking.
+ * [from] → [to] at the next [leaving] (null: now), searched live with the rider's [times] ([find]),
+ * and in the timetable, its [copy] downloaded when it's missing or old ([localTimetable]); or, [allDay],
+ * the fastest of the day ([fastestOfTheDay]). Only the official connections' request failing fails
+ * the search (any of the fastest of the day's); a failed onward request skips its change. Blocking.
  */
-private fun search(from: String, to: String, leaving: LocalTime, times: TrackSwitchTimes, copy: File): Result = try {
+private fun search(from: String, to: String, leaving: LocalTime?, allDay: Boolean, times: TrackSwitchTimes, copy: File): Result = try {
     val ask = { a: String, b: String, at: LocalDateTime -> connections(a, b, at, BuildConfig.VERSION_NAME) }
     val timetable = {
         localTimetable(copy, { download(TIMETABLE_URL, BuildConfig.VERSION_NAME) }) { Log.w("Gleiswechsel", "Timetable: $it", it) }
     }
-    Result.Done(find(from, to, leaving, times, ask, timetable) { Log.w("Gleiswechsel", "Not checked: $it", it) })
+    val failed: (Exception) -> Unit = { Log.w("Gleiswechsel", "Not checked: $it", it) }
+    Result.Done(
+        if (allDay) fastestOfTheDay(from, to, times, ask, timetable, failed = failed)
+        else find(from, to, leaving, times, ask, timetable, failed = failed),
+    )
 } catch (e: Exception) {
     // In the message too: Log drops the stack trace of an UnknownHostException (no network).
     Log.w("Gleiswechsel", "Search failed: $e", e)

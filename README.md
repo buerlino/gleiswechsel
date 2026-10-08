@@ -5,6 +5,7 @@ trip has a faster connection than the official timetable shows.
 
 <img src="fastlane/metadata/android/en-US/images/phoneScreenshots/1.png" width="300" alt="Gleiswechsel: Horw to Sursee 14 minutes earlier, through a 4-minute change at Luzern">
 <img src="fastlane/metadata/android/en-US/images/phoneScreenshots/2.png" width="300" alt="Gleiswechsel: Uster to Horw 15 minutes earlier, through changes of 3 minutes at Zürich HB and 2 at Luzern">
+<img src="fastlane/metadata/android/en-US/images/phoneScreenshots/3.png" width="300" alt="Gleiswechsel: the fastest of the day from Horw to Sursee, a 33-minute trip every 60 minutes through a 4-minute change at Luzern">
 
 ## Install
 
@@ -26,6 +27,9 @@ best one, it tells you that too.
 The full search goes further: it looks for the fastest train route through any stations, with
 your track switch time at every change. It runs on the phone, over a file of two weeks of Swiss
 trains that the app downloads about once a week (about 0.5 MB).
+
+The fastest of the day (the all day button) shows the fastest connection of a weekday with your
+track switch times, and how often it runs.
 
 Background and sources: [research/](research/).
 

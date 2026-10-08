@@ -1,0 +1,2 @@
+- The fastest of the day: "all day" beside the time shows the fastest connection of a weekday with your track switch times, how often it runs, and how much more efficient it is than the planner's.
+- An empty time means now.

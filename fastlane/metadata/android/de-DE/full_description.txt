@@ -4,6 +4,8 @@ Die offiziellen Fahrpläne zeigen einen Umstieg nur, wenn er mindestens die offi
 
 Die vollständige Suche probiert auch Wege über andere Bahnhöfe aus, in einer Datei mit zwei Wochen Schweizer Zügen, die die App etwa einmal pro Woche lädt (etwa 0,5 MB).
 
+Die schnellste des Tages (die Schaltfläche «ganzer Tag») zeigt die schnellste Verbindung eines Werktags mit Ihren Gleiswechselzeiten und wie oft sie fährt.
+
 Kein Konto, keine Werbung, kein Tracking. Ihre Pendelstrecken bleiben auf Ihrem Handy.
 
 Daten: Open Data des öffentlichen Verkehrs der Schweiz (opentransportdata.swiss, transport.opendata.ch; die Fahrplandatei von buerlino.github.io). Unabhängig von der SBB und allen anderen Transportunternehmen.

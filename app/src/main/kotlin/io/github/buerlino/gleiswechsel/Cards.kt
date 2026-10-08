@@ -39,6 +39,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import io.github.buerlino.gleiswechsel.core.Change
 import io.github.buerlino.gleiswechsel.core.Connection
+import io.github.buerlino.gleiswechsel.core.Fastest
 import io.github.buerlino.gleiswechsel.core.Find
 import io.github.buerlino.gleiswechsel.core.Leg
 import io.github.buerlino.gleiswechsel.core.Stop
@@ -50,41 +51,79 @@ import java.time.format.DateTimeFormatter
 import kotlin.math.roundToInt
 
 @Composable
-internal fun FindCard(find: Find, times: TrackSwitchTimes, offered: Set<Change>) {
+internal fun FindCard(find: Find, times: TrackSwitchTimes, offered: Set<Change>) =
+    TripCard(find.faster, find.official, times, offered) {
+        Text(
+            stringResource(R.string.earlier, find.saved.toMinutes()),
+            style = MaterialTheme.typography.titleLarge,
+            fontWeight = FontWeight.Bold,
+        )
+        Text(
+            stringResource(
+                R.string.instead_of,
+                find.faster.arrival.station,
+                find.faster.arrival.time.format(hourMinute),
+                find.official.arrival.time.format(hourMinute),
+            ),
+        )
+        Quiet(stringResource(R.string.more_efficient, (find.moreEfficient * 100).roundToInt()))
+    }
+
+/**
+ * A card of the fastest of the day (CLAUDE.md): the trip's minutes, how often it runs, and how much
+ * more efficient it is than the planner's connection then, or that the planner offers it too.
+ */
+@Composable
+internal fun FastestCard(fastest: Fastest, times: TrackSwitchTimes, offered: Set<Change>) =
+    TripCard(fastest.trip, fastest.official, times, offered) {
+        Text(
+            stringResource(R.string.trip_minutes, fastest.runs.duration.toMinutes()),
+            style = MaterialTheme.typography.titleLarge,
+            fontWeight = FontWeight.Bold,
+        )
+        val journeys = fastest.runs.journeys
+        val first = journeys.first().departure.time.format(hourMinute)
+        val last = journeys.last().departure.time.format(hourMinute)
+        val every = fastest.runs.every
+        Text(when {
+            every != null -> stringResource(R.string.runs_every, every.toMinutes(), first, last, journeys.size)
+            journeys.size > 1 -> stringResource(R.string.runs_irregular, first, last, journeys.size)
+            else -> stringResource(R.string.runs_once, first)
+        })
+        Quiet(
+            if (fastest.offered) stringResource(R.string.offered_too)
+            else stringResource(R.string.more_efficient, (fastest.moreEfficient * 100).roundToInt()),
+        )
+    }
+
+/**
+ * A card: the [header], then [trip] as a timetable, and the [official] connection it's compared with,
+ * folded and quiet (user, 2026-10-06), with the ticket on sbb.ch for that one's from, to and departure
+ * on the same line (user, 2026-10-06).
+ */
+@Composable
+private fun TripCard(
+    trip: Connection,
+    official: Connection,
+    times: TrackSwitchTimes,
+    offered: Set<Change>,
+    header: @Composable () -> Unit,
+) {
     Card(Modifier.fillMaxWidth()) {
         Column(Modifier.padding(12.dp), verticalArrangement = Arrangement.spacedBy(4.dp)) {
-            Text(
-                stringResource(R.string.earlier, find.saved.toMinutes()),
-                style = MaterialTheme.typography.titleLarge,
-                fontWeight = FontWeight.Bold,
-            )
-            Text(
-                stringResource(
-                    R.string.instead_of,
-                    find.faster.arrival.station,
-                    find.faster.arrival.time.format(hourMinute),
-                    find.official.arrival.time.format(hourMinute),
-                ),
-            )
-            Text(
-                stringResource(R.string.more_efficient, (find.moreEfficient * 100).roundToInt()),
-                color = MaterialTheme.colorScheme.onSurfaceVariant,
-                style = MaterialTheme.typography.bodySmall,
-            )
+            header()
             // It may need another ticket (user, 2026-10-06).
-            if (find.faster.doublesBack) Text(
+            if (trip.doublesBack) Text(
                 stringResource(R.string.doubles_back),
                 color = MaterialTheme.colorScheme.error,
                 style = MaterialTheme.typography.bodySmall,
             )
             Spacer(Modifier.height(4.dp))
-            Trip(find.faster, times, offered)
-            // The official connection, folded and quiet (user, 2026-10-06); on the same line the
-            // ticket on sbb.ch, for the official connection's from, to and departure (user, 2026-10-06).
+            Trip(trip, times, offered)
             var officialOpen by remember { mutableStateOf(false) }
             val uri = LocalUriHandler.current
             val context = LocalContext.current
-            val ticket = ticketUrl(find.official.departure, find.official.arrival, stringResource(R.string.language))
+            val ticket = ticketUrl(official.departure, official.arrival, stringResource(R.string.language))
             val noBrowser = stringResource(R.string.no_browser)
             Row(verticalAlignment = Alignment.CenterVertically) {
                 Row(Modifier.folding(officialOpen, { officialOpen = !officialOpen }), verticalAlignment = Alignment.CenterVertically) {
@@ -105,11 +144,16 @@ internal fun FindCard(find: Find, times: TrackSwitchTimes, offered: Set<Change>)
                 }) { Text(stringResource(R.string.ticket)) }
             }
             AnimatedVisibility(officialOpen) {
-                Column(Modifier.alpha(FADED), verticalArrangement = Arrangement.spacedBy(4.dp)) { Trip(find.official, times, offered) }
+                Column(Modifier.alpha(FADED), verticalArrangement = Arrangement.spacedBy(4.dp)) { Trip(official, times, offered) }
             }
         }
     }
 }
+
+/** A small grey line under a card's title. */
+@Composable
+private fun Quiet(text: String) =
+    Text(text, color = MaterialTheme.colorScheme.onSurfaceVariant, style = MaterialTheme.typography.bodySmall)
 
 /**
  * [trip] as a timetable: a row per stop, the train in between, and at each change its minutes in a
